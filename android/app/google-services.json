@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "994127064670",
+    "project_id": "tjw1-copy",
+    "storage_bucket": "tjw1-copy.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994127064670:android:5c058b01fbff7af11c8ecf",
+        "android_client_info": {
+          "package_name": "com.ue.tjw.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-N2Mqz4HhqEAk47oDjQTMAWmz2xhAkxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
