@@ -80,52 +80,6 @@ Future<void> main() async {
   );
 }
 
-
-
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//
-//   const flavor = String.fromEnvironment('FLAVOR');
-//
-//   FirebaseOptions options;
-//   switch (flavor) {
-//     case 'prod':
-//       options = prod.DefaultFirebaseOptions.currentPlatform;
-//       break;
-//     default:
-//       throw Exception('Unknown flavor: $flavor');
-//   }
-//
-//   await Firebase.initializeApp(options: options);
-//
-//   // Setup locator
-//   setupLocator();
-//
-//   // Fetch and decode config
-//   final remoteConfig = FirebaseRemoteConfig.instance;
-//   await remoteConfig.setConfigSettings(RemoteConfigSettings(
-//     fetchTimeout: const Duration(seconds: 10),
-//     minimumFetchInterval: const Duration(seconds: 0),
-//   ));
-//   await remoteConfig.fetchAndActivate();
-//
-//   final rawJson = remoteConfig.getString('config');
-//   final configMap = jsonDecode(rawJson);
-//
-//   // Set config
-//   locator<AppConfigService>().setConfig(configMap);
-//
-//   runApp(
-//     DevicePreview(
-//       enabled: !kReleaseMode,
-//       builder: (context) => MyApp(),
-//     ),
-//   );
-// }
-
-
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -140,7 +94,7 @@ class MyApp extends StatelessWidget {
 
     return GetMaterialApp(
       title: 'TJW',
-      initialRoute: '/dashboard',  // login
+      initialRoute: '/',  // login
       debugShowCheckedModeBanner: false,
       getPages: AppRoutes.pages,
       theme: AppStyle.appTheme,
