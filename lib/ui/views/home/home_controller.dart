@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -86,7 +88,6 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    bannerImages.clear();
 
     if (_timer == null || !_timer!.isActive) {
       _timer = Timer.periodic(Duration(seconds: 2), (timer) {
@@ -96,6 +97,11 @@ class HomeController extends GetxController {
 
     // Load banners from remote config if available, else fallback to default
     print("======== ${config.banners}");
+    updateBanners();
+  }
+
+  void updateBanners() {
+    bannerImages.clear();
     if (config.banners != null && config.banners!.isNotEmpty) {
       bannerImages.assignAll(config.banners!);
     } else {
@@ -106,9 +112,9 @@ class HomeController extends GetxController {
         "https://www.jewellermagazine.com/dbimages/156000/156442/156442-950px.png?m=133655721260000000",
       ]);
     }
-
-    productFetch();
+    update();
   }
+
 
   void startBannerAutoSlide() {
     Timer.periodic(Duration(seconds: 2), (timer) {
@@ -163,6 +169,40 @@ class HomeController extends GetxController {
     _timer?.cancel();
     super.onClose();
   }
+
+  Future<bool> refreshRemoteConfig() async {
+    print("=====FFFFF");
+    try {
+      final remoteConfig = FirebaseRemoteConfig.instance;
+
+      // Optional: set shorter fetch interval on manual refresh if needed
+      await remoteConfig.setConfigSettings(RemoteConfigSettings(
+        fetchTimeout: Duration(seconds: 10),
+        minimumFetchInterval: Duration(seconds: 0), // force fetch
+      ));
+
+      bool activated = await remoteConfig.fetchAndActivate();
+      print('Remote Config refreshed: $activated');
+
+      if (activated) {
+        final rawJson = remoteConfig.getString('config');
+        final Map<String, dynamic> configMap = jsonDecode(rawJson);
+
+        // Update your config service with new config
+        locator<AppConfigService>().setConfig(configMap);
+
+
+
+        updateBanners();
+      }
+
+      return activated;
+    } catch (e) {
+      debugPrint('Failed to refresh === remote config: $e');
+      return false;
+    }
+  }
+
 }
 
 class Fruit {
