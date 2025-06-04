@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../helper/update_checker.dart';
+
 
 // class AppConfigService {
 //   AppConfig _appConfig = AppConfig(
@@ -80,6 +82,8 @@ class AppConfig {
   Android? android;
   IOS? iOS;
   List<String>? banners;
+  String? termsAndConditions;
+  bool? forceUpdate;
 
   AppConfig({
     required this.appName,
@@ -88,6 +92,8 @@ class AppConfig {
     this.android,
     this.iOS,
     this.banners,
+    this.termsAndConditions,
+    this.forceUpdate
   });
 
   factory AppConfig.fromJson(Map<String, dynamic> json) {
@@ -100,6 +106,7 @@ class AppConfig {
       banners: (json['Banners'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      termsAndConditions: json['TermsAndConditions']
     );
   }
 
@@ -108,6 +115,7 @@ class AppConfig {
       'AppName': appName,
       'BaseApiUrl': baseApiUrl,
       'FirebaseNotificationApiKey': firebaseNotificationApiKey,
+      'TermsAndConditions' : termsAndConditions,
     };
     if (android != null) data['Android'] = android!.toJson();
     if (iOS != null) data['IOS'] = iOS!.toJson();

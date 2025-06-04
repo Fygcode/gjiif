@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tjw1/ui/views/splash/splash_controller.dart';
 
+import '../../../helper/update_checker.dart';
+
 
 
 

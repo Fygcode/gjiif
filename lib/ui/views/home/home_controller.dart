@@ -12,9 +12,11 @@ import '../../../services/appconfig_service.dart';
 import '../../../services/request_method.dart';
 
 class HomeController extends GetxController {
-  Rx<SectionType> selectedSection = SectionType.updates.obs;
-  final RxInt selectedChipIndex = 0.obs;
+  RxBool isLoading = false.obs;
   RxList<String> bannerImages = <String>[].obs;
+  RxInt currentQuoteIndex = 0.obs;
+  RxInt currentImageIndex = 0.obs;
+  Timer? _timer;
 
   final config = locator<AppConfigService>().config;
 
@@ -31,41 +33,8 @@ class HomeController extends GetxController {
     "You don’t just wear jewelry. You wear legacy, love, and light.",
   ];
 
-  RxInt currentQuoteIndex = 0.obs;
-  Timer? _timer;
-
-  RxInt currentImageIndex = 0.obs;
-
-  // Products
   var products = <Products>[].obs;
-  var isLoading = true.obs;
-
-  // TextEditingControllers
-  TextEditingController searchController = TextEditingController();
-  FocusNode searchFocus = FocusNode();
-
-  // Form
-  final formKey = GlobalKey<FormState>();
-  TextEditingController usernameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  final TextEditingController genderController = TextEditingController();
-  final TextEditingController fruitController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-
-  // Focus nodes
-  FocusNode focusNode = FocusNode();
-  FocusNode focusNodePhone = FocusNode();
-  FocusNode focusNodeEmail = FocusNode();
-  FocusNode focusNodePassword = FocusNode();
-
-  // Fruits
-  final List<Fruit> fruits = [
-    Fruit('Apple'),
-    Fruit('Banana'),
-    Fruit('Cherry'),
-    // More...
-  ];
+  final List<Fruit> fruits = [Fruit('Apple'), Fruit('Banana'), Fruit('Cherry')];
 
   final List<String> gridImages = [
     'assets/event_gjiif.png',
@@ -76,55 +45,24 @@ class HomeController extends GetxController {
     'assets/cjs.png',
   ];
 
-  final List<VoidCallback> onTapHandlers = [
-    () => print('Tapped on GJIIF'),
-    () => print('Tapped on JJS'),
-    () => print('Tapped on IIJS'),
-    () => print('Tapped on Vicenza'),
-    () => print('Tapped on Dubai'),
-    () => print('Tapped on Bangkok'),
-  ];
-
   @override
   void onInit() {
     super.onInit();
-
     if (_timer == null || !_timer!.isActive) {
       _timer = Timer.periodic(Duration(seconds: 2), (timer) {
         currentQuoteIndex.value = (currentQuoteIndex.value + 1) % quotes.length;
       });
     }
-
-    // Load banners from remote config if available, else fallback to default
-    print("======== ${config.banners}");
     updateBanners();
   }
 
   void updateBanners() {
     bannerImages.clear();
-    if (config.banners != null && config.banners!.isNotEmpty) {
-      bannerImages.assignAll(config.banners!);
-    } else {
-      print("Empty");
-      bannerImages.assignAll([
-        "https://img.tradeindia.com/new_website1/tradeshowslandingpage/thejewelleryshow/new-banner.jpg",
-        "https://shivamjewelsandart.com/public/frontend/assets/images/inner-banner/exhibition-banner.png",
-        "https://www.jewellermagazine.com/dbimages/156000/156442/156442-950px.png?m=133655721260000000",
-      ]);
+    final newConfig = locator<AppConfigService>().config;
+    if (newConfig.banners != null && newConfig.banners!.isNotEmpty) {
+      bannerImages.assignAll(newConfig.banners!);
     }
-    update();
-  }
-
-
-  void startBannerAutoSlide() {
-    Timer.periodic(Duration(seconds: 2), (timer) {
-      if (Get.isRegistered<HomeController>()) {
-        currentImageIndex.value =
-            (currentImageIndex.value + 1) % bannerImages.length;
-      } else {
-        timer.cancel();
-      }
-    });
+    bannerImages.refresh();
   }
 
   Future<void> productFetch() async {
@@ -142,67 +80,34 @@ class HomeController extends GetxController {
     }
   }
 
-  String getDiscountPercentage(double mrpPrice, double price) {
-    if (mrpPrice > price) {
-      double discountPercentage = ((mrpPrice - price) / mrpPrice) * 100;
-      return "${discountPercentage.toStringAsFixed(0)}%";
-    } else {
-      return "No Discount";
-    }
-  }
-
   @override
   void onClose() {
-    searchController.dispose();
-    usernameController.dispose();
-    passwordController.dispose();
-    phoneController.dispose();
-    emailController.dispose();
-    genderController.dispose();
-    fruitController.dispose();
-    searchFocus.dispose();
-    focusNode.dispose();
-    focusNodePhone.dispose();
-    focusNodeEmail.dispose();
-    focusNodePassword.dispose();
-
     _timer?.cancel();
     super.onClose();
   }
 
   Future<bool> refreshRemoteConfig() async {
-    print("=====FFFFF");
     try {
       final remoteConfig = FirebaseRemoteConfig.instance;
-
-      // Optional: set shorter fetch interval on manual refresh if needed
-      await remoteConfig.setConfigSettings(RemoteConfigSettings(
-        fetchTimeout: Duration(seconds: 10),
-        minimumFetchInterval: Duration(seconds: 0), // force fetch
-      ));
-
+      await remoteConfig.setConfigSettings(
+        RemoteConfigSettings(
+          fetchTimeout: Duration(seconds: 10),
+          minimumFetchInterval: Duration(seconds: 0),
+        ),
+      );
       bool activated = await remoteConfig.fetchAndActivate();
-      print('Remote Config refreshed: $activated');
-
       if (activated) {
         final rawJson = remoteConfig.getString('config');
         final Map<String, dynamic> configMap = jsonDecode(rawJson);
-
-        // Update your config service with new config
         locator<AppConfigService>().setConfig(configMap);
-
-
-
         updateBanners();
       }
-
       return activated;
     } catch (e) {
       debugPrint('Failed to refresh === remote config: $e');
       return false;
     }
   }
-
 }
 
 class Fruit {

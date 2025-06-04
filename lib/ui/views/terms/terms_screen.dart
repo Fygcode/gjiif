@@ -5,6 +5,7 @@ import 'package:tjw1/ui/views/terms/terms_controller.dart';
 
 import '../../../common_widget/common_button.dart';
 import '../../../core/res/colors.dart';
+import '../../../helper/update_checker.dart';
 import '../gst/gst_screen.dart';
 
 class TermsScreen extends StatefulWidget {
@@ -16,6 +17,22 @@ class TermsScreen extends StatefulWidget {
 
 class _TermsScreenState extends State<TermsScreen> {
   final TermsController controller = Get.put(TermsController());
+
+  bool _hasCheckedUpdate = false;
+
+  @override
+  void initState() {
+    controller.onInit();
+
+    if (!_hasCheckedUpdate) {
+      _hasCheckedUpdate = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        UpdateChecker().versionCheck();
+      });
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +64,7 @@ class _TermsScreenState extends State<TermsScreen> {
                 child: ListView(
                   padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                   children: [
-                    SizedBox(height: 50),
+                    SizedBox(height: 10),
                     Center(
                       child: Text(
                         "TERMS & CONDITIONS",
@@ -60,7 +77,7 @@ class _TermsScreenState extends State<TermsScreen> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      controller.termsContent,
+                      controller.termsContent ?? controller.termsContentDefault,
                       style: TextStyle(fontSize: 15, color: Colors.white),
                     ),
                   ],
