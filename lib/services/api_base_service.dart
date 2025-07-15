@@ -11,19 +11,26 @@ import 'package:logger/logger.dart';
 import 'json_parsers.dart';
 
 class ApiBaseService {
-  static const String baseUrl = 'http://192.168.1.2:3000/api';
+  static const String baseUrl = 'https://api.thejewelleryworld.com/api';
   static final _logger = Logger();
   static const _storage = FlutterSecureStorage();
   static final http.Client _httpClient = http.Client();
 
-  static Future<List<T>> requestList<T>(String endpoint,
-      {String method = 'GET',
-      Object? body,
-      Map<String, String>? params,
-      bool authenticated = true}) async {
+  static Future<List<T>> requestList<T>(
+    String endpoint, {
+    String method = 'GET',
+    Object? body,
+    Map<String, String>? params,
+    bool authenticated = true,
+  }) async {
     try {
-      var response = await _sendAsync(method, endpoint, body,
-          queryParams: params, authenticated: authenticated);
+      var response = await _sendAsync(
+        method,
+        endpoint,
+        body,
+        queryParams: params,
+        authenticated: authenticated,
+      );
       if (response != null) {
         var jsonResponse = jsonDecode(response.body);
         if (response.statusCode == 200 || response.statusCode == 204) {
@@ -37,23 +44,30 @@ class ApiBaseService {
       }
     } on TimeoutException {
       Fluttertoast.showToast(
-          msg: "There is a problem connecting to the server.");
+        msg: "There is a problem connecting to the server.",
+      );
     } catch (exception) {
       print('Exception: $exception');
     }
     throw ApiException("No Response: something went wrong");
   }
 
-  static Future<T> request<T>(String endpoint,
-      {String method = 'GET',
-      Object? body,
-      Map<String, String>? params,
-      bool authenticated = true}) async {
+  static Future<T> request<T>(
+    String endpoint, {
+    String method = 'GET',
+    Object? body,
+    Map<String, String>? params,
+    bool authenticated = true,
+  }) async {
     const timeoutDuration = Duration(seconds: 10);
     try {
-      var response = await _sendAsync(method, endpoint, body,
-              queryParams: params, authenticated: authenticated)
-          .timeout(timeoutDuration);
+      var response = await _sendAsync(
+        method,
+        endpoint,
+        body,
+        queryParams: params,
+        authenticated: authenticated,
+      ).timeout(timeoutDuration);
       if (response != null) {
         var jsonResponse = jsonDecode(response.body);
         if (response.statusCode == 200 ||
@@ -66,7 +80,8 @@ class ApiBaseService {
       }
     } on TimeoutException {
       Fluttertoast.showToast(
-          msg: "There is a problem connecting to the server.");
+        msg: "There is a problem connecting to the server.",
+      );
     } catch (exception) {
       print('Exception: $exception');
     }
@@ -75,13 +90,19 @@ class ApiBaseService {
   }
 
   static Future<http.Response?> _sendAsync(
-      String method, String endpoint, Object? body,
-      {Map<String, String>? queryParams, bool authenticated = true}) async {
-    var url = Uri.parse(baseUrl +
-        endpoint +
-        (queryParams != null
-            ? '?${Uri(queryParameters: queryParams).query}'
-            : ""));
+    String method,
+    String endpoint,
+    Object? body, {
+    Map<String, String>? queryParams,
+    bool authenticated = true,
+  }) async {
+    var url = Uri.parse(
+      baseUrl +
+          endpoint +
+          (queryParams != null
+              ? '?${Uri(queryParameters: queryParams).query}'
+              : ""),
+    );
     var requestMessage = http.Request(method, url);
 
     print("=== API URL : $requestMessage");
@@ -105,7 +126,8 @@ class ApiBaseService {
         response = await http.Response.fromStream(await body.send());
       } else {
         response = await http.Response.fromStream(
-            await _httpClient.send(requestMessage));
+          await _httpClient.send(requestMessage),
+        );
       }
     } on HttpException catch (e) {
       if (kDebugMode) {
@@ -118,7 +140,9 @@ class ApiBaseService {
   }
 
   static Future<Map<String, String>> _headers(
-      Object? body, bool authenticated) async {
+    Object? body,
+    bool authenticated,
+  ) async {
     Map<String, String> headerParams = {};
     headerParams["Content-Type"] = "application/json";
     if (body is String) {
@@ -161,7 +185,8 @@ class ApiBaseService {
   static Future<bool> _isTokenExpired(String token) async {
     try {
       final jwt = JWT.decode(token);
-      final expiryTime = jwt.payload['exp'] *
+      final expiryTime =
+          jwt.payload['exp'] *
           1000; // Expiry time is usually in seconds, so multiply by 1000 for milliseconds
       final currentTime = DateTime.now().millisecondsSinceEpoch;
       return currentTime >
@@ -180,12 +205,8 @@ class ApiBaseService {
       final response = await http.post(
         Uri.parse("http://192.168.1.2:3000/api/refresh-token"),
         ////////////////////////////////////////////////////////////////////////////////
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'refreshToken': refreshToken,
-        }),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'refreshToken': refreshToken}),
       );
 
       if (response.statusCode == 200) {
@@ -216,17 +237,52 @@ class ApiBaseService {
     return null;
   }
 
-  Future<dynamic> uploadImage(File file, String endpoint) async {
-    var request = http.MultipartRequest('POST', Uri.parse(baseUrl + endpoint))
-      ..files.add(await http.MultipartFile.fromPath('file', file.path));
+  // Future<dynamic> uploadImage(File file, String endpoint) async {
+  //   var request = http.MultipartRequest('POST', Uri.parse(baseUrl + endpoint))
+  //     ..files.add(await http.MultipartFile.fromPath('file', file.path));
+  //
+  //   var response = await _sendAsync(
+  //     'POST',
+  //     endpoint,
+  //     request,
+  //     authenticated: true,
+  //   );
+  //   if (response != null) {
+  //     return jsonDecode(response.body)['file'];
+  //   }
+  //   throw Exception("Image upload failed");
+  // }
 
-    var response =
-        await _sendAsync('POST', endpoint, request, authenticated: true);
-    if (response != null) {
-      return jsonDecode(response.body)['file'];
+  Future<dynamic> uploadImage(
+      File file,
+      String endpoint, {
+        required String fileCategory,
+        required String gstNumber,
+        required String mobileNumber,
+      }) async {
+    var uri = Uri.parse(baseUrl + endpoint);
+
+    var request = http.MultipartRequest('POST', uri)
+      ..files.add(await http.MultipartFile.fromPath('uploadedFile', file.path))
+      ..fields['fileCategory'] = fileCategory
+      ..fields['gstNumber'] = gstNumber
+      ..fields['mobileNumber'] = mobileNumber;
+
+    var response = await _sendAsync(
+      'POST',
+      endpoint,
+      request,
+      authenticated: false,
+    );
+
+    if (response != null && response.statusCode == 200) {
+      return jsonDecode(response.body);
     }
+
     throw Exception("Image upload failed");
   }
+
+
 
   // Get Token from Secure Storage
   static Future<String> _getToken() async {

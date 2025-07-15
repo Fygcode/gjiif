@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "994127064670",
-    "project_id": "tjw1-copy",
-    "storage_bucket": "tjw1-copy.firebasestorage.app"
+    "project_number": "922181767375",
+    "project_id": "gjiif-181ad",
+    "storage_bucket": "gjiif-181ad.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:994127064670:android:5c058b01fbff7af11c8ecf",
+        "mobilesdk_app_id": "1:922181767375:android:960852d83ee8cc148b27ba",
         "android_client_info": {
-          "package_name": "com.ue.tjw.app"
+          "package_name": "com.gjiif.event.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB-N2Mqz4HhqEAk47oDjQTMAWmz2xhAkxQ"
+          "current_key": "AIzaSyDsZVUFxy9wjP3unOZNYq7_ayTzMXrX6Ss"
         }
       ],
       "services": {

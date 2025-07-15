@@ -1,6 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import '../../../common_widget/common_button.dart';
@@ -19,98 +18,50 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   final EventDetailController controller = Get.put(EventDetailController());
 
   @override
-  void initState() {
-    controller.onInit();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      extendBodyBehindAppBar: true, // Carousel can go under app bar
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Image.asset('assets/back_arrow.png', height: 30, width: 30),
-          onPressed: () => Navigator.pop(context),
-        ),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: AppColor.background,
+        statusBarIconBrightness: Brightness.dark,
       ),
-      body: SizedBox.expand(
-        // Ensures Stack fills the screen
-        child: Stack(
-          children: [
-            // Background carousel
-            CarouselSlider(
-              items: controller.bannerImages.map((url) {
-                    return Container(
-                      width: double.infinity,
-                      color: Colors.black12,
-                      child: CachedNetworkImage(
-                        imageUrl: url,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        placeholder:
-                            (context, url) => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                        errorWidget:
-                            (context, url, error) => Image.asset(
-                              'assets/updateBanner.png',
-                              fit: BoxFit.cover,
-                            ),
-                      ),
-                    );
-                  }).toList(),
-              options: CarouselOptions(
-                height: size.height * 0.4,
-                autoPlay: true,
-                enlargeCenterPage: true,
-                viewportFraction: 1.0,
-                onPageChanged: (index, reason) {
-                  controller.currentImageIndex.value = index;
-                },
+      child: Scaffold(
+        extendBodyBehindAppBar: false,
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          centerTitle: true,
+          title:  Image.asset('assets/GJIIF_Logo.png', height: 35),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/splash_background.png'),
+                fit: BoxFit.cover,
               ),
             ),
-
-            Positioned(
-              top: size.height * 0.4 - 40,
-              left: 0,
-              right: 0,
-              child: Obx(() {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    controller.bannerImages.length,
-                    (index) => AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      width:
-                          controller.currentImageIndex.value == index ? 10 : 8,
-                      height:
-                          controller.currentImageIndex.value == index ? 10 : 8,
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color:
-                            controller.currentImageIndex.value == index
-                                ? AppColor.primary
-                                : Color(0xffeae8e1),
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            ),
-
-            // Foreground rounded container
-            Positioned(
-              top: size.height * 0.4 - 20,
-              // Slight overlap
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: size.width, // Square layout
+                color: Colors.black,
+                child: Image.asset(
+                  'assets/EventScreen_GJIIF.png',
+                  fit: BoxFit.contain,
+                  alignment: Alignment.center,
+                ),
+              ),
+              Container(
                 decoration: BoxDecoration(
                   color: AppColor.background,
                   borderRadius: BorderRadius.only(
@@ -156,7 +107,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                             ),
                             SizedBox(width: 6),
                             Text(
-                              "19th  - 22nd  Dec, 2025",
+                              "12th  - 14th  Sep, 2025",
                               style: TextStyle(
                                 color: AppColor.grey,
                                 fontSize: 16,
@@ -207,13 +158,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           ),
                         ),
                         SizedBox(height: 16),
-                        CommonButton(
-                          text: "Register Now",
-                          onPressed: () {
-                            Get.to(() => VisitorDetailScreen());
-                          },
-                        ),
-                        SizedBox(height: 16),
                         Text(
                           "Discover Brilliance at the 2025 Jewel Expo!",
                           style: TextStyle(
@@ -236,8 +180,21 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: SafeArea (
+          bottom: true,
+          child: Container(
+            padding: const EdgeInsets.only(left: 8,right: 8,top: 8,bottom: 10),
+            color: AppColor.background,
+            child: CommonButton(
+              text: "Register Now",
+              onPressed: () {
+                Get.to(() => VisitorDetailScreen());
+              },
             ),
-          ],
+          ),
         ),
       ),
     );

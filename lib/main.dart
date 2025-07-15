@@ -60,6 +60,7 @@ Future<void> main() async {
     await remoteConfig.fetchAndActivate();
 
     final rawJson = remoteConfig.getString('config');
+    debugPrint('Remote config raw: $rawJson');
     final Map<String, dynamic> configMap = jsonDecode(rawJson);
 
     // Set App Config into service
@@ -72,13 +73,13 @@ Future<void> main() async {
   locator<NetworkService>().onInit();
 
   // Run the app
-  runApp(MyApp());
-  // runApp(
-  //   DevicePreview(
-  //     enabled: !kReleaseMode,
-  //     builder: (context) => MyApp(),
-  //   ),
-  // );
+  // runApp(MyApp());
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

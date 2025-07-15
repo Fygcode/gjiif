@@ -65,6 +65,19 @@ class AppColor {
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
 
+  static const Color textPrimary = Color(0xFF581728);
+
+
+
+  static const Color gradientGold1 = Color(0xFFE9A83D);
+  static const Color gradientGold2 = Color(0xFFFFFFA6);
+
+  static const Color gradient1 = Color(0xFFFFDF8A);
+  static const Color gradient2 = Color(0xFFF8B500);
+
+  static const Color gradient3 = Color(0xFFD9D9D9);
+  static const Color gradient4 = Color(0xFFFAFAFA);
+
   static const Color shimmerBase = Color(0xFFE0E0E0); // Shimmer Loading Base
   static const Color shimmerHighlight = Color(0xFFF5F5F5); // Shimmer Highlight
 

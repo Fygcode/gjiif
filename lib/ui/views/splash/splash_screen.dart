@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tjw1/ui/views/splash/splash_controller.dart';
 
@@ -39,7 +40,10 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/logo.png'),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SvgPicture.asset("assets/GJIIF_Logo.svg"),
+                )
               ],
             ),
           ),

@@ -19,6 +19,8 @@ class CommonButton extends StatelessWidget {
   final TextStyle? textStyle;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
+  final bool isDisabled;
+
 
   const CommonButton({
     super.key,
@@ -39,6 +41,8 @@ class CommonButton extends StatelessWidget {
     this.textStyle,
     this.prefixIcon,
     this.suffixIcon,
+    this.isDisabled = false,
+
   });
 
   const CommonButton.outline({
@@ -60,6 +64,8 @@ class CommonButton extends StatelessWidget {
     this.textStyle,
     this.prefixIcon,
     this.suffixIcon,
+    this.isDisabled = false,
+
   });
 
   @override
@@ -68,7 +74,7 @@ class CommonButton extends StatelessWidget {
       width: width,
       height: height,
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
+        onPressed: (isLoading || isDisabled) ? null : onPressed,
         style: ButtonStyle(
           elevation: WidgetStateProperty.all(elevation),
           backgroundColor: WidgetStateProperty.resolveWith((states) {
@@ -128,8 +134,9 @@ class CommonButton extends StatelessWidget {
               TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color:
-                    textColor ?? (!isFilled ? AppColor.primary : Colors.white),
+                color: isDisabled
+                    ? Colors.grey
+                    : textColor ?? (!isFilled ? AppColor.primary : Colors.white),
               ),
         ),
         if (suffixIcon != null) ...[const SizedBox(width: 8), suffixIcon!],

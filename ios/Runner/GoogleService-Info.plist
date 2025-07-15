@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyAeFnIgadG03eWbiHuzWGucR4cpBE56Bas</string>
+	<string>AIzaSyAiKm9bdqImQWgCO7kKWm1WxcTd_g_5tT8</string>
 	<key>GCM_SENDER_ID</key>
-	<string>994127064670</string>
+	<string>922181767375</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.ue.tjw.app</string>
+	<string>com.gjiif.event.app</string>
 	<key>PROJECT_ID</key>
-	<string>tjw1-copy</string>
+	<string>gjiif-181ad</string>
 	<key>STORAGE_BUCKET</key>
-	<string>tjw1-copy.firebasestorage.app</string>
+	<string>gjiif-181ad.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:994127064670:ios:2cb7763beb712a3f1c8ecf</string>
+	<string>1:922181767375:ios:c8c6d2f75dc26cfa8b27ba</string>
 </dict>
 </plist>

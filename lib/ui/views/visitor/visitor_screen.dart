@@ -24,21 +24,44 @@ class _VisitorScreenState extends State<VisitorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.background,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Visitor",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 16),
-              ListView.separated(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 10,left: 20,right: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded (
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      "Employees",
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 120,
+                  height: 40,
+                  child: CommonButton(
+                    text: "+ Add Visitor",
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      Get.to(() => VisitorDetailScreen());
+                    },
+                    fillColor: AppColor.secondary,
+                    textColor: AppColor.black,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Expanded (
+              child: ListView.separated(
                 itemCount: controller.selected.length,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.only(bottom: 30),
+                physics: ScrollPhysics(),
                 itemBuilder: (context, index) {
                   return Container(
                     decoration: BoxDecoration(
@@ -116,6 +139,7 @@ class _VisitorScreenState extends State<VisitorScreen> {
                                         print("Item removed");
                                         Get.back();
                                       },
+                                      leading: Icon(Icons.warning_amber_rounded, size: 48, color: AppColor.primary),
                                       onCancel: () {
                                         Get.back(); // Just close the dialog
                                       },
@@ -148,17 +172,9 @@ class _VisitorScreenState extends State<VisitorScreen> {
                   return SizedBox(height: 15);
                 },
               ),
-              SizedBox(height: 20),
-              CommonButton(
-                text: "+ Add Visitor",
-                onPressed: () {
-                  Get.to(() => VisitorDetailScreen());
-                },
-                fillColor: AppColor.secondary,
-                textColor: AppColor.black,
-              ),
-            ],
-          ),
+            ),
+
+          ],
         ),
       ),
     );

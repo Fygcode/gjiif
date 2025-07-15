@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB-N2Mqz4HhqEAk47oDjQTMAWmz2xhAkxQ',
-    appId: '1:994127064670:android:5c058b01fbff7af11c8ecf',
-    messagingSenderId: '994127064670',
-    projectId: 'tjw1-copy',
-    storageBucket: 'tjw1-copy.firebasestorage.app',
+    apiKey: 'AIzaSyDsZVUFxy9wjP3unOZNYq7_ayTzMXrX6Ss',
+    appId: '1:922181767375:android:960852d83ee8cc148b27ba',
+    messagingSenderId: '922181767375',
+    projectId: 'gjiif-181ad',
+    storageBucket: 'gjiif-181ad.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAeFnIgadG03eWbiHuzWGucR4cpBE56Bas',
-    appId: '1:994127064670:ios:2cb7763beb712a3f1c8ecf',
-    messagingSenderId: '994127064670',
-    projectId: 'tjw1-copy',
-    storageBucket: 'tjw1-copy.firebasestorage.app',
-    iosBundleId: 'com.ue.tjw.app',
+    apiKey: 'AIzaSyAiKm9bdqImQWgCO7kKWm1WxcTd_g_5tT8',
+    appId: '1:922181767375:ios:c8c6d2f75dc26cfa8b27ba',
+    messagingSenderId: '922181767375',
+    projectId: 'gjiif-181ad',
+    storageBucket: 'gjiif-181ad.firebasestorage.app',
+    iosBundleId: 'com.gjiif.event.app',
   );
+
 }

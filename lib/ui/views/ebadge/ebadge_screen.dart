@@ -18,28 +18,28 @@ class _EbadgeScreenState extends State<EbadgeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.background,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        centerTitle: true,
-        title: Image.asset('assets/logo.png', height: 45),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/splash_background.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-      ),
+      // extendBodyBehindAppBar: true,
+      // appBar: AppBar(
+      //   elevation: 0,
+      //   backgroundColor: Colors.transparent,
+      //   automaticallyImplyLeading: false,
+      //   leading: IconButton(
+      //     icon: Icon(Icons.arrow_back, color: Colors.white),
+      //     onPressed: () {
+      //       Navigator.pop(context);
+      //     },
+      //   ),
+      //   centerTitle: true,
+      //   title: Image.asset('assets/logo.png', height: 45),
+      //   flexibleSpace: Container(
+      //     decoration: const BoxDecoration(
+      //       image: DecorationImage(
+      //         image: AssetImage('assets/splash_background.png'),
+      //         fit: BoxFit.cover,
+      //       ),
+      //     ),
+      //   ),
+      // ),
 
       body: SafeArea(
         child: TapOutsideUnFocus(

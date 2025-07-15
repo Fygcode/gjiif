@@ -82,6 +82,7 @@ class CommonDialog {
     String cancelText = 'Cancel',
     VoidCallback? onConfirm,
     VoidCallback? onCancel,
+    Widget? leading,
   }) {
     showCustomDialog(
       content: Padding(
@@ -89,7 +90,8 @@ class CommonDialog {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.warning_amber_rounded, size: 48, color: AppColor.primary),
+            if (leading != null) leading ,
+         //   Icon(Icons.warning_amber_rounded, size: 48, color: AppColor.primary),
             const SizedBox(height: 12),
             Text(
               title,
@@ -151,7 +153,6 @@ class CommonDialog {
   /// Fully Custom Dialog (Internal use or advanced)
   static void showCustomDialog({
     required Widget content,
-    String? title,
     bool barrierDismissible = true,
     double borderRadius = 8.0,
     Color? backgroundColor,

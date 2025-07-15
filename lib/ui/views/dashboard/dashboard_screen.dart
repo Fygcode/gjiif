@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/res/colors.dart';
 import '../company/company_screen.dart';
+import '../ebadge/ebadge_screen.dart';
 import '../home/home_screen.dart';
 import '../registered/registered_screen.dart';
 import '../setting/setting_screen.dart';
@@ -15,11 +16,11 @@ class DashboardScreen extends StatelessWidget {
   final DashboardController controller = Get.put(DashboardController());
 
   // Define your screens for each tab here
-  static const List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(),
-    VisitorScreen(),
-    RegisteredScreen(),
-    CompanyScreen(),
+  static List<Widget> _widgetOptions = <Widget>[
+    const HomeScreen(),
+    const VisitorScreen(),
+    EbadgeScreen(eventTitle: "GJIIF",),
+    const CompanyScreen(),
   ];
 
 
@@ -31,8 +32,11 @@ class DashboardScreen extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        leadingWidth: 80,
-        leading: Image.asset('assets/logo.png', height: 60, width: 60),
+        leadingWidth: 130,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Image.asset('assets/GJIIF_Logo.png', height: 60, width: 60),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
@@ -87,7 +91,7 @@ class DashboardScreen extends StatelessWidget {
                         ? AppColor.primary
                         : Colors.black,
               ),
-              label: 'Visitor',
+              label: 'Employee List',
             ),
             BottomNavigationBarItem(
               icon: Image.asset(

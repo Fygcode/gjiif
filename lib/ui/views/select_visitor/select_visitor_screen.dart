@@ -25,20 +25,6 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
       backgroundColor: Color(0xffFDF7DF),
       extendBodyBehindAppBar: false,
       extendBody: true,
-      // appBar: AppBar(
-      //   elevation: 0,
-      //   backgroundColor: Colors.transparent,
-      //   leadingWidth: 80,
-      //   leading: Image.asset('assets/logo.png', height: 60, width: 60),
-      //   flexibleSpace: Container(
-      //     decoration: const BoxDecoration(
-      //       image: DecorationImage(
-      //         image: AssetImage('assets/splash_background.png'),
-      //         fit: BoxFit.cover,
-      //       ),
-      //     ),
-      //   ),
-      // ),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -50,7 +36,7 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
           },
         ),
         centerTitle: true,
-        title: Image.asset('assets/logo.png', height: 45),
+        title: Image.asset('assets/GJIIF_Logo.png', height: 35),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
@@ -61,21 +47,68 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Select Visitor Details",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 16),
-                ListView.separated(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 20,
+            right: 20,
+            bottom: 10,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Select Employee to Register",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 10),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Filter : ",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: DropdownMenu(
+                      menuHeight: 160,
+                      enableSearch: true,
+                      textStyle: const TextStyle(fontSize: 16),
+                      initialSelection: 'All',
+                      controller: controller.filterController,
+
+                      // dropdown text
+                      onSelected: (value) {
+                        if (value != null) {
+                          print("MMMMM $value");
+                          controller.filterController.text = value;
+                        }
+                      },
+                      dropdownMenuEntries: const [
+                        DropdownMenuEntry(value: "All", label: "All"),
+                        DropdownMenuEntry(value: "Paid", label: "Paid"),
+                        DropdownMenuEntry(
+                          value: "Approval Awaiting",
+                          label: "Approval Awaiting",
+                        ),
+                        DropdownMenuEntry(value: "Pending", label: "Pending"),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              Expanded(
+                child: ListView.separated(
+                  padding: EdgeInsets.only(bottom: 60),
                   itemCount: controller.selected.length,
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return Container(
                       decoration: BoxDecoration(color: Color(0xffFCF4CB)),
@@ -103,7 +136,7 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                                           fit: BoxFit.cover,
                                         ),
                                   ),
-                              
+
                                   Positioned(
                                     top: -10,
                                     left: -10,
@@ -113,43 +146,70 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                                         decoration: BoxDecoration(
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.grey.withOpacity(0.3),
+                                              color: Colors.grey.withOpacity(
+                                                0.3,
+                                              ),
                                               spreadRadius: 4,
                                               blurRadius: 10,
-                                              offset: Offset(0, 2,
+                                              offset: Offset(
+                                                0,
+                                                2,
                                               ), // subtle drop shadow
                                             ),
                                           ],
                                           shape: BoxShape.circle,
-                                         // borderRadius: BorderRadius.circular(8),
+                                          // borderRadius: BorderRadius.circular(8),
                                         ),
-                                        child: Checkbox(
-                                          value: controller.selected[index],
-                                          checkColor: AppColor.white,
-                                          fillColor:
-                                              WidgetStateProperty.resolveWith<
-                                                Color
-                                              >((Set<WidgetState> states) {
-                                                if (states.contains(
-                                                  WidgetState.selected,
-                                                )) {
-                                                  return AppColor.primary;
-                                                }
-                                                return Colors.white;
-                                              }),
-                                          side: const BorderSide(
-                                            color: Colors.grey,
-                                          ),
-                                          onChanged: (bool? value) {
-                                            setState(() {
+                                        child:
+                                        // inside your build method – wrap with Obx so it rebuilds
+                                        Obx(
+                                          () => Checkbox(
+                                            value: controller.selected[index],
+                                            checkColor: AppColor.white,
+                                            fillColor:
+                                                WidgetStateProperty.resolveWith<
+                                                  Color
+                                                >(
+                                                  (states) =>
+                                                      states.contains(
+                                                            WidgetState
+                                                                .selected,
+                                                          )
+                                                          ? AppColor.primary
+                                                          : Colors.white,
+                                                ),
+                                            side: const BorderSide(
+                                              color: Colors.grey,
+                                            ),
+                                            onChanged: (bool? value) {
                                               controller.selected[index] =
-                                                  value ?? false;
-                                              print(
-                                                "Checkbox tapped at index: $index",
-                                              );
-                                            });
-                                          },
+                                                  value ??
+                                                  false; // reactive write
+                                            },
+                                          ),
                                         ),
+
+                                        // Checkbox(
+                                        //   value: controller.selected[index],
+                                        //   checkColor: AppColor.white,
+                                        //   fillColor:
+                                        //   WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+                                        //         if (states.contains(WidgetState.selected,)) {
+                                        //           return AppColor.primary;
+                                        //         }
+                                        //         return Colors.white;
+                                        //       }),
+                                        //   side: const BorderSide(
+                                        //     color: Colors.grey,
+                                        //   ),
+                                        //   onChanged: (bool? value) {
+                                        //     setState(() {
+                                        //       controller.selected[index] = value ?? false;
+                                        //       print("Checkbox tapped at index: $index",
+                                        //       );
+                                        //     });
+                                        //   },
+                                        // ),
                                       ),
                                     ),
                                   ),
@@ -181,7 +241,7 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                SizedBox(height: 4,),
+                                SizedBox(height: 4),
                                 RichText(
                                   text: TextSpan(
                                     children: [
@@ -190,15 +250,15 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500,
-                                          color: Colors.black45
+                                          color: Colors.black45,
                                         ),
                                       ),
                                       TextSpan(
                                         text: 'Paid',
                                         style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xff30910e)
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xff30910e),
                                         ),
                                       ),
                                     ],
@@ -224,6 +284,11 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                                           print("Item removed");
                                           //       Get.back();
                                         },
+                                        leading: Icon(
+                                          Icons.warning_amber_rounded,
+                                          size: 48,
+                                          color: AppColor.primary,
+                                        ),
                                         onCancel: () {
                                           //        Get.back(); // Just close the dialog
                                         },
@@ -256,32 +321,30 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                     return SizedBox(height: 15);
                   },
                 ),
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: CommonButton(
-                        text: "+ Add Visitor",
-                        onPressed: () {
-                          Get.to(() => VisitorDetailScreen());
-                        },
-                        fillColor: AppColor.secondary,
-                        textColor: AppColor.black,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CommonButton(
+                      text: "+ Add Visitor",
+                      onPressed: () => Get.to(() => VisitorDetailScreen()),
+                      fillColor: AppColor.secondary,
+                      textColor: AppColor.black,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Obx(
+                      () => CommonButton(
+                        text: "View Selected (${controller.selectedCount})",
+                        onPressed: () => Get.to(() => SummaryScreen()),
+                        isDisabled: controller.selectedCount == 0,
                       ),
                     ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: CommonButton(
-                        text: "View Selected (2)",
-                        onPressed: () {
-                          Get.to(() => SummaryScreen());
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

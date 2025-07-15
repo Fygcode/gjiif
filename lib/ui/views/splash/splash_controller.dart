@@ -2,11 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/model/user_model.dart';
+
 import '../terms/terms_screen.dart';
 
 class SplashController extends GetxController {
-  var userModel = <UserModel>[].obs;
+
   var isLoading = true.obs;
 
   // Form controllers

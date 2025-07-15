@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../../../core/enum/view_state.dart';
-import '../../../core/model/ecommerce/product.dart';
+
 import '../../../locator.dart';
 import '../../../services/api_base_service.dart';
 import '../../../services/appconfig_service.dart';
@@ -33,27 +33,34 @@ class HomeController extends GetxController {
     "You don’t just wear jewelry. You wear legacy, love, and light.",
   ];
 
-  var products = <Products>[].obs;
+
   final List<Fruit> fruits = [Fruit('Apple'), Fruit('Banana'), Fruit('Cherry')];
 
   final List<String> gridImages = [
     'assets/event_gjiif.png',
-    'assets/apgjf.png',
-    'assets/theJewelry.png',
-    'assets/event_kijf.png',
-    'assets/hijs.png',
-    'assets/cjs.png',
+    // 'assets/apgjf.png',
+    // 'assets/theJewelry.png',
+    // 'assets/event_kijf.png',
+    // 'assets/hijs.png',
+    // 'assets/cjs.png',
   ];
 
   @override
   void onInit() {
     super.onInit();
     if (_timer == null || !_timer!.isActive) {
-      _timer = Timer.periodic(Duration(seconds: 2), (timer) {
+      _timer = Timer.periodic(Duration(seconds: 3), (timer) {
         currentQuoteIndex.value = (currentQuoteIndex.value + 1) % quotes.length;
       });
     }
-    updateBanners();
+    //  updateBanners();
+
+    bannerImages =
+        [
+          'assets/001.png',
+          'assets/002.png',
+          'assets/003.png',
+        ].obs;
   }
 
   void updateBanners() {
@@ -65,26 +72,29 @@ class HomeController extends GetxController {
     bannerImages.refresh();
   }
 
-  Future<void> productFetch() async {
-    try {
-      isLoading(true);
-      List<Products> response = await ApiBaseService.requestList<Products>(
-        '/products',
-        method: RequestMethod.GET,
-      );
-      products.assignAll(response);
-    } catch (e) {
-      print('Error fetching products: $e');
-    } finally {
-      isLoading(false);
-    }
-  }
+  // Future<void> productFetch() async {
+  //   try {
+  //     isLoading(true);
+  //     List<Products> response = await ApiBaseService.requestList<Products>(
+  //       '/products',
+  //       method: RequestMethod.GET,
+  //     );
+  //     products.assignAll(response);
+  //   } catch (e) {
+  //     print('Error fetching products: $e');
+  //   } finally {
+  //     isLoading(false);
+  //   }
+  // }
 
   @override
   void onClose() {
     _timer?.cancel();
     super.onClose();
   }
+
+
+
 
   Future<bool> refreshRemoteConfig() async {
     try {
@@ -108,6 +118,7 @@ class HomeController extends GetxController {
       return false;
     }
   }
+
 }
 
 class Fruit {

@@ -33,6 +33,7 @@ class CommonTextField extends StatefulWidget {
   final Color? borderColor;
   final Color? focusedBorderColor;
   final Color? errorBorderColor;
+  final Color? errorTextColor;
 
 
   CommonTextField({
@@ -65,6 +66,7 @@ class CommonTextField extends StatefulWidget {
     this.borderColor,
     this.focusedBorderColor,
     this.errorBorderColor,
+    this.errorTextColor,
 
   }) : inputFormatters = [
          FilteringTextInputFormatter.deny(RegExp("[ ]{2}")),
@@ -98,6 +100,8 @@ class CommonTextField extends StatefulWidget {
     this.borderColor,
     this.focusedBorderColor,
     this.errorBorderColor,
+    this.errorTextColor,
+
 
   }) : obscureText = false,
        keyboardType = TextInputType.emailAddress,
@@ -137,6 +141,8 @@ class CommonTextField extends StatefulWidget {
     this.borderColor,
     this.focusedBorderColor,
     this.errorBorderColor,
+    this.errorTextColor,
+
 
   }) : obscureText = true,
        keyboardType = TextInputType.number,
@@ -175,6 +181,8 @@ class CommonTextField extends StatefulWidget {
     this.borderColor,
     this.focusedBorderColor,
     this.errorBorderColor,
+    this.errorTextColor,
+
 
   }) : obscureText = false,
        keyboardType = TextInputType.phone,
@@ -250,6 +258,11 @@ class _CommonTextFieldState extends State<CommonTextField> {
           ),
         ),
 
+        errorStyle: TextStyle(
+          color: widget.errorTextColor ?? Colors.red,
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+        ),
 
       //  labelText: widget.isRequired ? '${widget.labelText ?? ''} *' : widget.labelText,
         labelText: (widget.labelText != null && widget.labelText!.isNotEmpty)
