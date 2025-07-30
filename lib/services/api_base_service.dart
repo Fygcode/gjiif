@@ -11,7 +11,7 @@ import 'package:logger/logger.dart';
 import 'json_parsers.dart';
 
 class ApiBaseService {
-  static const String baseUrl = 'https://api.thejewelleryworld.com/api';
+  static const String baseUrl = 'https://gjiif.thejewelleryworld.com/';
   static final _logger = Logger();
   static const _storage = FlutterSecureStorage();
   static final http.Client _httpClient = http.Client();

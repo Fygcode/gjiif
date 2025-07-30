@@ -4,7 +4,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:tjw1/core/model/tjw/fetch_company_detail.dart';
+import 'package:tjw1/core/model/tjw/fetch_company_type.dart';
+import 'package:tjw1/core/model/tjw/stateList.dart';
 import 'package:tjw1/services/api_base_service.dart';
+import 'package:tjw1/services/request_method.dart';
 import 'package:tjw1/services/secure_storage_service.dart';
 
 class CompanyController extends GetxController {
@@ -16,6 +20,9 @@ class CompanyController extends GetxController {
 
   final TextEditingController companyNameController = TextEditingController();
   final FocusNode companyNameFocusNode = FocusNode();
+
+  final TextEditingController emailController = TextEditingController();
+  final FocusNode emailFocusNode = FocusNode();
 
   final TextEditingController communicationAddressController =
       TextEditingController();
@@ -30,6 +37,9 @@ class CompanyController extends GetxController {
   final TextEditingController pincodeController = TextEditingController();
   final FocusNode pincodeFocusNode = FocusNode();
 
+  final TextEditingController districtController = TextEditingController();
+  final FocusNode districtFocusNode = FocusNode();
+
   final TextEditingController landlineController = TextEditingController();
   final FocusNode landlineFocusNode = FocusNode();
 
@@ -38,8 +48,7 @@ class CompanyController extends GetxController {
 
   final formKeyCompany = GlobalKey<FormState>();
 
-  // File paths
-  String? gstCopyFilePath;
+  var gstCopyFilePath = ''.obs;
 
   // Reactive file names
   final RxString gstCopyFileName = ''.obs;
@@ -52,46 +61,39 @@ class CompanyController extends GetxController {
   String? gstNumber;
   String? mobileNumber;
 
+  String? visitorId;
+
+  var stateId = ''.obs;
+  var companyTypeId = ''.obs;
+
+  bool isGstUploadedNow = false;
+
+
   @override
   void onInit() {
     // TODO: implement onInit
     _loadGstFromStorage();
+    // stateListApi();
+    // fetchCompanyType();
     super.onInit();
   }
 
   Future<void> _loadGstFromStorage() async {
     gstNumber = await SecureStorageService().read("gst");
     mobileNumber = await SecureStorageService().read("mobileNumber");
-    print("Stored token: $gstNumber");
+    visitorId = await SecureStorageService().read("visitorID");
+
     if (gstNumber?.isNotEmpty == true) {
       companyGstController.text = gstNumber!;
     }
+
+    await Future.wait([
+      fetchCompanyType(),
+      stateListApi(),
+    ]);
+
+    await fetchCompanyDetail(visitorId);
   }
-
-
-  // Future<void> pickFile(String type) async {
-  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
-  //     type: FileType.custom,
-  //     allowedExtensions: ['jpg', 'pdf', 'doc'],
-  //     allowMultiple: false,
-  //   );
-  //
-  //   if (result != null && result.files.single.path != null) {
-  //     String fileName = result.files.single.name;
-  //     String? filePath = result.files.single.path;
-  //
-  //     switch (type) {
-  //       case 'gstCopy':
-  //         gstCopyFileName.value = fileName;
-  //         gstCopyFilePath = filePath;
-  //         gstCopyError.value = '';
-  //         break;
-  //     }
-  //     print("===== ${gstCopyFilePath}");
-  //   } else {
-  //     print("No file selected.");
-  //   }
-  // }
 
   Future<void> pickFile(String type) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -121,7 +123,7 @@ class CompanyController extends GetxController {
       switch (type) {
         case 'gstCopy':
           gstCopyFileName.value = fileName;
-          gstCopyFilePath = filePath;
+          gstCopyFilePath.value = filePath;
           gstCopyError.value = '';
           break;
       }
@@ -147,24 +149,169 @@ class CompanyController extends GetxController {
   }
 
   Future<void> saveCompany() async {
-    // ✅ Validate form fields first
     if (formKeyCompany.currentState?.validate() != true) {
       print('Form is invalid. Please correct the errors.');
       return;
     }
-
-    // ✅ Validate GST copy upload
     if (gstCopyFileName.value.isEmpty) {
       gstCopyError.value = 'Please upload your GST Copy';
       return;
     } else {
-      gstCopyError.value = ''; // Clear error if file is uploaded
+      gstCopyError.value = '';
     }
 
-    // ✅ Proceed with saving or navigating
-    print('Company form and GST Copy are valid.');
-    // Example: navigate to next screen or call API
-    // Get.to(() => SelectVisitorScreen());
+    try {
+      isLoading(true);
+
+      var bodyData = {
+        "gstN": gstNumber,
+        "companyType": companyTypeId.value , // companyTypeController.text,
+        "companyName": companyNameController.text,
+        "address": communicationAddressController.text,
+        "city": cityController.text,
+        "pincode": pincodeController.text,
+        "stateID": stateId.value,
+        "district": districtController.text,
+        "landline": landlineController.text,
+        "gstFileName": gstCopyFileName.value,
+        // "saveFlag": statusCode == "300" ? 1 : 2,   // 2 insert  -    1 -update - data incompleted
+        // "gstChangedFlag": statusCode == "400" ? 1 : isGstUploadedNow ? 1 : 0,     // 0 means- no chnage,    1 - update /new    gst new upload - 1, gst repload - 1 , gst no upload just save - 0
+      };
+
+      print("cdddddd $bodyData");
+      final Map<String, dynamic> response = await ApiBaseService.request<Map<String, dynamic>>(
+        'CompanyDetails/Save',
+        body: bodyData,
+        method: RequestMethod.POST,
+        authenticated: false,
+      );
+
+      if(response['status'] == "200"){
+        Fluttertoast.showToast(msg: response['message'] ?? "");
+      }
+
+      //
+    } catch (e) {
+      print('Error: $e');
+      Get.snackbar("Error", "Something went wrong");
+    } finally {
+      isLoading(false);
+    }
+
+  }
+
+
+  var companyTypeList = <CompanyTypeData>[].obs;
+  Future<void> fetchCompanyType() async {
+    print("STATE API");
+    try {
+      isLoading(true);
+      FetchCompanyType response = await ApiBaseService.request<FetchCompanyType>(
+          'CompanyDetails/FetchCompanyType',
+          method: RequestMethod.GET,
+          authenticated: false
+      );
+      if(response.status == "200"){
+        companyTypeList.assignAll(response.companyTypeData!);
+      }
+    } catch (e) {
+      print('Error fetching state list: $e');
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  List<StateData> stateList = [];
+  Future<void> stateListApi() async {
+    print("STATE API");
+    try {
+      isLoading(true);
+
+      StateList response = await ApiBaseService.request<StateList>(
+          'SQ/GetStateList',
+          method: RequestMethod.GET,
+          authenticated: false
+      );
+
+      if(response.response?.status == "200"){
+        stateList = response.stateData!;
+        fetchCompanyDetail(visitorId);
+      }
+      print("==== ss ${response.stateData}");
+
+      print("States: ${stateList.length}");
+    } catch (e) {
+      print('Error fetching state list: $e');
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  CompanyTypeData get selectedCompanyType =>
+      companyTypeList.firstWhere(
+            (e) => e.id == int.tryParse(companyTypeId.value ?? '0'),
+        orElse: () => CompanyTypeData(id: 0, companyType: ''),
+      );
+
+  Future<void> fetchCompanyDetail(String? visitorId) async {
+    try {
+      isLoading(true);
+
+      final FetchCompanyDetail response = await ApiBaseService.request<FetchCompanyDetail>(
+        'CompanyDetails/FetchCompanyDetail?GSTN=$gstNumber&VisitorID=$visitorId',
+        method: RequestMethod.GET,
+        authenticated: false,
+      );
+
+      if(response.status == "200"){
+        companyTypeId.value = response.data?.companyType ?? "";
+        print("=== companyTypeId ${companyTypeId.value}");
+        if (companyTypeId.value.isNotEmpty && companyTypeList.isNotEmpty) {
+          final matchedCompany = companyTypeList.firstWhere(
+                (type) => type.id.toString() == companyTypeId.value.toString(),
+            orElse: () => CompanyTypeData(id: 1, companyType: ''),
+          );
+          companyTypeController.text = matchedCompany.companyType ?? "";
+          print("=== companyTypeId ${companyTypeController.text}");
+        }
+
+        companyNameController.text = response.data?.companyName ?? "";
+        emailController.text = response.data?.email ?? "";
+        communicationAddressController.text = response.data?.address ?? "";
+        cityController.text = response.data?.city ?? "";
+
+        stateId.value = response.data?.stateID ?? "";
+
+        print("=== stateId ${stateId.value}");
+        if (stateId.value != null && stateList.isNotEmpty) {
+          final matchedState = stateList.firstWhere(
+                (state) => state.stateID.toString() == stateId.value.toString(),
+            orElse: () => StateData(stateID: 1, stateName: ''),
+          );
+          stateController.text = matchedState.stateName ?? "";
+          print("=== stateId ${stateController.text}");
+        }
+
+        districtController.text = response.data?.district ?? "";
+        pincodeController.text = response.data?.pincode ?? "";
+        landlineController.text = response.data?.landline ?? "";
+        gstCopyFilePath.value = response.data?.gstFilePath ?? "";
+        gstCopyFileName.value = response.data?.gstFileName ?? "";
+
+        print("gstCopyFilePath  $gstCopyFilePath");
+        print("gstCopyFileName  $gstCopyFileName");
+
+      }
+
+      print("COMPANY FETCH : ${response.toJson()}");
+
+      // Get.offAll(() => DashboardScreen());
+    } catch (e) {
+      print('Error: $e');
+      Get.snackbar("Error", "Something went wrong");
+    } finally {
+      isLoading(false);
+    }
   }
 
 }

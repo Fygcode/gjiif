@@ -29,18 +29,33 @@ class OtpController extends GetxController {
   String mobileNumber = '';
   String visitorID = '';
 
+  bool isExpiredOrInvalid = false;
+
+  bool? isNewPrimaryNumber;
+
+  String? gstNumber;
+
+  OtpController(this.isNewPrimaryNumber);
+
   @override
   void onInit() {
     print("DATA: $data");
     String phone = data['mobileNumber'].toString();
     print("Phone: $phone");
+    print("isNewPrimaryNumber: $isNewPrimaryNumber");
     maskedPhone.value = phone.replaceRange(2, 6, "xxxxxx");
 
     otpID = data['otpID'].toString();
     mobileNumber = data['mobileNumber'].toString();
     visitorID = data['visitorID'].toString();
 
+    _loadGstFromStorage();
+
     super.onInit();
+  }
+
+  Future<void> _loadGstFromStorage() async {
+    gstNumber = await SecureStorageService().read("gst");
   }
 
   Future<void> mobileOpt() async {
@@ -55,24 +70,28 @@ class OtpController extends GetxController {
     try {
       isLoading(true);
       final OtpVerify response = await ApiBaseService.request<OtpVerify>(
-        '/OTPVerify?otpID=$otpID&mobileNumber=$mobileNumber&visitorID=$visitorID&enteredOTP=$enteredOTP',
+        'OTP/OTPVerify?otpID=$otpID&mobileNumber=$mobileNumber&visitorID=$visitorID&enteredOTP=$enteredOTP',
         method: RequestMethod.GET,
         authenticated: false,
       );
 
       print("OTP Verify Response: ${response.toJson()}");
 
+      // 100 error - 200 dashboard - 300 - fetch company details - 400 - no fetch just navigate company detail
+
       if (response.status == "200") {
         Fluttertoast.showToast(
           msg: response.message ?? "Verified successfully",
         );
+        await setPrimaryNumber(isNewPrimaryNumber, status: response.status,visitorID: visitorID);
         await SecureStorageService().write("mobileNumber", mobileNumber);
-      }
-
-      if (response.data?.isCompanyDetailFull == true) {
-        Get.offAll(() => OrganizationDetailScreen());
-      } else {
-        Get.offAll(() => DashboardScreen());
+      } else if (response.status == "100") {
+        Fluttertoast.showToast(msg: response.message ?? "Status 100");
+        isExpiredOrInvalid = true;
+      } else if (response.status == "300" || response.status == "400") {
+        print("LET'S CHECK ${response.status}");
+        await SecureStorageService().write("mobileNumber", mobileNumber);
+        await setPrimaryNumber(isNewPrimaryNumber, status: response.status,visitorID: visitorID);
       }
     } catch (e) {
       print('Error: $e');
@@ -83,24 +102,49 @@ class OtpController extends GetxController {
   }
 
   Future<void> resendOtp() async {
-    // if (!_canResend) return;
-    //
-    // _canResend = false;
-    // Fluttertoast.showToast(msg: "OTP resent successfully");
-    //
-    // Future.delayed(Duration(seconds: 30), () {
-    //   _canResend = true;
-    // });
+    isExpiredOrInvalid = false;
+    otpController.text = '';
 
     try {
       isLoading(true);
 
-      await ApiBaseService.request<OtpVerify>(
-        '/ResendOTP?otpID=$otpID&mobileNumber=$mobileNumber&visitorID=$visitorID&enteredOTP=1011',
+      Map<String, dynamic>
+      response = await ApiBaseService.request<Map<String, dynamic>>(
+        'OTP/ReSendOTP?otpID=$otpID&mobileNumber=$mobileNumber&visitorID=$visitorID&enteredOTP=1011',
         method: RequestMethod.GET,
         authenticated: false,
       );
+      otpID = response['otpID'].toString();
+      visitorID = response['visitorID'].toString();
+      mobileNumber = response['mobileNumber'].toString();
+
       Fluttertoast.showToast(msg: "OTP resent successfully");
+    } catch (e) {
+      print('Error: $e');
+      Get.snackbar("Error", "Something went wrong");
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  Future<void> setPrimaryNumber(bool? isNewPrimaryNumber, {status, visitorID}) async {
+    print("isNewPrimaryNumber $isNewPrimaryNumber");
+    print("VisitorID ${visitorID}");
+
+    try {
+      isLoading(true);
+      final Map<String, dynamic> json = await ApiBaseService.request<Map<String, dynamic>>(
+        'VisitorDetail/SetPrimaryMobileNumber?GSTN=$gstNumber&VisitorID=$visitorID',
+        method: RequestMethod.GET,
+        authenticated: false,
+      );
+      if (json.isNotEmpty) {
+        if (status == "300" || status == "400") {
+          Get.offAll(() => OrganizationDetailScreen(), arguments: status);
+        } else if (status == "200") {
+          Get.offAll(() => DashboardScreen());
+        }
+      }
     } catch (e) {
       print('Error: $e');
       Get.snackbar("Error", "Something went wrong");

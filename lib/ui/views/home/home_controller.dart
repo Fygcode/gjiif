@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:tjw1/core/model/tjw/banner_event_response.dart';
+import 'package:tjw1/core/model/tjw/today_rate_card.dart';
 
 import '../../../core/enum/view_state.dart';
 
@@ -13,54 +16,71 @@ import '../../../services/request_method.dart';
 
 class HomeController extends GetxController {
   RxBool isLoading = false.obs;
+
   RxList<String> bannerImages = <String>[].obs;
-  RxInt currentQuoteIndex = 0.obs;
+  RxList<EventsList> eventList = <EventsList>[].obs;
+
+  RxList<RateCardData> rateCardDataList = <RateCardData>[].obs;
+
   RxInt currentImageIndex = 0.obs;
-  Timer? _timer;
 
   final config = locator<AppConfigService>().config;
-
-  final List<String> quotes = [
-    "Adorn yourself with brilliance — let every jewel speak your story.",
-    "More than an accessory — jewelry is a celebration of your essence.",
-    "Crafted with passion, worn with pride, cherished forever.",
-    "Every gem holds a memory. Every piece reflects your light.",
-    "Let your elegance shine louder than words — wear timeless beauty.",
-    "From whispers of gold to echoes of diamonds — express your soul.",
-    "Shine isn’t just seen, it’s felt. Wear what empowers you.",
-    "For moments that matter, and beauty that lasts — choose authenticity.",
-    "Luxury isn’t a label, it’s a feeling — wrapped in sparkle.",
-    "You don’t just wear jewelry. You wear legacy, love, and light.",
-  ];
-
-
-  final List<Fruit> fruits = [Fruit('Apple'), Fruit('Banana'), Fruit('Cherry')];
-
-  final List<String> gridImages = [
-    'assets/event_gjiif.png',
-    // 'assets/apgjf.png',
-    // 'assets/theJewelry.png',
-    // 'assets/event_kijf.png',
-    // 'assets/hijs.png',
-    // 'assets/cjs.png',
-  ];
 
   @override
   void onInit() {
     super.onInit();
-    if (_timer == null || !_timer!.isActive) {
-      _timer = Timer.periodic(Duration(seconds: 3), (timer) {
-        currentQuoteIndex.value = (currentQuoteIndex.value + 1) % quotes.length;
-      });
-    }
-    //  updateBanners();
+    fetchBannerEvent();
+    fetchRateCard();
+  }
 
-    bannerImages =
-        [
-          'assets/001.png',
-          'assets/002.png',
-          'assets/003.png',
-        ].obs;
+  Future<void> fetchBannerEvent() async {
+    try {
+      isLoading(true);
+      BannerEventResponse response =
+          await ApiBaseService.request<BannerEventResponse>(
+            'SQ/GetBannerForHomeScreen',
+            method: RequestMethod.GET,
+            authenticated: false,
+          );
+
+      if (response.status == "200") {
+        bannerImages.assignAll(
+          response.bannerEventData?.bannerList
+                  ?.map((e) => e.bannerURL ?? '')
+                  .toList() ??
+              [],
+        );
+        eventList.value = response.bannerEventData?.eventsList ?? [];
+      }
+    } catch (e) {
+      print('Error fetching products: $e');
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  DateTime? rateDatetime;
+
+  fetchRateCard() async {
+    try {
+      isLoading(true);
+      TodaysRateCard response = await ApiBaseService.request<TodaysRateCard>(
+        'SQ/TodaysRateCard',
+        method: RequestMethod.GET,
+        authenticated: false,
+      );
+
+      if (response.status == "200") {
+        rateCardDataList.value = response.rateCardData ?? [];
+
+        String rawDate = response.rateCardData!.first.rateDate ?? '';
+        rateDatetime = DateTime.parse(rawDate);
+      }
+    } catch (e) {
+      print('Error fetching products: $e');
+    } finally {
+      isLoading(false);
+    }
   }
 
   void updateBanners() {
@@ -72,29 +92,10 @@ class HomeController extends GetxController {
     bannerImages.refresh();
   }
 
-  // Future<void> productFetch() async {
-  //   try {
-  //     isLoading(true);
-  //     List<Products> response = await ApiBaseService.requestList<Products>(
-  //       '/products',
-  //       method: RequestMethod.GET,
-  //     );
-  //     products.assignAll(response);
-  //   } catch (e) {
-  //     print('Error fetching products: $e');
-  //   } finally {
-  //     isLoading(false);
-  //   }
-  // }
-
   @override
   void onClose() {
-    _timer?.cancel();
     super.onClose();
   }
-
-
-
 
   Future<bool> refreshRemoteConfig() async {
     try {
@@ -118,7 +119,6 @@ class HomeController extends GetxController {
       return false;
     }
   }
-
 }
 
 class Fruit {

@@ -48,55 +48,77 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             ),
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                height: size.width, // Square layout
-                color: Colors.black,
-                child: Image.asset(
-                  'assets/EventScreen_GJIIF.png',
-                  fit: BoxFit.contain,
-                  alignment: Alignment.center,
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColor.background,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(34),
-                    topRight: Radius.circular(34),
+        body: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final eventWrapper = controller.eventDetail.value;
+
+          if (eventWrapper == null) {
+            return const Center(child: Text('No event data available'));
+          }
+
+          final event = eventWrapper;
+
+          final preRegistrationList = controller.preRegistrationList;
+
+
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                /// Event Banner
+                Container(
+                  width: double.infinity,
+                  height: size.width,
+                  color: Colors.black,
+                  child: Image.network(
+                    event!.eventBannerURL ?? '',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      'assets/fallback_banner.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      top: 10,
-                      right: 20,
-                      bottom: 30,
+
+                /// Event Detail Card
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColor.background,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(34),
+                      topRight: Radius.circular(34),
                     ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: 20),
+
                         Text(
-                          "Gems and Jewelry India International Fair",
+                          event.eventName ?? '',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+
                         SizedBox(height: 4),
+
                         Padding(
                           padding: const EdgeInsets.only(right: 30),
                           child: Text(
-                            "Chennai trade centre Nandambakkam, Chennai",
+                            '${event.eventVenue ?? ''}, ${event.eventCity ?? ''}',
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
+
                         SizedBox(height: 6),
+
                         Row(
                           children: [
                             Lottie.asset(
@@ -107,7 +129,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                             ),
                             SizedBox(width: 6),
                             Text(
-                              "12th  - 14th  Sep, 2025",
+                              event.eventDates ?? '',
                               style: TextStyle(
                                 color: AppColor.grey,
                                 fontSize: 16,
@@ -116,73 +138,84 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                             ),
                           ],
                         ),
+
                         SizedBox(height: 6),
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '₹500 ',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 34,
-                                  fontWeight: FontWeight.w600,
-                                ),
+
+                        ...preRegistrationList.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final phase = entry.value;
+
+                          if (index == 0) {
+                            return RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '₹${phase.preRegistrationFee} ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 34,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: phase.phaseDate,
+                                    style: TextStyle(
+                                      color: AppColor.grey,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              TextSpan(
-                                text: "till 30th Nov",
-                                style: TextStyle(
-                                  color: AppColor.grey,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                            );
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Text(
+                              '₹ ${phase.preRegistrationFee} - ${phase.phaseDate}',
+                              style: TextStyle(
+                                color: AppColor.grey,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
                               ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 6),
-                        Text(
-                          "₹ 1,000 - 1st to 12th Dec. 2025",
-                          style: TextStyle(
-                            color: AppColor.grey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(height: 6),
-                        Text(
-                          "₹ 1,500 - 12th to 18th Dec. 2025",
-                          style: TextStyle(
-                            color: AppColor.grey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                            ),
+                          );
+                        }).toList(),
+
                         SizedBox(height: 16),
+
                         Text(
-                          "Discover Brilliance at the 2025 Jewel Expo!",
+                          event.eventTitle ?? '',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+
                         SizedBox(height: 8),
+
                         Text(
-                          'Step into a world of elegance and craftsmanship at the Jewel Expo 2025, where the finest jewelry designers, brands, and artisans from around the globe gather under one roof. Explore a curated showcase of timeless pieces, cutting-edge trends, and one-of-a-kind creations that redefine luxury.',
+                          event.eventDescription ?? '',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black87,
-                            height: 1.6, // for better line height
+                            height: 1.6,
                           ),
                         ),
+
                         SizedBox(height: 20),
                       ],
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          );
+        }),
+
+
+
         bottomNavigationBar: SafeArea (
           bottom: true,
           child: Container(
@@ -200,3 +233,140 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     );
   }
 }
+
+
+// return  SingleChildScrollView(
+//   child: Column(
+//     children: [
+//       Container(
+//         width: double.infinity,
+//         height: size.width, // Square layout
+//         color: Colors.black,
+//         child: Image.asset(
+//           'assets/EventScreen_GJIIF.png',
+//           fit: BoxFit.contain,
+//           alignment: Alignment.center,
+//         ),
+//       ),
+//       Container(
+//         decoration: BoxDecoration(
+//           color: AppColor.background,
+//           borderRadius: BorderRadius.only(
+//             topLeft: Radius.circular(34),
+//             topRight: Radius.circular(34),
+//           ),
+//         ),
+//         child: SingleChildScrollView(
+//           child: Padding(
+//             padding: const EdgeInsets.only(
+//               left: 20,
+//               top: 10,
+//               right: 20,
+//               bottom: 30,
+//             ),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 SizedBox(height: 20),
+//                 Text(
+//                   "Gems and Jewelry India International Fair",
+//                   style: TextStyle(
+//                     fontSize: 18,
+//                     fontWeight: FontWeight.w600,
+//                   ),
+//                 ),
+//                 SizedBox(height: 4),
+//                 Padding(
+//                   padding: const EdgeInsets.only(right: 30),
+//                   child: Text(
+//                     "Chennai trade centre Nandambakkam, Chennai",
+//                     style: TextStyle(fontSize: 16),
+//                   ),
+//                 ),
+//                 SizedBox(height: 6),
+//                 Row(
+//                   children: [
+//                     Lottie.asset(
+//                       'assets/live_pulse.json',
+//                       width: 20,
+//                       height: 20,
+//                       fit: BoxFit.contain,
+//                     ),
+//                     SizedBox(width: 6),
+//                     Text(
+//                       "12th  - 14th  Sep, 2025",
+//                       style: TextStyle(
+//                         color: AppColor.grey,
+//                         fontSize: 16,
+//                         fontWeight: FontWeight.w600,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//                 SizedBox(height: 6),
+//                 RichText(
+//                   text: TextSpan(
+//                     children: [
+//                       TextSpan(
+//                         text: '₹500 ',
+//                         style: TextStyle(
+//                           color: Colors.black,
+//                           fontSize: 34,
+//                           fontWeight: FontWeight.w600,
+//                         ),
+//                       ),
+//                       TextSpan(
+//                         text: "till 30th Nov",
+//                         style: TextStyle(
+//                           color: AppColor.grey,
+//                           fontSize: 16,
+//                           fontWeight: FontWeight.w500,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//                 SizedBox(height: 6),
+//                 Text(
+//                   "₹ 1,000 - 1st to 12th Dec. 2025",
+//                   style: TextStyle(
+//                     color: AppColor.grey,
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.w500,
+//                   ),
+//                 ),
+//                 SizedBox(height: 6),
+//                 Text(
+//                   "₹ 1,500 - 12th to 18th Dec. 2025",
+//                   style: TextStyle(
+//                     color: AppColor.grey,
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.w500,
+//                   ),
+//                 ),
+//                 SizedBox(height: 16),
+//                 Text(
+//                   "Discover Brilliance at the 2025 Jewel Expo!",
+//                   style: TextStyle(
+//                     fontSize: 18,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//                 SizedBox(height: 8),
+//                 Text(
+//                   'Step into a world of elegance and craftsmanship at the Jewel Expo 2025, where the finest jewelry designers, brands, and artisans from around the globe gather under one roof. Explore a curated showcase of timeless pieces, cutting-edge trends, and one-of-a-kind creations that redefine luxury.',
+//                   style: TextStyle(
+//                     fontSize: 16,
+//                     color: Colors.black87,
+//                     height: 1.6, // for better line height
+//                   ),
+//                 ),
+//                 SizedBox(height: 20),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     ],
+//   ),
+// );

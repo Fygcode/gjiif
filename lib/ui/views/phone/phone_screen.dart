@@ -312,6 +312,20 @@ class _PhoneScreenState extends State<PhoneScreen> {
                             ),
                           ),
                         ),
+                        SizedBox(height: 20,),
+                        controller.isAlreadyRegister ?
+                        Align (
+                          alignment: Alignment.centerRight,
+                          child: InkWell (
+                            onTap: (){
+                              print("Contact Helpline");
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 20),
+                              child: Text("Contact Helpline",style: TextStyle(color: Colors.blue, textBaseline: TextBaseline.alphabetic), textAlign: TextAlign.end,),
+                            ),
+                          ),
+                        ) : SizedBox.shrink()
                       ],
                     ),
                   ),
@@ -323,7 +337,9 @@ class _PhoneScreenState extends State<PhoneScreen> {
       }),
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-        child: CommonButton(text: "Continue", onPressed: controller.mobileOpt),
+        child: Obx((){
+          return CommonButton(text: "Continue", onPressed: controller.mobileOpt,isLoading: controller.isLoading.value,);
+        })
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

@@ -83,6 +83,7 @@ class CommonDialog {
     VoidCallback? onConfirm,
     VoidCallback? onCancel,
     Widget? leading,
+    bool cancelTextHide = false,
   }) {
     showCustomDialog(
       content: Padding(
@@ -111,6 +112,7 @@ class CommonDialog {
             const SizedBox(height: 20),
             Row(
               children: [
+                cancelTextHide == false ?
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -125,7 +127,7 @@ class CommonDialog {
                       style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.w500),
                     ),
                   ),
-                ),
+                ) : SizedBox.shrink(),
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(

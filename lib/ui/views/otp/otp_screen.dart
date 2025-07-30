@@ -12,14 +12,22 @@ import '../../../core/res/colors.dart';
 import 'otp_controller.dart';
 
 class OtpScreen extends StatefulWidget {
-  OtpScreen({super.key});
+  bool? isNewPrimaryNumber;
+  OtpScreen({super.key, this.isNewPrimaryNumber});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  final OtpController controller = Get.put(OtpController());
+
+  late final OtpController controller;
+
+  @override
+  void initState() {
+    controller = Get.put(OtpController(widget.isNewPrimaryNumber));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,6 +200,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   text: "Continue",
                   onPressed: controller.mobileOpt,
                   isLoading: controller.isLoading.value,
+                  isDisabled: controller.isExpiredOrInvalid,
                 ),
               ),
             ],
@@ -201,4 +210,5 @@ class _OtpScreenState extends State<OtpScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
+
 }
