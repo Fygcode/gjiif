@@ -3,9 +3,14 @@ import 'package:tjw1/core/model/tjw/event_detail.dart';
 import 'package:tjw1/core/model/tjw/fetch_company_detail.dart';
 import 'package:tjw1/core/model/tjw/fetch_company_type.dart';
 import 'package:tjw1/core/model/tjw/otp_verify.dart';
+import 'package:tjw1/core/model/tjw/payment_summary_response.dart';
+import 'package:tjw1/core/model/tjw/registered_visitor_list.dart';
 import 'package:tjw1/core/model/tjw/select_primary_number.dart';
 import 'package:tjw1/core/model/tjw/stateList.dart';
 import 'package:tjw1/core/model/tjw/today_rate_card.dart';
+import 'package:tjw1/core/model/tjw/visitor_list_response.dart';
+
+import '../core/model/tjw/designation_response.dart';
 
 class JsonParsers {
   static T fromJson<T>(Map<String, dynamic> json) {
@@ -29,8 +34,15 @@ class JsonParsers {
       return EventDetailResponse.fromJson(json) as T;
     } else if (T == EventDetails) {
       return EventDetails.fromJson(json) as T;
-    }
-    else {
+    } else if (T == VisitorListResponse) {
+      return VisitorListResponse.fromJson(json) as T;
+    } else if (T == DesignationResponse) {
+      return DesignationResponse.fromJson(json) as T;
+    } else if (T == RegisteredVisitorResponse) {
+      return RegisteredVisitorResponse.fromJson(json) as T;
+    } else if (T == PaymentSummaryResponse) {
+      return PaymentSummaryResponse.fromJson(json) as T;
+    } else {
       throw Exception('Unsupported type $T');
     }
   }

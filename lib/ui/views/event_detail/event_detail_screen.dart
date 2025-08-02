@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:tjw1/ui/views/add_visitor/add_visitor_screen.dart';
+import 'package:tjw1/ui/views/select_visitor/select_visitor_screen.dart';
 import '../../../common_widget/common_button.dart';
 import '../../../core/res/colors.dart';
 import '../visitor_detail/visitor_detail_screen.dart';
@@ -38,7 +41,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             },
           ),
           centerTitle: true,
-          title:  Image.asset('assets/GJIIF_Logo.png', height: 35),
+          title: Image.asset('assets/GJIIF_Logo.png', height: 35),
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -63,7 +66,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
           final preRegistrationList = controller.preRegistrationList;
 
-
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -71,19 +73,22 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 Container(
                   width: double.infinity,
                   height: size.width,
-                  color: Colors.black,
-                  child: Image.network(
-                    event!.eventBannerURL ?? '',
+                  color: AppColor.tertiary,
+                  child: CachedNetworkImage(
+                    imageUrl: event.eventBannerURL ?? '',
                     fit: BoxFit.cover,
                     alignment: Alignment.center,
-                    errorBuilder: (context, error, stackTrace) => Image.asset(
-                      'assets/fallback_banner.png',
-                      fit: BoxFit.cover,
-                    ),
+                    // placeholder: (context, url) => const Center(
+                    //   child: CircularProgressIndicator(),
+                    // ),
+                    errorWidget:
+                        (context, url, error) => Image.asset(
+                          'assets/fallback_banner.png',
+                          fit: BoxFit.cover,
+                        ),
                   ),
                 ),
 
-                /// Event Detail Card
                 Container(
                   decoration: BoxDecoration(
                     color: AppColor.background,
@@ -214,26 +219,44 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           );
         }),
 
-
-
-        bottomNavigationBar: SafeArea (
+        bottomNavigationBar: SafeArea(
           bottom: true,
           child: Container(
-            padding: const EdgeInsets.only(left: 8,right: 8,top: 8,bottom: 10),
-            color: AppColor.background,
-            child: CommonButton(
-              text: "Register Now",
-              onPressed: () {
-                Get.to(() => VisitorDetailScreen());
-              },
+            padding: const EdgeInsets.only(
+              left: 8,
+              right: 8,
+              top: 8,
+              bottom: 10,
             ),
+            color: AppColor.background,
+            child: Obx((){
+              return  !controller.isLoading.value ? CommonButton(
+                text: "Register Now",
+                isLoading: controller.isVisitorListLoading.value,
+                onPressed: () async {
+                  final isEmpty = await controller.fetchRegisteredVisitorList();
+                  if (isEmpty) {
+                    Get.to(
+                          () => AddVisitorScreen(),
+                      arguments: {'isFromEdit': false, 'visitorID': 0},
+                    );
+                  } else {
+                    Get.to(() => SelectVisitorScreen(), arguments: {
+                      'visitorList': controller.registeredVisitorList.toList(),
+                      'eventId' : controller.eventId,
+                      'statusList': controller.statusList.toList(),
+                    });
+                  }
+                },
+              ) : SizedBox.shrink();
+            })
+
           ),
         ),
       ),
     );
   }
 }
-
 
 // return  SingleChildScrollView(
 //   child: Column(

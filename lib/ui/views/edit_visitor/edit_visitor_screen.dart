@@ -1,29 +1,28 @@
-import 'dart:io';
-
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-import 'package:tjw1/core/model/tjw/designation_response.dart';
-import 'package:tjw1/ui/views/visitor_detail/visitor_detail_controller.dart';
-import 'package:tjw1/ui/widgets/file_preview_widget.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:tjw1/common_widget/tap_outside_unfocus.dart';
+import 'package:tjw1/core/res/colors.dart';
+import 'package:tjw1/ui/views/edit_visitor/edit_visitor_controller.dart';
 
 import '../../../common_widget/common_button.dart';
 import '../../../common_widget/common_dropdown.dart';
 import '../../../common_widget/common_text_field.dart';
-import '../../../common_widget/tap_outside_unfocus.dart';
 import '../../../core/enum/view_state.dart';
-import '../../../core/res/colors.dart';
+import '../../../core/model/tjw/designation_response.dart';
+import '../../widgets/file_preview_widget.dart';
 
-class VisitorDetailScreen extends StatefulWidget {
-  const VisitorDetailScreen({super.key});
+class EditVisitorScreen extends StatefulWidget {
+  const EditVisitorScreen({super.key});
 
   @override
-  State<VisitorDetailScreen> createState() => _VisitorDetailScreenState();
+  State<EditVisitorScreen> createState() => _EditVisitorScreenState();
 }
 
-class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
-  final VisitorDetailController controller = Get.put(VisitorDetailController());
+class _EditVisitorScreenState extends State<EditVisitorScreen> {
+  final EditVisitorController controller = Get.put(EditVisitorController());
 
   @override
   Widget build(BuildContext context) {
@@ -57,14 +56,14 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
           child: Padding(
             padding: const EdgeInsets.only(top: 20, right: 20, left: 20),
             child: Form(
-              key: controller.formKey,
+              key: controller.editFormKey,
               autovalidateMode: AutovalidateMode.onUserInteraction,
 
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                  controller.isFromEdit ? "Edit Visitor Details" : "Add Visitor Details",
+                    "Edit Visitor Details",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
                   ),
                   SizedBox(height: 20),
@@ -190,45 +189,76 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                           ),
                           SizedBox(height: 10),
 
+                          // Obx(() {
+                          //   return Row(
+                          //     children: [
+                          //       Text(
+                          //         "Phone Number",
+                          //         style: TextStyle(
+                          //           fontSize: 18,
+                          //           fontWeight: FontWeight.bold,
+                          //         ),
+                          //       ),
+                          //       Spacer(),
+                          //       controller.phoneNumberController.text != controller.getPhoneNumberDB.value
+                          //           ? Text(
+                          //             "Unverified",
+                          //             style: TextStyle(
+                          //               fontWeight: FontWeight.w600,
+                          //             ),
+                          //           )
+                          //           : SizedBox.shrink(),
+                          //       controller.isPhoneVerified.value
+                          //           ? Text(
+                          //             "Verified",
+                          //             style: TextStyle(
+                          //               fontWeight: FontWeight.w600,
+                          //             ),
+                          //           )
+                          //           : SizedBox.shrink(),
+                          //       SizedBox(
+                          //         width:
+                          //             controller.isPhoneVerified.value ? 6 : 0,
+                          //       ),
+                          //       controller.isPhoneVerified.value
+                          //           ? Icon(
+                          //             Icons.verified_rounded,
+                          //             color: Colors.green,
+                          //           )
+                          //           : SizedBox.shrink(),
+                          //     ],
+                          //   );
+                          // }),
                           Obx(() {
+                            final isChanged = controller.phoneNumberController.text != controller.getPhoneNumberDB.value;
                             return Row(
                               children: [
                                 Text(
                                   "Phone Number",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                 ),
                                 Spacer(),
-                               controller.currentPhoneNumber.value != controller.getPhoneNumberCheck.value ?
-                                Text(
-                                  "Unverified",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
+                                if (isChanged || !controller.isPhoneVerified.value)
+                                  Text(
+                                    "Unverified",
+                                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
                                   ),
-                                ) : SizedBox.shrink(),
-                                controller.isPhoneVerified.value
-                                    ? Text(
-                                      "Verified",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
+                                if (controller.isPhoneVerified.value && !isChanged)
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Verified",
+                                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.w600),
                                       ),
-                                    )
-                                    : SizedBox.shrink(),
-                                SizedBox(
-                                  width:
-                                      controller.isPhoneVerified.value ? 6 : 0,
-                                ),
-                                controller.isPhoneVerified.value
-                                    ? Icon(
-                                      Icons.verified_rounded,
-                                      color: Colors.green,
-                                    )
-                                    : SizedBox.shrink(),
+                                      SizedBox(width: 4),
+                                      Icon(Icons.verified_rounded, color: Colors.green),
+                                    ],
+                                  ),
                               ],
                             );
                           }),
+
+
                           SizedBox(height: 4),
                           CommonTextField.phone(
                             controller: controller.phoneNumberController,
@@ -252,9 +282,12 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                                     onPressed: () async {
                                       controller.otpController.clear();
                                       print("Open OPT Dialog");
-                                      final success = await controller.sendOtp();
+                                      final success =
+                                          await controller.sendOtp();
                                       if (success) {
-                                        print("OTP sent successfully, opening dialog...",);
+                                        print(
+                                          "OTP sent successfully, opening dialog...",
+                                        );
                                         controller.openDialogBox();
                                       } else {
                                         Get.snackbar(
@@ -269,6 +302,14 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                                 ),
                               ),
                             ),
+                            onChanged: (value) {
+                              if (controller.phoneNumberController.text !=
+                                  controller.getPhoneNumberDB.value) {
+                                controller.isPhoneVerified.value = false;
+                              }else{
+                                controller.isPhoneVerified.value = true;
+                              }
+                            },
                             validator: (val) {
                               if (val == null || val.isEmpty) {
                                 return 'Please enter phone number';
@@ -445,106 +486,12 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                             ),
                           ),
                           SizedBox(height: 2),
-
-                          // Obx(() {
-                          //   final filePath = controller.businessFilePath.value;
-                          //   final fileName = controller.businessFileName.value;
-                          //   //
-                          //   if (filePath == null || fileName.isEmpty) {
-                          //     return const SizedBox.shrink();
-                          //   }
-                          //   return InkWell(
-                          //     onTap: () {
-                          //       print("File name == ${fileName} || File Path == ${filePath}");
-                          //       if (controller.isLoading.value) {
-                          //         print("It's loading ");
-                          //         return;
-                          //       }
-                          //       CommonDialog.showCustomDialog(
-                          //         content: SizedBox(
-                          //           width:
-                          //               MediaQuery.of(context).size.width * 0.9,
-                          //           height:
-                          //               MediaQuery.of(context).size.height *
-                          //               0.6,
-                          //           child: Padding(
-                          //             padding: const EdgeInsets.all(6.0),
-                          //             child:
-                          //                 filePath.toLowerCase().endsWith(
-                          //                       '.pdf',
-                          //                     )
-                          //                     ? SfPdfViewer.file(
-                          //                       File(filePath),
-                          //                       canShowScrollHead: true,
-                          //                       canShowScrollStatus: true,
-                          //                       enableDoubleTapZooming: true,
-                          //                       initialZoomLevel: 1,
-                          //                     )
-                          //                     :  Image.network(
-                          //                   filePath,
-                          //                   fit: BoxFit.contain,
-                          //                   errorBuilder:
-                          //                       (
-                          //                       context,
-                          //                       error,
-                          //                       stackTrace,
-                          //                       ) => const Text(
-                          //                     'Failed to load image',
-                          //                   ),
-                          //                 ),
-                          //
-                          //           ),
-                          //         ),
-                          //       );
-                          //     },
-                          //     child: Padding(
-                          //       padding: const EdgeInsets.all(8.0),
-                          //       child: Row(
-                          //         children: [
-                          //           Expanded(
-                          //             child: Text(
-                          //               fileName,
-                          //               style: const TextStyle(
-                          //                 fontSize: 14,
-                          //                 decoration: TextDecoration.underline,
-                          //                 color: Colors.blue,
-                          //               ),
-                          //             ),
-                          //           ),
-                          //           const SizedBox(width: 8),
-                          //           Image.asset(
-                          //             'assets/tick.png',
-                          //             scale: 2,
-                          //             color: Colors.green,
-                          //           ),
-                          //         ],
-                          //       ),
-                          //     ),
-                          //   );
-                          // }),
-                          // Obx(() {
-                          //   final error = controller.businessError.value;
-                          //   return error.isNotEmpty
-                          //       ? Padding(
-                          //         padding: const EdgeInsets.only(top: 4),
-                          //         child: Text(
-                          //           error,
-                          //           style: TextStyle(
-                          //             color: Colors.red,
-                          //             fontSize: 12,
-                          //           ),
-                          //         ),
-                          //       )
-                          //       : SizedBox.shrink();
-                          // }),
-
                           FilePreviewWidget(
                             filePath: controller.businessFilePath,
                             fileName: controller.businessFileName,
                             errorText: controller.businessError,
                             isLoading: controller.isLoading,
                           ),
-
 
                           SizedBox(height: 10),
 
@@ -597,102 +544,6 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                             ),
                           ),
                           SizedBox(height: 2),
-                          // Obx(() {
-                          //   final filePath = controller.passportPhotoPath.value;
-                          //   final fileName = controller.passportPhotoName.value;
-                          //   //
-                          //   if (filePath.isEmpty || fileName.isEmpty) {
-                          //     return const SizedBox.shrink();
-                          //   }
-                          //   return InkWell(
-                          //     onTap: () {
-                          //       print("File name == ${fileName} || File Path == ${filePath}");
-                          //       if (controller.isLoading.value) {
-                          //         print("It's loading ");
-                          //         return;
-                          //       }
-                          //       CommonDialog.showCustomDialog(
-                          //         content: SizedBox(
-                          //           width:
-                          //               MediaQuery.of(context).size.width * 0.9,
-                          //           height:
-                          //               MediaQuery.of(context).size.height *
-                          //               0.6,
-                          //           child: Padding(
-                          //             padding: const EdgeInsets.all(6.0),
-                          //             child:
-                          //                 filePath.toLowerCase().endsWith(
-                          //                       '.pdf',
-                          //                     )
-                          //                     ? SfPdfViewer.file(
-                          //                       File(filePath),
-                          //                       canShowScrollHead: true,
-                          //                       canShowScrollStatus: true,
-                          //                       enableDoubleTapZooming: true,
-                          //                       initialZoomLevel: 1,
-                          //                     )
-                          //                     :  Image.network(
-                          //                   filePath,
-                          //                   fit: BoxFit.contain,
-                          //                   errorBuilder:
-                          //                       (
-                          //                       context,
-                          //                       error,
-                          //                       stackTrace,
-                          //                       ) => const Text(
-                          //                     'Failed to load image',
-                          //                   ),
-                          //                 ),
-                          //
-                          //                 // Image.file(
-                          //                 //       File(filePath),
-                          //                 //       fit: BoxFit.contain,
-                          //                 //     ),
-                          //           ),
-                          //         ),
-                          //       );
-                          //     },
-                          //     child: Padding(
-                          //       padding: const EdgeInsets.all(8.0),
-                          //       child: Row(
-                          //         children: [
-                          //           Expanded(
-                          //             child: Text(
-                          //               fileName,
-                          //               style: const TextStyle(
-                          //                 fontSize: 14,
-                          //                 decoration: TextDecoration.underline,
-                          //                 color: Colors.blue,
-                          //               ),
-                          //             ),
-                          //           ),
-                          //           const SizedBox(width: 8),
-                          //           Image.asset(
-                          //             'assets/tick.png',
-                          //             scale: 2,
-                          //             color: Colors.green,
-                          //           ),
-                          //         ],
-                          //       ),
-                          //     ),
-                          //   );
-                          // }),
-                          //
-                          // Obx(() {
-                          //   final error = controller.passportPhotoError.value;
-                          //   return error.isNotEmpty
-                          //       ? Padding(
-                          //         padding: const EdgeInsets.only(top: 4),
-                          //         child: Text(
-                          //           error,
-                          //           style: TextStyle(
-                          //             color: Colors.red,
-                          //             fontSize: 12,
-                          //           ),
-                          //         ),
-                          //       )
-                          //       : SizedBox.shrink();
-                          // }),
 
                           FilePreviewWidget(
                             filePath: controller.passportPhotoPath,
@@ -752,101 +603,6 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                             ),
                           ),
                           SizedBox(height: 2),
-                          // Obx(() {
-                          //   final filePath = controller.idProofPath.value;
-                          //   final fileName = controller.idProofName.value;
-                          //   print("====filePath ${filePath}");
-                          //   if (filePath == null || fileName.isEmpty) {
-                          //     return const SizedBox.shrink();
-                          //   }
-                          //   return InkWell(
-                          //     onTap: () {
-                          //       print("File name == ${fileName} || File Path == ${filePath}");
-                          //       if (controller.isLoading.value) {
-                          //         print("It's loading ");
-                          //         return;
-                          //       }
-                          //       CommonDialog.showCustomDialog(
-                          //         content: SizedBox(
-                          //           width:
-                          //               MediaQuery.of(context).size.width * 0.9,
-                          //           height:
-                          //               MediaQuery.of(context).size.height *
-                          //               0.6,
-                          //           child: Padding(
-                          //             padding: const EdgeInsets.all(6.0),
-                          //             child:
-                          //                 filePath.toLowerCase().endsWith(
-                          //                       '.pdf',
-                          //                     )
-                          //                     ? SfPdfViewer.file(
-                          //                       File(filePath),
-                          //                       canShowScrollHead: true,
-                          //                       canShowScrollStatus: true,
-                          //                       enableDoubleTapZooming: true,
-                          //                       initialZoomLevel: 1,
-                          //                     )
-                          //                     : Image.network(
-                          //                       filePath,
-                          //                       fit: BoxFit.contain,
-                          //                       errorBuilder:
-                          //                           (
-                          //                             context,
-                          //                             error,
-                          //                             stackTrace,
-                          //                           ) => const Text(
-                          //                             'Failed to load image',
-                          //                           ),
-                          //                     ),
-                          //             // Image.file(
-                          //             //       File(filePath),
-                          //             //       fit: BoxFit.contain,
-                          //             //     ),
-                          //           ),
-                          //         ),
-                          //       );
-                          //     },
-                          //     child: Padding(
-                          //       padding: const EdgeInsets.all(8.0),
-                          //       child: Row(
-                          //         children: [
-                          //           Expanded(
-                          //             child: Text(
-                          //               fileName,
-                          //               style: const TextStyle(
-                          //                 fontSize: 14,
-                          //                 decoration: TextDecoration.underline,
-                          //                 color: Colors.blue,
-                          //               ),
-                          //             ),
-                          //           ),
-                          //           const SizedBox(width: 8),
-                          //           Image.asset(
-                          //             'assets/tick.png',
-                          //             scale: 2,
-                          //             color: Colors.green,
-                          //           ),
-                          //         ],
-                          //       ),
-                          //     ),
-                          //   );
-                          // }),
-                          //
-                          // Obx(() {
-                          //   final error = controller.idProofError.value;
-                          //   return error.isNotEmpty
-                          //       ? Padding(
-                          //         padding: const EdgeInsets.only(top: 4),
-                          //         child: Text(
-                          //           error,
-                          //           style: TextStyle(
-                          //             color: Colors.red,
-                          //             fontSize: 12,
-                          //           ),
-                          //         ),
-                          //       )
-                          //       : SizedBox.shrink();
-                          // }),
 
                           FilePreviewWidget(
                             filePath: controller.idProofPath,
@@ -874,7 +630,7 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
               text: "Save",
               isLoading: controller.isLoading.value,
               onPressed: () {
-                controller.saveVisitor();
+                controller.saveUpdatedVisitor();
               },
             );
           }),
@@ -883,26 +639,3 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
     );
   }
 }
-
-// return WillPopScope(
-//     onWillPop: () async {
-//       Get.back(result: 'refresh');
-//       return false;
-//     },
-//     child: Scaffold(
-//       // your UI
-//     ),
-//   );
-
-// final phone = controller.phoneNumberController.text.trim();
-//
-// if (phone.isEmpty) {
-//   Fluttertoast.showToast(msg: "Please enter phone number");
-//   return;
-// }
-//
-// final phoneRegExp = RegExp(r'^[0-9]{10}$');
-// if (!phoneRegExp.hasMatch(phone)) {
-//   Fluttertoast.showToast(msg: "Please enter a valid phone number");
-//   return;
-// }

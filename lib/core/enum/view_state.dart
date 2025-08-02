@@ -17,7 +17,6 @@ enum PaymentStatus {
 enum Gender {
   male,
   female,
-  other
 }
 
 enum IDType {

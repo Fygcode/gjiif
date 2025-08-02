@@ -146,7 +146,8 @@ class ApiBaseService {
     Map<String, String> headerParams = {};
     headerParams["Content-Type"] = "application/json";
     if (body is String) {
-      headerParams["Content-Type"] = "application/x-www-form-urlencoded";
+  //    headerParams["Content-Type"] = "application/x-www-form-urlencoded";
+      headerParams['Content-Type'] = 'application/json';
     } else if (body is Map) {
       headerParams['Accept'] = "application/json";
       headerParams["Content-Type"] = "application/json";
@@ -267,6 +268,14 @@ class ApiBaseService {
       ..fields['fileCategory'] = fileCategory
       ..fields['gstNumber'] = gstNumber
       ..fields['mobileNumber'] = mobileNumber;
+
+    // 🖨️ Print request details
+    print('📤 UPLOADING TO: $uri');
+    print('📄 FILE PATH: ${file.path}');
+    print('📁 FIELD fileCategory: $fileCategory');
+    print('🏢 FIELD gstNumber: $gstNumber');
+    print('📱 FIELD mobileNumber: $mobileNumber');
+    print('🧾 HEADERS: ${request.headers}');
 
     var response = await _sendAsync(
       'POST',

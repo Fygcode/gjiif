@@ -7,6 +7,8 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:tjw1/router.dart';
 import 'package:tjw1/services/appconfig_service.dart';
@@ -16,6 +18,7 @@ import 'package:tjw1/services/network_service.dart';
 
 
 
+import 'controllers/master_data_controller.dart';
 import 'core/res/colors.dart';
 import 'core/res/styles.dart';
 import 'firebase_options.dart';
@@ -45,6 +48,8 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+
+
   // Setup service locator
   setupLocator();
 
@@ -71,6 +76,8 @@ Future<void> main() async {
 
   // Init network service (after config is set)
   locator<NetworkService>().onInit();
+  final masterData = Get.put(MasterDataController());
+  await masterData.loadInitialData();
 
   // Run the app
   // runApp(MyApp());

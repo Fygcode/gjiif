@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../common_widget/tap_outside_unfocus.dart';
 import '../../../core/enum/view_state.dart';
@@ -248,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Text(
                                       DateFormat(
                                         'EEE, MMM dd, yyyy',
-                                      ).format(controller.rateDatetime!),
+                                      ).format(controller.rateDatetime ?? DateTime.now()),
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w500,
@@ -476,14 +477,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: Colors.white.withOpacity(0.9),
+                  //    color: Colors.white.withOpacity(0.9),
                     ),
                     clipBehavior: Clip.antiAlias,
-                    child: Image.network(
-                      path,
-                      fit: BoxFit.contain,
+                    child:
+
+                    CachedNetworkImage(
+                      imageUrl: path,
+                      fit: BoxFit.cover,
                       alignment: Alignment.center,
+                      // placeholder: (context, url) => const Center(
+                      //   child: CircularProgressIndicator(),
+                      // ),
+                      errorWidget: (context, url, error) => const Center(
+                        child: Icon(Icons.error, color: Colors.red),
+                      ),
                     ),
+
+                    // Image.network(
+                    //   path,
+                    //   fit: BoxFit.contain,
+                    //   alignment: Alignment.center,
+                    // ),
                   );
                 }).toList(),
             options: CarouselOptions(
@@ -523,4 +538,5 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
+
 }

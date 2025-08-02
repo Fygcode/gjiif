@@ -7,6 +7,7 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:tjw1/common_widget/common_dialog.dart';
 import 'package:tjw1/core/model/tjw/fetch_company_type.dart';
 import 'package:tjw1/core/model/tjw/stateList.dart';
+import 'package:tjw1/ui/widgets/file_preview_widget.dart';
 
 import '../../../common_widget/common_button.dart';
 import '../../../common_widget/common_dropdown.dart';
@@ -25,6 +26,12 @@ class CompanyScreen extends StatefulWidget {
 
 class _CompanyScreenState extends State<CompanyScreen> {
   final CompanyController controller = Get.put(CompanyController());
+
+  @override
+  void initState() {
+    controller.loadGstFromStorage();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -276,81 +283,12 @@ class _CompanyScreenState extends State<CompanyScreen> {
           ),
         ),
         SizedBox(height: 2),
-        controller.gstCopyFilePath.value.isNotEmpty == true
-            ? Obx(() {
-              final filePath = controller.gstCopyFilePath.value;
-              final fileName = controller.gstCopyFileName.value;
-
-              if (filePath == null || fileName.isEmpty) {
-                return const SizedBox.shrink();
-              }
-              return InkWell(
-                onTap: () {
-                  if (controller.isLoading.value) {
-                    print("It's loading ");
-                    return;
-                  }
-                  CommonDialog.showCustomDialog(
-                    content: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      height: MediaQuery.of(context).size.height * 0.6,
-                      child: Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child:
-                            filePath.toLowerCase().endsWith('.pdf')
-                                ? SfPdfViewer.file(
-                                  File(filePath),
-                                  canShowScrollHead: true,
-                                  canShowScrollStatus: true,
-                                  enableDoubleTapZooming: true,
-                                  initialZoomLevel: 1,
-                                )
-                                : Image.file(
-                                  File(filePath),
-                                  fit: BoxFit.contain,
-                                ),
-                      ),
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          fileName,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            decoration: TextDecoration.underline,
-                            color: Colors.blue,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Image.asset(
-                        'assets/tick.png',
-                        scale: 2,
-                        color: Colors.green,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            })
-            : SizedBox.shrink(),
-        Obx(() {
-          final error = controller.gstCopyError.value;
-          return error.isNotEmpty
-              ? Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  error,
-                  style: TextStyle(color: Colors.red, fontSize: 12),
-                ),
-              )
-              : SizedBox.shrink();
-        }),
+        FilePreviewWidget(
+          filePath: controller.gstCopyFilePath,
+          fileName: controller.gstCopyFileName,
+          errorText: controller.gstCopyError,
+          isLoading: controller.isLoading,
+        ),
         SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.only(top: 25, bottom: 40),

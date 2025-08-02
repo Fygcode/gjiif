@@ -56,15 +56,6 @@ class PhoneController extends GetxController {
     } finally {
       isLoading(false);
     }
-
-    // final dummyOtpData = {
-    //   "otpID": 27,
-    //   "mobileNumber": "8754509996",
-    //   "visitorID": 5608,
-    //   "enteredOTP": 0
-    // };
-    //
-    // Get.to(() => OtpScreen(), arguments: dummyOtpData);
   }
 
   @override

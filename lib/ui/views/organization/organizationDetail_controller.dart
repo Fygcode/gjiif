@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:tjw1/common_widget/common_dialog.dart';
+import 'package:tjw1/controllers/master_data_controller.dart';
 import 'package:tjw1/core/model/tjw/fetch_company_detail.dart';
 import 'package:tjw1/core/model/tjw/fetch_company_type.dart';
 import 'package:tjw1/core/model/tjw/stateList.dart';
@@ -78,23 +79,32 @@ class OrganizationDetailController extends GetxController {
 
   bool isGstUploadedNow = false;
 
+  final MasterDataController masterData = Get.find();
+
+  var companyTypeList = <CompanyTypeData>[].obs;
+  var stateList = <StateData>[].obs;
+
   @override
   Future<void> onInit() async {
     print("statusCode === : $statusCode");
     _loadGstFromStorage();
-    // stateListApi();
+
+    // Initialize Rx lists
+    companyTypeList.assignAll(masterData.companyTypes);
+    stateList.assignAll(masterData.states);
+
+    // Then watch for changes
+    ever(masterData.companyTypes, (_) {
+      companyTypeList.assignAll(masterData.companyTypes);
+    });
+
+    ever(masterData.states, (_) {
+      stateList.assignAll(masterData.states);
+    });
+
     super.onInit();
   }
 
-  // Future<void> _loadGstFromStorage() async {
-  //   gstNumber = await SecureStorageService().read("gst");
-  //   mobileNumber = await SecureStorageService().read("mobileNumber");
-  //   visitorId = await SecureStorageService().read("visitorID");
-  //   print("Stored token: $gstNumber");
-  //   if (gstNumber?.isNotEmpty == true) {
-  //     companyGstController.text = gstNumber!;
-  //   }
-  // }
 
   Future<void> _loadGstFromStorage() async {
     gstNumber = await SecureStorageService().read("gst");
@@ -104,11 +114,6 @@ class OrganizationDetailController extends GetxController {
     if (gstNumber?.isNotEmpty == true) {
       companyGstController.text = gstNumber!;
     }
-
-    await Future.wait([
-      fetchCompanyType(),
-      stateListApi(),
-    ]);
 
     if (statusCode == "300") {            // 300 means partially company details there , 400 - no company details at all
      await fetchCompanyDetail(visitorId);
@@ -161,7 +166,7 @@ class OrganizationDetailController extends GetxController {
         print("File uploaded successfully: $response");
         if(response['status'] == "200"){
           isGstUploadedNow = true;
-          final fileName = response['data'][0]['fileName'];
+          final fileName = response['data']['fileName'];
           print("Uploaded file name: $fileName");
           gstCopyFileName.value = fileName;
         }
@@ -244,55 +249,6 @@ class OrganizationDetailController extends GetxController {
       isLoading(false);
     }
 
-  }
-
-
-  var companyTypeList = <CompanyTypeData>[].obs;
-  Future<void> fetchCompanyType() async {
-    print("STATE API");
-    try {
-      isLoading(true);
-      FetchCompanyType response = await ApiBaseService.request<FetchCompanyType>(
-          'CompanyDetails/FetchCompanyType',
-          method: RequestMethod.GET,
-          authenticated: false
-      );
-      if(response.status == "200"){
-        companyTypeList.assignAll(response.companyTypeData!);
-      }
-    } catch (e) {
-      print('Error fetching state list: $e');
-    } finally {
-      isLoading(false);
-    }
-  }
-
-
-  // var stateList = <StateData>[].obs;
-  RxList<StateData> stateList = <StateData>[].obs;
-  Future<void> stateListApi() async {
-    print("STATE API");
-    try {
-      isLoading(true);
-
-      StateList response = await ApiBaseService.request<StateList>(
-          'SQ/GetStateList',
-          method: RequestMethod.GET,
-          authenticated: false
-      );
-
-      if (response.response?.status == "200") {
-        stateList.assignAll(response.stateData!);
-      }
-
-      print("==== ss ${response.stateData}");
-
-      print("States: ${stateList.length}");
-    } catch (e) {
-      print('Error fetching state list: $e');
-    } finally {
-      isLoading(false);
-    }
   }
 
   CompanyTypeData get selectedCompanyType =>

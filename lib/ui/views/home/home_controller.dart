@@ -73,7 +73,9 @@ class HomeController extends GetxController {
       if (response.status == "200") {
         rateCardDataList.value = response.rateCardData ?? [];
 
-        String rawDate = response.rateCardData!.first.rateDate ?? '';
+        String rawDate = response.rateCardData?.first.rateDate ?? '';
+
+        print("========== $rawDate");
         rateDatetime = DateTime.parse(rawDate);
       }
     } catch (e) {

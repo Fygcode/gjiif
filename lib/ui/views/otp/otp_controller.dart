@@ -38,10 +38,11 @@ class OtpController extends GetxController {
   OtpController(this.isNewPrimaryNumber);
 
   @override
-  void onInit() {
+  Future<void> onInit() async {
     print("DATA: $data");
     String phone = data['mobileNumber'].toString();
     print("Phone: $phone");
+    await SecureStorageService().write("mobileNumber", phone);
     print("isNewPrimaryNumber: $isNewPrimaryNumber");
     maskedPhone.value = phone.replaceRange(2, 6, "xxxxxx");
 
