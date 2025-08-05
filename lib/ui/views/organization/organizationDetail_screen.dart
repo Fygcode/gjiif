@@ -1,45 +1,359 @@
-import 'dart:io';
+// import 'dart:io';
+//
+// import 'package:dotted_border/dotted_border.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_pdfview/flutter_pdfview.dart';
+// import 'package:get/get.dart';
+// import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+// import 'package:tjw1/core/model/tjw/fetch_company_type.dart';
+// import 'package:tjw1/core/model/tjw/stateList.dart';
+// import 'package:tjw1/ui/widgets/common_file_picker_box.dart';
+// import 'package:tjw1/ui/widgets/file_preview_widget.dart';
+//
+// import '../../../common_widget/common_button.dart';
+// import '../../../common_widget/common_dialog.dart';
+// import '../../../common_widget/common_dropdown.dart';
+// import '../../../common_widget/common_text_field.dart';
+// import '../../../common_widget/tap_outside_unfocus.dart';
+// import '../../../core/enum/view_state.dart';
+// import '../../../core/res/colors.dart';
+// import 'organizationDetail_controller.dart';
+//
+// class OrganizationDetailScreen extends StatefulWidget {
+//   OrganizationDetailScreen({super.key});
+//
+//   @override
+//   State<OrganizationDetailScreen> createState() =>
+//       _OrganizationDetailScreenState();
+// }
+//
+// class _OrganizationDetailScreenState extends State<OrganizationDetailScreen> {
+//   final OrganizationDetailController controller = Get.put(
+//     OrganizationDetailController(),
+//   );
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     Size size = MediaQuery.of(context).size;
+//     return AnnotatedRegion<SystemUiOverlayStyle>(
+//       value: SystemUiOverlayStyle(
+//         statusBarColor: AppColor.background,
+//         statusBarIconBrightness: Brightness.dark,
+//       ),
+//       child: Scaffold(
+//         backgroundColor: AppColor.background,
+//         resizeToAvoidBottomInset: false,
+//         extendBody: true,
+//         appBar: AppBar(
+//           elevation: 0,
+//           backgroundColor: Colors.transparent,
+//           leadingWidth: 130,
+//           leading: Padding(
+//             padding: const EdgeInsets.only(left: 20),
+//             child: Image.asset('assets/GJIIF_Logo.png', height: 60, width: 60),
+//           ),
+//           flexibleSpace: Container(
+//             decoration: const BoxDecoration(
+//               image: DecorationImage(
+//                 image: AssetImage('assets/splash_background.png'),
+//                 fit: BoxFit.cover,
+//               ),
+//             ),
+//           ),
+//         ),
+//         body: SafeArea(
+//           bottom: false,
+//           child: Obx(() {
+//             return Stack(
+//               children: [
+//                 TapOutsideUnFocus(
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Padding(
+//                         padding: const EdgeInsets.only(
+//                           top: 20,
+//                           left: 20,
+//                           right: 20,
+//                         ),
+//                         child: Text(
+//                           "Company Detail",
+//                           style: TextStyle(
+//                             fontSize: 24,
+//                             fontWeight: FontWeight.w500,
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(height: 16),
+//
+//                       Expanded(
+//                         child: SingleChildScrollView(
+//                           padding: const EdgeInsets.symmetric(horizontal: 20),
+//                           child: Form(
+//                             key: controller.formKeyOrganization,
+//                             autovalidateMode: AutovalidateMode.onUserInteraction,
+//                             child: _buildFormFields(),
+//                           ),
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//
+//                 if (controller.isLoading.value)
+//                   Container(
+//                     color: Colors.black.withOpacity(0.2), // Dim background
+//                     child: const Center(child: CircularProgressIndicator()),
+//                   ),
+//               ],
+//             );
+//           }),
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildFormFields() {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         _buildLabeledText("Company GSTIN"),
+//         CommonTextField(
+//           controller: controller.companyGstController,
+//           focusNode: controller.companyGstFocusNode,
+//           hintText: 'Enter Company GST*',
+//           enabled: false,
+//           validator: (val) {
+//             if (val == null || val.isEmpty) {
+//               return 'Please enter GST number';
+//             }
+//             return null;
+//           },
+//         ),
+//         SizedBox(height: 10),
+//         _buildLabeledText("Company Type"),
+//         Obx(
+//           () => CommonDropdown<CompanyTypeData>(
+//             items: controller.companyTypeList,
+//             hintText: 'Select Company Type*',
+//             selectedItem: controller.selectedCompanyType,
+//             itemAsString: (state) => state.companyType ?? '',
+//             compareFn: (a, b) => a.id == b.id,
+//             onChanged: (value) {
+//               if (value != null) {
+//                 controller.companyTypeController.text = value.companyType ?? '';
+//                 controller.companyTypeId.value = value.id.toString() ?? "";
+//               }
+//             },
+//             validator: (val) {
+//               if (val == null || val.companyType?.isEmpty == true) {
+//                 return 'Please select company type';
+//               }
+//               return null;
+//             },
+//           ),
+//         ),
+//         SizedBox(height: 10),
+//         _buildLabeledText("Company Name"),
+//         CommonTextField(
+//           controller: controller.companyNameController,
+//           focusNode: controller.companyNameFocusNode,
+//           hintText: 'Enter Company Name*',
+//           validator: (val) {
+//             if (val == null || val.isEmpty) {
+//               return 'Please enter company name';
+//             }
+//             return null;
+//           },
+//         ),
+//         SizedBox(height: 10),
+//         _buildLabeledText("Communication Address"),
+//         CommonTextField(
+//           controller: controller.communicationAddressController,
+//           focusNode: controller.communicationAddressFocusNode,
+//           hintText: 'Enter Communication Address*',
+//           validator: (val) {
+//             if (val == null || val.isEmpty) {
+//               return 'Please enter communication address';
+//             }
+//             return null;
+//           },
+//         ),
+//         SizedBox(height: 10),
+//         _buildLabeledText("City"),
+//         CommonTextField(
+//           controller: controller.cityController,
+//           focusNode: controller.cityFocusNode,
+//           hintText: 'Enter City*',
+//           validator: (val) {
+//             if (val == null || val.isEmpty) {
+//               return 'Please enter city';
+//             }
+//             return null;
+//           },
+//         ),
+//         SizedBox(height: 10),
+//         _buildLabeledText("State"),
+//
+//         Obx(
+//           () => CommonDropdown<StateData>(
+//             items: controller.stateList.toList(),
+//             hintText: 'Select State*',
+//             selectedItem:
+//                 (() {
+//                   final id = int.tryParse(controller.stateId.value ?? '0');
+//                   if (id == null || id == 0) return null;
+//                   return controller.stateList.firstWhere(
+//                     (e) => e.stateID == id,
+//                     orElse:
+//                         () => StateData(
+//                           stateID: 0,
+//                           stateName: '',
+//                           countryID: null,
+//                         ),
+//                   );
+//                 })(),
+//             itemAsString: (state) => state.stateName ?? '',
+//             compareFn: (a, b) => a.stateID == b.stateID,
+//             onChanged: (value) {
+//               if (value != null) {
+//                 controller.stateController.text = value.stateName ?? '';
+//                 controller.stateId.value = value.stateID.toString() ?? "";
+//               }
+//             },
+//             validator: (val) {
+//               if (val == null || val.stateName?.isEmpty == true) {
+//                 return 'Please select state';
+//               }
+//               return null;
+//             },
+//           ),
+//         ),
+//
+//         SizedBox(height: 10),
+//         _buildLabeledText("District"),
+//         CommonTextField(
+//           controller: controller.districtController,
+//           focusNode: controller.districtFocusNode,
+//           hintText: 'Enter District*',
+//           textInputAction: TextInputAction.next,
+//           validator: (val) {
+//             if (val == null || val.isEmpty) {
+//               return 'Please enter district';
+//             }
+//             return null;
+//           },
+//         ),
+//         SizedBox(height: 10),
+//         _buildLabeledText("Pincode"),
+//         CommonTextField(
+//           controller: controller.pincodeController,
+//           focusNode: controller.pincodeFocusNode,
+//           hintText: 'Enter Pincode*',
+//           keyboardType: TextInputType.number,
+//           validator: (val) {
+//             if (val == null || val.isEmpty) {
+//               return 'Please enter pincode';
+//             }
+//             if (val.length != 6) {
+//               return 'Pincode must be 6 digits';
+//             }
+//             return null;
+//           },
+//         ),
+//         SizedBox(height: 10),
+//         _buildLabeledText("Landline"),
+//         CommonTextField.phone(
+//           controller: controller.landlineController,
+//           focusNode: controller.landlineFocusNode,
+//           hintText: 'Enter Landline *',
+//           validator: (val) {
+//             if (val == null || val.isEmpty) {
+//               return 'Please enter landline number';
+//             }
+//             RegExp phoneRegExp = RegExp(r'^[0-9]{10}$');
+//             if (!phoneRegExp.hasMatch(val)) {
+//               return 'Please enter a valid landline number';
+//             }
+//             return null;
+//           },
+//         ),
+//         SizedBox(height: 10),
+//         _buildLabeledText("Upload GST Copy"),
+//
+//         CommonFilePickerBox(
+//           label: "Upload GST-Copy",
+//           fileKey: "gstCopy",
+//           isLoading: controller.isUploadLoading,
+//           uploadingKey: controller.uploadingFileKey,
+//           onPick: controller.pickFile,
+//         ),
+//
+//         SizedBox(height: 2),
+//
+//         FilePreviewWidget(
+//           filePath: controller.gstCopyFilePath,
+//           fileName: controller.gstCopyFileName,
+//           errorText: controller.gstCopyError,
+//           isLoading: controller.isLoading,
+//         ),
+//
+//         SizedBox(height: 10),
+//         Padding(
+//           padding: const EdgeInsets.only(top: 25, bottom: 40),
+//           child: Obx(() {
+//             return CommonButton(
+//               text: "Save",
+//             //  isLoading: controller.isLoading.value,
+//               isLoading: controller.isLoading.value || controller.isUploadLoading.value,
+//               onPressed: () {
+//                 controller.saveOrganization();
+//               },
+//             );
+//           }),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   Widget _buildLabeledText(String text) => Padding(
+//     padding: const EdgeInsets.only(bottom: 4),
+//     child: Text(
+//       text,
+//       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//     ),
+//   );
+// }
 
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:get/get.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:tjw1/core/model/tjw/fetch_company_type.dart';
 import 'package:tjw1/core/model/tjw/stateList.dart';
+import 'package:tjw1/ui/widgets/common_file_picker_box.dart';
 import 'package:tjw1/ui/widgets/file_preview_widget.dart';
-
 import '../../../common_widget/common_button.dart';
-import '../../../common_widget/common_dialog.dart';
 import '../../../common_widget/common_dropdown.dart';
 import '../../../common_widget/common_text_field.dart';
 import '../../../common_widget/tap_outside_unfocus.dart';
-import '../../../core/enum/view_state.dart';
 import '../../../core/res/colors.dart';
 import 'organizationDetail_controller.dart';
 
-class OrganizationDetailScreen extends StatefulWidget {
+class OrganizationDetailScreen extends StatelessWidget {
   OrganizationDetailScreen({super.key});
 
-  @override
-  State<OrganizationDetailScreen> createState() =>
-      _OrganizationDetailScreenState();
-}
-
-class _OrganizationDetailScreenState extends State<OrganizationDetailScreen> {
   final OrganizationDetailController controller = Get.put(
     OrganizationDetailController(),
   );
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: AppColor.background,
@@ -49,38 +363,23 @@ class _OrganizationDetailScreenState extends State<OrganizationDetailScreen> {
         backgroundColor: AppColor.background,
         resizeToAvoidBottomInset: false,
         extendBody: true,
+        appBar: _buildAppBar(),
         body: SafeArea(
           bottom: false,
-          child: Obx(() {
-            return Stack(
+          child: Obx(
+            () => Stack(
               children: [
                 TapOutsideUnFocus(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 20,
-                          left: 20,
-                          right: 20,
-                        ),
-                        child: Text(
-                          "Organization Details",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
+                      _buildTitle("Company Detail"),
                       Expanded(
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Form(
                             key: controller.formKeyOrganization,
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
+                        //    autovalidateMode: AutovalidateMode.onUserInteraction,
                             child: _buildFormFields(),
                           ),
                         ),
@@ -88,724 +387,247 @@ class _OrganizationDetailScreenState extends State<OrganizationDetailScreen> {
                     ],
                   ),
                 ),
-
-                if (controller.isLoading.value &&
-                    (controller.stateList.isEmpty ||
-                        controller.companyTypeList.isEmpty))
-                  Container(
-                    color: Colors.black.withOpacity(0.2), // Dim background
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
+                if (controller.isLoading.value) _buildLoadingOverlay(),
               ],
-            );
-          }),
+            ),
+          ),
         ),
       ),
     );
   }
 
+  PreferredSizeWidget _buildAppBar() => AppBar(
+    elevation: 0,
+    backgroundColor: Colors.transparent,
+    leadingWidth: 130,
+    leading: Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: Image.asset('assets/GJIIF_Logo.png', height: 60, width: 60),
+    ),
+    flexibleSpace: Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/splash_background.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildTitle(String text) => Padding(
+    padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 16),
+    child: Text(
+      text,
+      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+    ),
+  );
+
+  Widget _buildLoadingOverlay() => Container(
+    color: Colors.black.withOpacity(0.2),
+    child: const Center(child: CircularProgressIndicator()),
+  );
+
   Widget _buildFormFields() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLabeledText("Company GSTIN"),
-        CommonTextField(
-          controller: controller.companyGstController,
-          focusNode: controller.companyGstFocusNode,
-          hintText: 'Enter Company GST*',
-          enabled: false,
-          validator: (val) {
-            if (val == null || val.isEmpty) {
-              return 'Please enter GST number';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 10),
-        _buildLabeledText("Company Type"),
-        Obx(
-          () => CommonDropdown<CompanyTypeData>(
-            items: controller.companyTypeList,
-            hintText: 'Select Company Type*',
-            selectedItem: controller.selectedCompanyType,
-            itemAsString: (state) => state.companyType ?? '',
-            compareFn: (a, b) => a.id == b.id,
-            onChanged: (value) {
-              if (value != null) {
-                controller.companyTypeController.text = value.companyType ?? '';
-                controller.companyTypeId.value = value.id.toString() ?? "";
-              }
-            },
-            validator: (val) {
-              if (val == null || val.companyType?.isEmpty == true) {
-                return 'Please select company type';
-              }
-              return null;
-            },
+        _buildLabeledField(
+          "Company GSTIN",
+          _buildDisabledTextField(
+            controller.companyGstController,
+            controller.companyGstFocusNode,
+            'Enter Company GST*',
           ),
         ),
-        SizedBox(height: 10),
-        _buildLabeledText("Company Name"),
-        CommonTextField(
-          controller: controller.companyNameController,
-          focusNode: controller.companyNameFocusNode,
-          hintText: 'Enter Company Name*',
-          validator: (val) {
-            if (val == null || val.isEmpty) {
-              return 'Please enter company name';
-            }
-            return null;
-          },
+        _buildLabeledField(
+          "Company Type",
+          Obx(() => _buildCompanyTypeDropdown()),
         ),
-        SizedBox(height: 10),
-        _buildLabeledText("Communication Address"),
-        CommonTextField(
-          controller: controller.communicationAddressController,
-          focusNode: controller.communicationAddressFocusNode,
-          hintText: 'Enter Communication Address*',
-          validator: (val) {
-            if (val == null || val.isEmpty) {
-              return 'Please enter communication address';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 10),
-        _buildLabeledText("City"),
-        CommonTextField(
-          controller: controller.cityController,
-          focusNode: controller.cityFocusNode,
-          hintText: 'Enter City*',
-          validator: (val) {
-            if (val == null || val.isEmpty) {
-              return 'Please enter city';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 10),
-        _buildLabeledText("State"),
-
-        Obx(() => CommonDropdown<StateData>(
-            items: controller.stateList.toList(),
-            hintText: 'Enter State*',
-            selectedItem: controller.stateList.firstWhere(
-              (e) => e.stateID == int.tryParse(controller.stateId.value ?? '0'),
-              orElse:
-                  () => StateData(stateID: 0, stateName: '', countryID: null),
-            ),
-            itemAsString: (state) => state.stateName ?? '',
-            compareFn: (a, b) => a.stateID == b.stateID,
-            onChanged: (value) {
-              if (value != null) {
-                controller.stateController.text = value.stateName ?? '';
-                controller.stateId.value = value.stateID.toString() ?? "";
-              }
-            },
-            validator: (val) {
-              if (val == null || val.stateName?.isEmpty == true) {
-                return 'Please select state';
-              }
-              return null;
-            },
-          ),),
-
-        SizedBox(height: 10),
-        _buildLabeledText("District"),
-        CommonTextField(
-          controller: controller.districtController,
-          focusNode: controller.districtFocusNode,
-          hintText: 'Enter District*',
-          textInputAction: TextInputAction.next,
-          validator: (val) {
-            if (val == null || val.isEmpty) {
-              return 'Please enter district';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 10),
-        _buildLabeledText("Pincode"),
-        CommonTextField(
-          controller: controller.pincodeController,
-          focusNode: controller.pincodeFocusNode,
-          hintText: 'Enter Pincode*',
-          keyboardType: TextInputType.number,
-          validator: (val) {
-            if (val == null || val.isEmpty) {
-              return 'Please enter pincode';
-            }
-            if (val.length != 6) {
-              return 'Pincode must be 6 digits';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 10),
-        _buildLabeledText("Landline"),
-        CommonTextField.phone(
-          controller: controller.landlineController,
-          focusNode: controller.landlineFocusNode,
-          hintText: 'Enter Landline *',
-          validator: (val) {
-            if (val == null || val.isEmpty) {
-              return 'Please enter landline number';
-            }
-            RegExp phoneRegExp = RegExp(r'^[0-9]{10}$');
-            if (!phoneRegExp.hasMatch(val)) {
-              return 'Please enter a valid landline number';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 10),
-        _buildLabeledText("Upload GST Copy"),
-        GestureDetector(
-          onTap: () {
-            controller.pickFile('gstCopy');
-          },
-          child: DottedBorder(
-            options: RectDottedBorderOptions(
-              strokeWidth: 1,
-              color: AppColor.grey.withOpacity(0.6),
-              dashPattern: [3, 6],
-              strokeCap: StrokeCap.square,
-            ),
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 30),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(color: AppColor.white),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset("assets/uploadIcon.png", scale: 3),
-                  SizedBox(width: 20),
-                  Text(
-                    "Upload GST-Copy",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        _buildLabeledField(
+          "Company Name",
+          _buildTextField(
+            controller.companyNameController,
+            controller.companyNameFocusNode,
+            'Enter Company Name*',
           ),
         ),
-        SizedBox(height: 2),
-
-        FilePreviewWidget(
-          filePath: controller.gstCopyFilePath,
-          fileName: controller.gstCopyFileName,
-          errorText: controller.gstCopyError,
-          isLoading: controller.isLoading,
+        _buildLabeledField(
+          "Communication Address",
+          _buildTextField(
+            controller.communicationAddressController,
+            controller.communicationAddressFocusNode,
+            'Enter Communication Address*',
+          ),
         ),
-
-        SizedBox(height: 10),
+        _buildLabeledField(
+          "City",
+          _buildTextField(
+            controller.cityController,
+            controller.cityFocusNode,
+            'Enter City*',
+          ),
+        ),
+        _buildLabeledField("State", Obx(() => _buildStateDropdown())),
+        _buildLabeledField(
+          "District",
+          _buildTextField(
+            controller.districtController,
+            controller.districtFocusNode,
+            'Enter District*',
+          ),
+        ),
+        _buildLabeledField(
+          "Pincode",
+          _buildNumberField(
+            controller.pincodeController,
+            controller.pincodeFocusNode,
+            'Enter Pincode*',
+          ),
+        ),
+        _buildLabeledField("Landline", _buildPhoneField()),
+        _buildLabeledField("Upload GST Copy", _buildFileSection()),
         Padding(
           padding: const EdgeInsets.only(top: 25, bottom: 40),
-          child: Obx(() {
-            return CommonButton(
+          child: Obx(
+            () => CommonButton(
               text: "Save",
-              isLoading: controller.isLoading.value,
-              onPressed: () {
-                controller.saveOrganization();
-              },
-            );
-          }),
+              isLoading:
+                  controller.isLoading.value ||
+                  controller.isUploadLoading.value,
+              onPressed: controller.saveOrganization,
+            ),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildLabeledText(String text) => Padding(
-    padding: const EdgeInsets.only(bottom: 4),
-    child: Text(
-      text,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  Widget _buildLabeledField(String label, Widget child) => Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Text(
+            label,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        child,
+      ],
     ),
   );
-}
 
-//     Obx(() {
-//           if (controller.isLoading.value) {
-//             return const Center(child: CircularProgressIndicator());
-//           }
-//           return TapOutsideUnFocus(
-//             child: Padding(
-//               padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-//               child: Form(
-//                 key: controller.formKeyOrganization,
-//                 autovalidateMode: AutovalidateMode.onUserInteraction,
-//                 child: Column(
-//                   mainAxisSize: MainAxisSize.min,
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     SizedBox(height: 40),
-//                     Text(
-//                       "Organization Details",
-//                       style: TextStyle(
-//                         fontSize: 24,
-//                         fontWeight: FontWeight.w500,
-//                       ),
-//                     ),
-//                     SizedBox(height: 20),
-//
-//                     Flexible(
-//                       child: SingleChildScrollView(
-//                         child: Column(
-//                           crossAxisAlignment: CrossAxisAlignment.start,
-//                           children: [
-//                             // Company GSTIN
-//                             Text(
-//                               "Company GSTIN",
-//                               style: TextStyle(
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             SizedBox(height: 4),
-//                             CommonTextField(
-//                               controller: controller.companyGstController,
-//                               focusNode: controller.companyGstFocusNode,
-//                               hintText: 'Enter Company GST*',
-//                               textInputAction: TextInputAction.next,
-//                               enabled: false,
-//                               validator: (val) {
-//                                 if (val == null || val.isEmpty) {
-//                                   return 'Please enter GST number';
-//                                 }
-//                                 // RegExp gstRegExp = RegExp(
-//                                 //   r'^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$',
-//                                 // );
-//                                 // if (!gstRegExp.hasMatch(val.toUpperCase())) {
-//                                 //   return 'Please enter a valid GST number';
-//                                 // }
-//                                 return null;
-//                               },
-//                             ),
-//                             SizedBox(height: 10),
-//
-//                             // Company Type
-//                             Text(
-//                               "Company Type",
-//                               style: TextStyle(
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             SizedBox(height: 4),
-//
-//                             CommonDropdown<String>(
-//                               items:
-//                                   CompanyType.values
-//                                       .map(
-//                                         (e) =>
-//                                             e.name[0].toUpperCase() +
-//                                             e.name.substring(1),
-//                                       )
-//                                       .toList(),
-//                               hintText: 'Company Type*',
-//                               selectedItem:
-//                                   controller
-//                                           .companyTypeController
-//                                           .text
-//                                           .isNotEmpty
-//                                       ? controller.companyTypeController.text
-//                                       : null,
-//                               onChanged: (value) {
-//                                 if (value != null) {
-//                                   CompanyType selectedStatus = CompanyType
-//                                       .values
-//                                       .firstWhere(
-//                                         (e) =>
-//                                             e.name.toLowerCase() ==
-//                                             value.toLowerCase(),
-//                                         orElse:
-//                                             () => CompanyType.Proprietorship,
-//                                       );
-//                                   controller.companyTypeController.text = value;
-//                                   print("Selected: $selectedStatus");
-//                                   print(
-//                                     "Selected Text: ${controller.companyTypeController.text}",
-//                                   );
-//                                 }
-//                               },
-//                               validator: (val) {
-//                                 if (val == null || val.isEmpty) {
-//                                   return 'Please select company type';
-//                                 }
-//                                 return null;
-//                               },
-//                             ),
-//
-//                             SizedBox(height: 10),
-//
-//                             // Company Name
-//                             Text(
-//                               "Company Name",
-//                               style: TextStyle(
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             SizedBox(height: 4),
-//                             CommonTextField(
-//                               controller: controller.companyNameController,
-//                               focusNode: controller.companyNameFocusNode,
-//                               hintText: 'Enter Company Name*',
-//                               textInputAction: TextInputAction.next,
-//                               validator: (val) {
-//                                 if (val == null || val.isEmpty) {
-//                                   return 'Please enter company name';
-//                                 }
-//                                 return null;
-//                               },
-//                             ),
-//                             SizedBox(height: 10),
-//                             // Text(
-//                             //   "Email",
-//                             //   style: TextStyle(
-//                             //     fontSize: 18,
-//                             //     fontWeight: FontWeight.bold,
-//                             //   ),
-//                             // ),
-//                             // SizedBox(height: 4),
-//                             // CommonTextField.email(
-//                             //   controller: controller.emailController,
-//                             //   focusNode: controller.emailFocusNode,
-//                             //   hintText: 'Enter Email *',
-//                             //   validator: (val) {
-//                             //     if (val == null || val.isEmpty) {
-//                             //       return 'Please enter email';
-//                             //     }
-//                             //     return null;
-//                             //   },
-//                             // ),
-//                             // SizedBox(height: 10),
-//
-//                             // Communication Address
-//                             Text(
-//                               "Communication Address",
-//                               style: TextStyle(
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             SizedBox(height: 4),
-//                             CommonTextField(
-//                               controller:
-//                                   controller.communicationAddressController,
-//                               focusNode:
-//                                   controller.communicationAddressFocusNode,
-//                               hintText: 'Enter Communication Address*',
-//                               textInputAction: TextInputAction.next,
-//                               validator: (val) {
-//                                 if (val == null || val.isEmpty) {
-//                                   return 'Please enter communication address';
-//                                 }
-//                                 return null;
-//                               },
-//                             ),
-//                             SizedBox(height: 10),
-//
-//                             // City
-//                             Text(
-//                               "City",
-//                               style: TextStyle(
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             SizedBox(height: 4),
-//                             CommonTextField(
-//                               controller: controller.cityController,
-//                               focusNode: controller.cityFocusNode,
-//                               hintText: 'Enter City*',
-//                               textInputAction: TextInputAction.next,
-//                               validator: (val) {
-//                                 if (val == null || val.isEmpty) {
-//                                   return 'Please enter city';
-//                                 }
-//                                 return null;
-//                               },
-//                             ),
-//                             SizedBox(height: 10),
-//
-//                             // State
-//                             Text(
-//                               "State",
-//                               style: TextStyle(
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             SizedBox(height: 4),
-//                             Obx(() => CommonDropdown<StateData>(
-//                               items: controller.stateList,
-//                               hintText: 'Enter State*',
-//                               selectedItem: controller.stateList.firstWhere(
-//                                     (e) => e.stateID == int.tryParse(controller.stateId.value ?? '0'),
-//                                 orElse: () => StateData(stateID: 0, stateName: '', countryID: null),
-//                               ),
-//                               itemAsString: (state) => state.stateName ?? '',
-//                               compareFn: (a, b) => a.stateID == b.stateID,
-//                               onChanged: (value) {
-//                                 if (value != null) {
-//                                   controller.stateController.text = value.stateName ?? '';
-//                                   controller.stateId.value = value.stateID.toString() ?? "";
-//                                 }
-//                               },
-//                               validator: (val) {
-//                                 if (val == null || val.stateName?.isEmpty == true) {
-//                                   return 'Please select state';
-//                                 }
-//                                 return null;
-//                               },
-//                             )),
-//
-//                             SizedBox(height: 10),
-//                             Text(
-//                               "District",
-//                               style: TextStyle(
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             SizedBox(height: 4),
-//                             CommonTextField(
-//                               controller: controller.districtController,
-//                               focusNode: controller.districtFocusNode,
-//                               hintText: 'Enter District*',
-//                               textInputAction: TextInputAction.next,
-//                               validator: (val) {
-//                                 if (val == null || val.isEmpty) {
-//                                   return 'Please enter district';
-//                                 }
-//                                 return null;
-//                               },
-//                             ),
-//                             SizedBox(height: 10),
-//
-//                             // Pincode
-//                             Text(
-//                               "Pincode",
-//                               style: TextStyle(
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             SizedBox(height: 4),
-//                             CommonTextField(
-//                               controller: controller.pincodeController,
-//                               focusNode: controller.pincodeFocusNode,
-//                               hintText: 'Enter Pincode*',
-//                               keyboardType: TextInputType.number,
-//                               textInputAction: TextInputAction.next,
-//                               validator: (val) {
-//                                 if (val == null || val.isEmpty) {
-//                                   return 'Please enter pincode';
-//                                 }
-//                                 if (val.length != 6) {
-//                                   return 'Pincode must be 6 digits';
-//                                 }
-//                                 return null;
-//                               },
-//                             ),
-//                             SizedBox(height: 10),
-//
-//
-//
-//                             // Landline
-//                             Text(
-//                               "Landline",
-//                               style: TextStyle(
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             SizedBox(height: 4),
-//                             CommonTextField.phone(
-//                               controller: controller.landlineController,
-//                               focusNode: controller.landlineFocusNode,
-//                               hintText: 'Enter Landline *',
-//                               validator: (val) {
-//                                 if (val == null || val.isEmpty) {
-//                                   return 'Please enter landline number';
-//                                 }
-//                                 // RegExp phoneRegExp = RegExp(r'^[0-9]{10}$');
-//                                 // if (!phoneRegExp.hasMatch(val)) {
-//                                 //   return 'Please enter a valid landline number';
-//                                 // }
-//                                 return null;
-//                               },
-//                               textInputAction: TextInputAction.next,
-//                             ),
-//
-//                             SizedBox(height: 10),
-//
-//                             // Upload GST
-//                             Text(
-//                               "Upload GST Copy",
-//                               style: TextStyle(
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.bold,
-//                               ),
-//                             ),
-//                             SizedBox(height: 4),
-//                             GestureDetector(
-//                               onTap: () {
-//                                 controller.pickFile('gstCopy');
-//                               },
-//                               child: DottedBorder(
-//                                 options: RectDottedBorderOptions(
-//                                   strokeWidth: 1,
-//                                   color: AppColor.grey.withOpacity(0.6),
-//                                   dashPattern: [3, 6],
-//                                   strokeCap: StrokeCap.square,
-//                                 ),
-//                                 child: Container(
-//                                   width: double.infinity,
-//                                   padding: EdgeInsets.symmetric(vertical: 30),
-//                                   alignment: Alignment.center,
-//                                   decoration: BoxDecoration(
-//                                     color: AppColor.white,
-//                                   ),
-//                                   child: Row(
-//                                     crossAxisAlignment:
-//                                         CrossAxisAlignment.center,
-//                                     mainAxisAlignment: MainAxisAlignment.center,
-//                                     children: [
-//                                       Image.asset(
-//                                         "assets/uploadIcon.png",
-//                                         scale: 3,
-//                                       ),
-//                                       SizedBox(width: 20),
-//                                       Text(
-//                                         "Upload GST-Copy",
-//                                         style: TextStyle(
-//                                           color: Colors.grey,
-//                                           fontSize: 16,
-//                                           fontWeight: FontWeight.w500,
-//                                         ),
-//                                       ),
-//                                     ],
-//                                   ),
-//                                 ),
-//                               ),
-//                             ),
-//                             SizedBox(height: 6),
-//
-//                             // Text("${controller.gstCopyFilePath.value}"),
-//                             controller.gstCopyFilePath.value.isNotEmpty == true ?
-//                             Obx(() {
-//                               final filePath = controller.gstCopyFilePath.value;
-//                               final fileName = controller.gstCopyFileName.value;
-//
-//                               if (filePath == null || fileName.isEmpty) {
-//                                 return const SizedBox.shrink();
-//                               }
-//                               return InkWell(
-//                                 onTap: () {
-//                                   if (controller.isLoading.value) {
-//                                     print("It's loading ");
-//                                     return;
-//                                   }
-//                                   CommonDialog.showCustomDialog(
-//                                     content: SizedBox(
-//                                       width:
-//                                           MediaQuery.of(context).size.width *
-//                                           0.9,
-//                                       height:
-//                                           MediaQuery.of(context).size.height *
-//                                           0.6,
-//                                       child: Padding(
-//                                         padding: const EdgeInsets.all(6.0),
-//                                         child:
-//                                             filePath.toLowerCase().endsWith(
-//                                                   '.pdf',
-//                                                 )
-//                                                 ? SfPdfViewer.file(
-//                                                   File(filePath),
-//                                                   canShowScrollHead: true,
-//                                                   canShowScrollStatus: true,
-//                                                   enableDoubleTapZooming: true,
-//                                                   initialZoomLevel: 1,
-//                                                 )
-//                                                 : Image.file(
-//                                                   File(filePath),
-//                                                   fit: BoxFit.contain,
-//                                                 ),
-//                                       ),
-//                                     ),
-//                                   );
-//                                 },
-//                                 child: Padding(
-//                                   padding: const EdgeInsets.all(8.0),
-//                                   child: Row(
-//                                     children: [
-//                                       Expanded(
-//                                         child: Text(
-//                                           fileName,
-//                                           style: const TextStyle(
-//                                             fontSize: 14,
-//                                             decoration:
-//                                                 TextDecoration.underline,
-//                                             color: Colors.blue,
-//                                           ),
-//                                         ),
-//                                       ),
-//                                       const SizedBox(width: 8),
-//                                       Image.asset(
-//                                         'assets/tick.png',
-//                                         scale: 2,
-//                                         color: Colors.green,
-//                                       ),
-//                                     ],
-//                                   ),
-//                                 ),
-//                               );
-//                             }) : SizedBox.shrink(),
-//
-//                             Obx(() {
-//                               final error = controller.gstCopyError.value;
-//                               return error.isNotEmpty
-//                                   ? Padding(
-//                                     padding: const EdgeInsets.only(top: 4),
-//                                     child: Text(
-//                                       error,
-//                                       style: TextStyle(
-//                                         color: Colors.red,
-//                                         fontSize: 12,
-//                                       ),
-//                                     ),
-//                                   )
-//                                   : SizedBox.shrink();
-//                             }),
-//                             SizedBox(height: 10),
-//                             Padding(
-//                               padding: const EdgeInsets.symmetric(vertical: 10),
-//                               child: Obx(() {
-//                                 return CommonButton(
-//                                   text: "Continue",
-//                                   isLoading: controller.isLoading.value,
-//                                   onPressed: () {
-//                                     controller.saveOrganization();
-//                                   },
-//                                 );
-//                               }),
-//                             ),
-//                             SizedBox(height: 40),
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           );
-//         }),
+  Widget _buildTextField(
+    TextEditingController controller,
+    FocusNode focusNode,
+    String hint,
+  ) => CommonTextField(
+    controller: controller,
+    focusNode: focusNode,
+    hintText: hint,
+    validator: (val) => val == null || val.isEmpty ? 'Required field' : null,
+  );
+
+  Widget _buildDisabledTextField(
+    TextEditingController controller,
+    FocusNode focusNode,
+    String hint,
+  ) => CommonTextField(
+    controller: controller,
+    focusNode: focusNode,
+    hintText: hint,
+    enabled: false,
+    validator: (val) => val == null || val.isEmpty ? 'Required field' : null,
+  );
+
+  Widget _buildNumberField(
+    TextEditingController controller,
+    FocusNode focusNode,
+    String hint,
+  ) => CommonTextField(
+    controller: controller,
+    focusNode: focusNode,
+    hintText: hint,
+    keyboardType: TextInputType.number,
+    maxLength: 6,
+    validator:
+        (val) =>
+            val == null || val.isEmpty || val.length != 6
+                ? 'Pincode must be 6 digits'
+                : null,
+  );
+
+  Widget _buildPhoneField() => CommonTextField.phone(
+    controller: controller.landlineController,
+    focusNode: controller.landlineFocusNode,
+    hintText: 'Enter Landline *',
+    validator: (val) {
+      if (val == null || val.isEmpty) return 'Please enter landline number';
+      if (!RegExp(r'^[0-9]{10}$').hasMatch(val)) {         // RegExp(r'^[0-9]{6,12}$')   allow landlines with STD code (like 0441234567),  // Accepts between 6 to 12 digits
+
+        return 'Please enter a valid number';
+      }
+      return null;
+    },
+  );
+
+  Widget _buildCompanyTypeDropdown() => CommonDropdown<CompanyTypeData>(
+    items: controller.companyTypeList,
+    hintText: 'Select Company Type*',
+    selectedItem: controller.selectedCompanyType,
+    itemAsString: (state) => state.companyType ?? '',
+    compareFn: (a, b) => a.id == b.id,
+    onChanged: (value) {
+      if (value != null) {
+        controller.companyTypeController.text = value.companyType ?? '';
+        controller.companyTypeId.value = value.id.toString();
+      }
+    },
+    validator:
+        (val) =>
+            val == null || val.companyType?.isEmpty == true
+                ? 'Please select company type'
+                : null,
+  );
+
+  Widget _buildStateDropdown() => CommonDropdown<StateData>(
+    items: controller.stateList.toList(),
+    hintText: 'Select State*',
+    selectedItem: controller.getSelectedState(),
+    itemAsString: (state) => state.stateName ?? '',
+    compareFn: (a, b) => a.stateID == b.stateID,
+    onChanged: (value) {
+      if (value != null) {
+        controller.stateController.text = value.stateName ?? '';
+        controller.stateId.value = value.stateID.toString();
+      }
+    },
+    validator:
+        (val) =>
+            val == null || val.stateName?.isEmpty == true
+                ? 'Please select state'
+                : null,
+  );
+
+  Widget _buildFileSection() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      CommonFilePickerBox(
+        label: "Upload GST-Copy",
+        fileKey: "gstCopy",
+        isLoading: controller.isUploadLoading,
+        uploadingKey: controller.uploadingFileKey,
+        onPick: controller.pickFile,
+      ),
+      const SizedBox(height: 2),
+      FilePreviewWidget(
+        filePath: controller.gstCopyFilePath,
+        fileName: controller.gstCopyFileName,
+        errorText: controller.gstCopyError,
+        isLoading: controller.isLoading,
+      ),
+    ],
+  );
+}

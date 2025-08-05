@@ -5,7 +5,7 @@ class SettingController extends GetxController {
   final String termsContent = '''
 TERMS & CONDITIONS
 
-1. Please note that this is a provisional pre-registration only. GJIIF 2023 is a B2B jewellery exhibition. Entry is only for jewellery business delegates. Your registration is complete only after verification and validation of the following documents that are to be submitted along with this application:
+1. Please note that this is a provisional pre-registration only. GJIIF 2025 is a B2B jewellery exhibition. Entry is only for jewellery business delegates. Your registration is complete only after verification and validation of the following documents that are to be submitted along with this application:
    a) Visiting card of your firm with your name and designation.
    b) Photocopy of valid photo ID (Driving License, Election Card, or Aadhar Card).
    c) Photocopy of company’s GST Certificate or your local association certificate.
@@ -18,7 +18,7 @@ TERMS & CONDITIONS
 
 5. Entry is not allowed for children below 18 years.
 
-6. GJIIF 2023 IS A B2B TRADESHOW. SALES OR PURCHASE OVER THE COUNTER IS STRICTLY PROHIBITED.
+6. GJIIF 2025 IS A B2B TRADESHOW. SALES OR PURCHASE OVER THE COUNTER IS STRICTLY PROHIBITED.
 
 7. Photography inside the exhibition is strictly prohibited. The organizer reserves the right to confiscate the gadget or camera used.
 
@@ -36,7 +36,7 @@ TERMS & CONDITIONS
 
 14. Carrying of bullion, bulk jewellery, or cash exceeding Rupees Fifty Thousand is STRICTLY NOT ALLOWED.
 
-15. I hereby agree and accept the above Terms & Conditions and the Liability & Indemnity to visit GEM and Jewellery India International Fair 2023, organized from 29th Sept. to 1st Oct. 2023 at Chennai Trade Centre, Chennai. I also undertake that all the information and documents submitted by me/us along with this form are correct and true to the best of my knowledge.
+15. I hereby agree and accept the above Terms & Conditions and the Liability & Indemnity to visit GEM and Jewellery India International Fair 2025, organized from 29th Sept. to 1st Oct. 2025 at Chennai Trade Centre, Chennai. I also undertake that all the information and documents submitted by me/us along with this form are correct and true to the best of my knowledge.
 ''';
 
   final String privacyPolicyContent = '''
@@ -106,7 +106,7 @@ REFUND & CANCELLATION POLICY
   final String accountDeletion = '''
 • Users have the ability to log out of the app at any time, which will securely end their session and protect their personal information.
 
-• Currently, the app does not support in-app account deletion. Users who wish to delete their account and personal data must contact our support team directly at [support@example.com].
+• Currently, the app does not support in-app account deletion. Users who wish to delete their account and personal data must contact our support team directly at [support@itech.com].
 
 • Upon receiving a valid deletion request, we will process the removal of the user's account and data in accordance with applicable laws and regulations.
 

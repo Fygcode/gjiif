@@ -25,16 +25,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tjw1/common_widget/common_dialog.dart';
 import 'package:tjw1/core/model/tjw/registered_visitor_list.dart';
 import 'package:tjw1/services/api_base_service.dart';
 import 'package:tjw1/services/request_method.dart';
+import 'package:tjw1/ui/views/edit_visitor/edit_visitor_screen.dart';
 
 import '../../../services/secure_storage_service.dart';
 
 class SelectVisitorController extends GetxController {
   final RxList<bool> selected = List<bool>.filled(5, false).obs;
 
-  int get selectedCount => selected.where((e) => e).length;
+  // int get selectedCount => selected.where((e) => e).length;
 
   final filterController = TextEditingController(text: 'All');
   final FocusNode filterFocusNode = FocusNode();
@@ -144,6 +146,8 @@ class SelectVisitorController extends GetxController {
     }
   }
 
+  int get selectedCount => selectedVisitorIDs.length;
+
   Future<void> filterVisitorListByStatus(String statusID) async {
     try {
       isVisitorListLoading.value = true;
@@ -155,7 +159,26 @@ class SelectVisitorController extends GetxController {
       );
 
       if (response.status == "200") {
-        visitorList.assignAll(response.registeredData?.visitorsList ?? []);
+        // final newVisitorList = response.registeredData?.visitorsList ?? [];
+        // visitorList.assignAll(newVisitorList);
+        //
+        // // Reset selection states based on new list
+        // selected.value = List<bool>.filled(newVisitorList.length, false);
+        //
+        // // Optional: clear selectedVisitorIDs if filter switch should reset them
+        // // selectedVisitorIDs.clear();
+        //
+        // print("LETS SEE STATUS LIST = ${statusList.toJson()}");
+
+
+        final newVisitorList = response.registeredData?.visitorsList ?? [];
+        visitorList.assignAll(newVisitorList);
+
+        // Rebuild selected list based on whether the visitor ID is in selectedVisitorIDs
+        selected.value = newVisitorList.map((visitor) {
+          return selectedVisitorIDs.contains(visitor.visitorID.toString());
+        }).toList();
+
         print("LETS SEE STATUS LIST = ${statusList.toJson()}");
       }
     } catch (e) {
@@ -164,6 +187,41 @@ class SelectVisitorController extends GetxController {
       isVisitorListLoading.value = false;
     }
   }
+
+  void handleIncompleteVisitor({
+    required int visitorID,
+    required int index,
+    required BuildContext context,
+  }) {
+    CommonDialog.showConfirmDialog(
+      title: "Incomplete Registration",
+      content: "This visitor’s registration details are incomplete. Do you want to complete it?",
+      confirmText: "Edit Now",
+      cancelText: "Cancel",
+      leading: const Icon(
+        Icons.warning_amber_rounded,
+        size: 48,
+        color: Colors.orange,
+      ),
+      onConfirm: () {
+        Get.to(
+              () => EditVisitorScreen(),
+          arguments: {'visitorID': visitorID, 'isFromEdit': true},
+        )?.then((_) {
+          selected[index] = false;
+          selectedVisitorIDs.remove(visitorID.toString());
+          print("EDIT BACK = VISITOR IDs: ${selectedVisitorIDs}",);
+          fetchRegisteredVisitorList();
+        });
+      },
+      onCancel: () {
+        selected[index] = false;
+        selectedVisitorIDs.remove(visitorID.toString());
+        print("CANCEL = VISITOR IDs: ${selectedVisitorIDs}",);
+      },
+    );
+  }
+
 
   Color getStatusColorByID(int statusID) {
     switch (statusID) {

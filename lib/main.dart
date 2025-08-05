@@ -103,7 +103,7 @@ class MyApp extends StatelessWidget {
 
     return GetMaterialApp(
       title: 'TJW',
-      initialRoute: '/',  //  / ,  login
+      initialRoute: 'dashboard',  //  / ,  login
       debugShowCheckedModeBanner: false,
       getPages: AppRoutes.pages,
       theme: AppStyle.appTheme,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -8,6 +9,7 @@ import 'package:tjw1/controllers/master_data_controller.dart';
 import 'package:tjw1/core/model/tjw/fetch_company_detail.dart';
 import 'package:tjw1/core/model/tjw/fetch_company_type.dart';
 import 'package:tjw1/core/model/tjw/stateList.dart';
+import 'package:tjw1/helper/file_upload_helper.dart';
 import 'package:tjw1/services/api_base_service.dart';
 import 'package:tjw1/services/request_method.dart';
 import 'package:tjw1/services/secure_storage_service.dart';
@@ -58,6 +60,8 @@ class CompanyController extends GetxController {
   var gstCopyError = ''.obs;
 
   var isLoading = false.obs;
+  var isUploadLoading = false.obs;
+  final RxString uploadingFileKey = ''.obs;
 
   String? gstNumber;
   String? mobileNumber;
@@ -74,12 +78,18 @@ class CompanyController extends GetxController {
   var companyTypeList = <CompanyTypeData>[].obs;
   var stateList = <StateData>[].obs;
 
+  final ScrollController scrollController = ScrollController();
+  final RxBool showSaveButton = false.obs;
+
+
   @override
   void onInit() {
     print("GHGHG");
     // TODO: implement onInit
     loadGstFromStorage();
     print("Muthu");
+
+    scrollController.addListener(_scrollListener);
 
     // Initialize Rx lists
     companyTypeList.assignAll(masterData.companyTypes);
@@ -97,6 +107,28 @@ class CompanyController extends GetxController {
     super.onInit();
   }
 
+
+  Timer? _debounce;
+
+  void _scrollListener() {
+    if (!scrollController.hasClients) return;
+
+    final maxScroll = scrollController.position.maxScrollExtent;
+    final currentScroll = scrollController.offset;
+
+    final shouldShow = currentScroll >= (maxScroll - 100);
+
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(Duration(milliseconds: 50), () {
+      if (showSaveButton.value != shouldShow) {
+        showSaveButton.value = shouldShow;
+      }
+    });
+  }
+
+
+
   Future<void> loadGstFromStorage() async {
     gstNumber = await SecureStorageService().read("gst");
     mobileNumber = await SecureStorageService().read("mobileNumber");
@@ -108,64 +140,90 @@ class CompanyController extends GetxController {
     await fetchCompanyDetail(visitorId);
   }
 
-  Future<void> pickFile(String type) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'pdf', 'doc'],
-      allowMultiple: false,
-    );
+  // Future<void> pickFile(String type) async {
+  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //     type: FileType.custom,
+  //     allowedExtensions: ['jpg', 'pdf',],
+  //     allowMultiple: false,
+  //   );
+  //
+  //   if (result != null && result.files.single.path != null) {
+  //     String fileName = result.files.single.name;
+  //     String filePath = result.files.single.path!;
+  //
+  //     File pickedFile = File(filePath);
+  //     int fileSize = await pickedFile.length();
+  //
+  //     double sizeInMB = fileSize / (1024 * 1024);
+  //     print("File size: ${sizeInMB.toStringAsFixed(2)} MB");
+  //
+  //     const int maxFileSize = 2 * 1024 * 1024;
+  //
+  //     if (fileSize > maxFileSize) {
+  //       Fluttertoast.showToast(
+  //         msg: "File Too Large, Please select a file under 2MB.",
+  //       );
+  //       return;
+  //     }
+  //     switch (type) {
+  //       case 'gstCopy':
+  //         gstCopyFileName.value = fileName;
+  //         gstCopyFilePath.value = filePath;
+  //         gstCopyError.value = '';
+  //         break;
+  //     }
+  //
+  //     uploadingFileKey.value = type;
+  //     isUploadLoading(true);
+  //
+  //     try {
+  //       var response = await ApiBaseService().uploadImage(
+  //         pickedFile,
+  //         'SQ/FileUpload',
+  //         fileCategory: 'gst',
+  //         gstNumber: '$gstNumber',
+  //         mobileNumber: '$mobileNumber',
+  //       );
+  //       if (response['status'] == "200") {
+  //         Fluttertoast.showToast(msg: response['message'] ?? "");
+  //         isGstUploadedNow = true;
+  //         final fileName = response['data']['fileName'];
+  //         print("Uploaded file name: $fileName");
+  //         gstCopyFileName.value = fileName;
+  //         gstCopyFilePath.value = response['data']['url'];
+  //
+  //       }
+  //     } catch (e) {
+  //       print("Upload failed: $e");
+  //     } finally {
+  //       isUploadLoading(false);
+  //       uploadingFileKey.value = '';
+  //     }
+  //   } else {
+  //     print("No file selected.");
+  //   }
+  // }
 
-    if (result != null && result.files.single.path != null) {
-      String fileName = result.files.single.name;
-      String filePath = result.files.single.path!;
-
-      File pickedFile = File(filePath);
-      int fileSize = await pickedFile.length();
-
-      double sizeInMB = fileSize / (1024 * 1024);
-      print("File size: ${sizeInMB.toStringAsFixed(2)} MB");
-
-      const int maxFileSize = 2 * 1024 * 1024;
-
-      if (fileSize > maxFileSize) {
-        Fluttertoast.showToast(
-          msg: "File Too Large, Please select a file under 2MB.",
-        );
-        return;
-      }
-      switch (type) {
-        case 'gstCopy':
-          gstCopyFileName.value = fileName;
-          gstCopyFilePath.value = filePath;
-          gstCopyError.value = '';
-          break;
-      }
-
-      try {
-        isLoading(true);
-        var response = await ApiBaseService().uploadImage(
-          pickedFile,
-          'SQ/FileUpload',
-          fileCategory: 'gst',
-          gstNumber: '$gstNumber',
-          mobileNumber: '$mobileNumber',
-        );
-        if (response['status'] == "200") {
-          isGstUploadedNow = true;
-          final fileName = response['data']['fileName'];
-          print("Uploaded file name: $fileName");
-          gstCopyFileName.value = fileName;
-          gstCopyFilePath.value = response['data']['url'];
+  Future<void> pickFile(String fileKey) async {
+    await FileUploadHelper.pickAndUploadFile(
+      fileType: fileKey,
+      gstNumber: gstNumber!,
+      mobileNumber: mobileNumber!,
+      isUploadLoading: isUploadLoading,
+      uploadingKey: uploadingFileKey,
+      onSuccess: (uploadedFileName, uploadedFileUrl) {
+        switch (fileKey) {
+          case 'gstCopy':
+            gstCopyFileName.value = uploadedFileName;
+            gstCopyFilePath.value = uploadedFileUrl;
+            gstCopyError.value = '';
+            isGstUploadedNow = true;
+            break;
         }
-      } catch (e) {
-        print("Upload failed: $e");
-      } finally {
-        isLoading(false);
-      }
-    } else {
-      print("No file selected.");
-    }
+      },
+    );
   }
+
 
   Future<void> saveCompany() async {
     if (formKeyCompany.currentState?.validate() != true) {
@@ -221,10 +279,19 @@ class CompanyController extends GetxController {
     }
   }
 
-  CompanyTypeData get selectedCompanyType => companyTypeList.firstWhere(
-    (e) => e.id == int.tryParse(companyTypeId.value ?? '0'),
-    orElse: () => CompanyTypeData(id: 0, companyType: ''),
-  );
+  // CompanyTypeData get selectedCompanyType => companyTypeList.firstWhere(
+  //   (e) => e.id == int.tryParse(companyTypeId.value ?? '0'),
+  //   orElse: () => CompanyTypeData(id: 0, companyType: ''),
+  // );
+
+  CompanyTypeData? get selectedCompanyType {
+    final id = int.tryParse(companyTypeId.value ?? '0');
+    if (id == null || id == 0) return null; // ✅ Let it be null to show hint
+    return companyTypeList.firstWhere(
+          (e) => e.id == id,
+      orElse: () => CompanyTypeData(id: 0, companyType: ''),
+    );
+  }
 
   Future<void> fetchCompanyDetail(String? visitorId) async {
     try {

@@ -45,7 +45,7 @@ class _VisitorScreenState extends State<VisitorScreen> {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (controller.visitorListData.isEmpty) {
+        if (controller.visitorListData.isEmpty && !controller.isLoading.value) {
           return VisitorFormScreen(controller: controller);
         } else {
           return VisitorListScreen(controller: controller);
@@ -753,9 +753,8 @@ class VisitorListScreen extends StatelessWidget {
                       arguments: {'isFromEdit': false, 'visitorID': 0},
                     );
                     if (result == 'refresh') {
-                     controller.fetchVisitorList();
+                      controller.fetchVisitorList();
                     }
-
                   },
                   fillColor: AppColor.secondary,
                   textColor: AppColor.black,
@@ -798,20 +797,23 @@ class VisitorListScreen extends StatelessWidget {
               child: CachedNetworkImage(
                 height: 100,
                 width: 100,
-                imageUrl: (data.visitorPhoto ?? "").startsWith("http")
-                    ? "${data.visitorPhoto}?ts=${DateTime.now().millisecondsSinceEpoch}"
-                    : (data.visitorPhoto ?? ""),
+                imageUrl:
+                    (data.visitorPhoto ?? "").startsWith("http")
+                        ? "${data.visitorPhoto}?ts=${DateTime.now().millisecondsSinceEpoch}"
+                        : (data.visitorPhoto ?? ""),
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  height: 100,
-                  width: 100,
-                  color: Colors.grey[200],
-                  child: const Icon(Icons.image, color: Colors.grey),
-                ),
-                errorWidget: (context, url, error) => Image.asset(
-                  'assets/updateBanner.png',
-                  fit: BoxFit.cover,
-                ),
+                placeholder:
+                    (context, url) => Container(
+                      height: 100,
+                      width: 100,
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.image, color: Colors.grey),
+                    ),
+                errorWidget:
+                    (context, url, error) => Image.asset(
+                      'assets/updateBanner.png',
+                      fit: BoxFit.cover,
+                    ),
               ),
             ),
             SizedBox(width: 10),
@@ -827,58 +829,62 @@ class VisitorListScreen extends StatelessWidget {
                     data.visitorMobile!,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
+
+
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () async {
+                            final result = await Get.to(
+                                  () => EditVisitorScreen(),
+                              arguments: {
+                                'isFromEdit': true,
+                                'visitorID': data.visitorID,
+                              },
+                            );
+                            if (result == 'refresh') {
+                              controller.fetchVisitorList();
+                            }
+                          },
+                          child: Text(
+                            "Edit",
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: AppColor.black,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                        InkWell (
+                          onTap: (){
+                            CommonDialog.showConfirmDialog(
+                              title: "Confirm Remove",
+                              content: "Are you sure you want to remove ?",
+                              confirmText: "Yes",
+                              cancelText: "No",
+                              onConfirm: () {
+                                print("Item removed");
+                                Get.back();
+                              },
+                              leading: Icon(
+                                Icons.warning_amber_rounded,
+                                size: 48,
+                                color: AppColor.primary,
+                              ),
+                              onCancel: () {
+                                Get.back(); // Just close the dialog
+                              },
+                            );
+                          },
+                            child: Icon(Icons.delete_forever_sharp)),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-            Column(
-              children: [
-                SizedBox(
-                  width: 100,
-                  child: CommonButton(
-                    text: "Remove",
-                    onPressed: () {
-                      CommonDialog.showConfirmDialog(
-                        title: "Confirm Remove",
-                        content: "Are you sure you want to remove ?",
-                        confirmText: "Yes",
-                        cancelText: "No",
-                        onConfirm: () {
-                          print("Item removed");
-                          Get.back();
-                        },
-                        leading: Icon(
-                          Icons.warning_amber_rounded,
-                          size: 48,
-                          color: AppColor.primary,
-                        ),
-                        onCancel: () {
-                          Get.back(); // Just close the dialog
-                        },
-                      );
-                    },
-                    fillColor: AppColor.white,
-                    textColor: Colors.black,
-                  ),
-                ),
-                SizedBox(height: 8),
-                SizedBox(
-                  width: 100,
-                  child: CommonButton(
-                    text: "Edit",
-                    onPressed: () async {
-                      final result = await Get.to(
-                            () => EditVisitorScreen(),
-                        arguments: {'isFromEdit': true, 'visitorID': data.visitorID},
-                      );
-                      if (result == 'refresh') {
-                        controller.fetchVisitorList();
-                      }
-                    },
-                    fillColor: AppColor.secondary,
-                    textColor: AppColor.black,
-                  ),
-                ),
-              ],
             ),
           ],
         ),

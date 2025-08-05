@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 import 'package:tjw1/controllers/master_data_controller.dart';
+import 'package:tjw1/helper/file_upload_helper.dart';
 
 import '../../../common_widget/common_button.dart';
 import '../../../common_widget/common_dialog.dart';
@@ -71,7 +72,11 @@ class AddVisitorController extends GetxController {
   var designationID = ''.obs;
 
   RxBool isPhoneValid = false.obs;
+
   var isLoading = false.obs;
+  var isUploadLoading = false.obs;
+  final RxString uploadingFileKey = ''.obs;
+
   RxBool isPhoneVerified = false.obs;
 
   bool isIDProofUploadedNow = false;
@@ -82,6 +87,9 @@ class AddVisitorController extends GetxController {
   String? mobileNumber;
   String? visitorId;
 
+  final getPhoneNumberDB = ''.obs;
+  final currentPhoneNumber = ''.obs;
+
   final MasterDataController masterData = Get.find();
   RxList<DesignationData> designationList = <DesignationData>[].obs;
 
@@ -90,8 +98,16 @@ class AddVisitorController extends GetxController {
     print("ADD VISITOR SCREEN");
     super.onInit();
     _loadGstFromStorage();
+
+    // Listen to phone number changes and handle validity + verification
     phoneNumberController.addListener(() {
+      currentPhoneNumber.value = phoneNumberController.text;
       isPhoneValid.value = phoneNumberController.text.length == 10;
+
+      // If phone number is modified, mark unverified
+      if (phoneNumberController.text != getPhoneNumberDB.value) {
+        isPhoneVerified.value = false;
+      }
     });
 
     designationList.assignAll(masterData.designations);
@@ -99,6 +115,8 @@ class AddVisitorController extends GetxController {
     ever(masterData.designations, (_) {
       designationList.assignAll(masterData.designations);
     });
+
+
   }
 
   Future<void> _loadGstFromStorage() async {
@@ -118,10 +136,27 @@ class AddVisitorController extends GetxController {
       return;
     }
 
-    if (isPhoneVerified.value == false) {
-      Fluttertoast.showToast(msg: "Verify mobile number pending");
+    if (!isPhoneVerified.value) {
+      Fluttertoast.showToast(
+        msg: "Please verify the mobile number before saving.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        fontSize: 16.0,
+      );
+
+      // toastification.show(
+      //   context: context,
+      //   title: Text('Hello, world!'),
+      //   alignment: Alignment.topCenter,
+      //   type: ToastificationType.success,
+      //   style: ToastificationStyle.simple,
+      //   showProgressBar: true,
+      //   autoCloseDuration: const Duration(seconds: 2),
+      // );
+
       return;
     }
+
 
     try {
       isLoading(true);
@@ -272,96 +307,132 @@ class AddVisitorController extends GetxController {
     );
   }
 
-  Future<void> pickFile(String type) async {
-    const allowedExtensions = ['jpg', 'pdf', 'doc'];
-    const maxFileSizeBytes = 2 * 1024 * 1024; // 2MB
+  // Future<void> pickFile(String type) async {
+  //   const allowedExtensions = ['jpg', 'pdf'];
+  //   const maxFileSizeBytes = 2 * 1024 * 1024; // 2MB
+  //
+  //   try {
+  //     final result = await FilePicker.platform.pickFiles(
+  //       type: FileType.custom,
+  //       allowedExtensions: allowedExtensions,
+  //       allowMultiple: false,
+  //     );
+  //
+  //     if (result == null || result.files.single.path == null) {
+  //       print("No file selected.");
+  //       return;
+  //     }
+  //
+  //     final file = File(result.files.single.path!);
+  //     final fileSize = await file.length();
+  //
+  //     if (fileSize > maxFileSizeBytes) {
+  //       Fluttertoast.showToast(
+  //         msg: "File too large. Please select a file under 2MB.",
+  //       );
+  //       return;
+  //     }
+  //
+  //     final fileName = result.files.single.name;
+  //     final filePath = result.files.single.path!;
+  //
+  //     final fileMappings = {
+  //       'businessCard': () {
+  //         businessFileName.value = fileName;
+  //         // businessFilePath.value = filePath;
+  //         businessError.value = '';
+  //       },
+  //       'photo': () {
+  //         passportPhotoName.value = fileName;
+  //         // passportPhotoPath.value = filePath;
+  //         passportPhotoError.value = '';
+  //       },
+  //       'idProof': () {
+  //         idProofName.value = fileName;
+  //         //     idPro ofPath.value = filePath;
+  //         idProofError.value = '';
+  //       },
+  //     };
+  //
+  //     fileMappings[type]?.call();
+  //
+  //     uploadingFileKey.value = type;
+  //     isUploadLoading(true);
+  //
+  //     final response = await ApiBaseService().uploadImage(
+  //       file,
+  //       'SQ/FileUpload',
+  //       fileCategory: type,
+  //       gstNumber: '$gstNumber',
+  //       mobileNumber: phoneNumberController.text,
+  //     );
+  //
+  //     if (response['status'] == "200") {
+  //       final uploadedFileName = response['data']['fileName'];
+  //       print("Uploaded file name: $uploadedFileName");
+  //
+  //       Fluttertoast.showToast(msg: response['message'] ?? "");
+  //
+  //       switch (type) {
+  //         case 'businessCard':
+  //           businessFileName.value = uploadedFileName;
+  //           isBusinessCardUploadedNow = true;
+  //           businessFilePath.value = response['data']['url'];
+  //           break;
+  //         case 'photo':
+  //           passportPhotoName.value = uploadedFileName;
+  //           isPhotoUploadedNow = true;
+  //           passportPhotoPath.value = response['data']['url'];
+  //           break;
+  //         case 'idProof':
+  //           idProofName.value = uploadedFileName;
+  //           isIDProofUploadedNow = true;
+  //           idProofPath.value = response['data']['url'];
+  //           print("idProofPath=== ${idProofPath.value}");
+  //           break;
+  //       }
+  //     } else {
+  //       Fluttertoast.showToast(msg: "Upload failed. Try again.");
+  //     }
+  //   } catch (e) {
+  //     print("Error during file picking/upload: $e");
+  //     Fluttertoast.showToast(msg: "Something went wrong. Try again.");
+  //   } finally {
+  //     isUploadLoading(false);
+  //     uploadingFileKey.value = '';
+  //   }
+  // }
 
-    try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: allowedExtensions,
-        allowMultiple: false,
-      );
-
-      if (result == null || result.files.single.path == null) {
-        print("No file selected.");
-        return;
-      }
-
-      final file = File(result.files.single.path!);
-      final fileSize = await file.length();
-
-      if (fileSize > maxFileSizeBytes) {
-        Fluttertoast.showToast(
-          msg: "File too large. Please select a file under 2MB.",
-        );
-        return;
-      }
-
-      final fileName = result.files.single.name;
-      final filePath = result.files.single.path!;
-
-      final fileMappings = {
-        'businessCard': () {
-          businessFileName.value = fileName;
-          // businessFilePath.value = filePath;
-          businessError.value = '';
-        },
-        'photo': () {
-          passportPhotoName.value = fileName;
-          // passportPhotoPath.value = filePath;
-          passportPhotoError.value = '';
-        },
-        'idProof': () {
-          idProofName.value = fileName;
-          //     idPro ofPath.value = filePath;
-          idProofError.value = '';
-        },
-      };
-
-      fileMappings[type]?.call();
-
-      isLoading(true);
-
-      final response = await ApiBaseService().uploadImage(
-        file,
-        'SQ/FileUpload',
-        fileCategory: type,
-        gstNumber: '$gstNumber',
-        mobileNumber: phoneNumberController.text,
-      );
-
-      if (response['status'] == "200") {
-        final uploadedFileName = response['data']['fileName'];
-        print("Uploaded file name: $uploadedFileName");
-
-        switch (type) {
+  Future<void> pickFile(String fileKey) async {
+    await FileUploadHelper.pickAndUploadFile(
+      fileType: fileKey,
+      gstNumber: gstNumber!,
+      mobileNumber: phoneNumberController.text,
+      isUploadLoading: isUploadLoading,
+      uploadingKey: uploadingFileKey,
+      onSuccess: (uploadedFileName, uploadedFileUrl) {
+        switch (fileKey) {
           case 'businessCard':
             businessFileName.value = uploadedFileName;
+            businessFilePath.value = uploadedFileUrl;
+            businessError.value = '';
             isBusinessCardUploadedNow = true;
-            businessFilePath.value = response['data']['url'];
             break;
           case 'photo':
             passportPhotoName.value = uploadedFileName;
+            passportPhotoPath.value = uploadedFileUrl;
+            passportPhotoError.value = '';
             isPhotoUploadedNow = true;
-            passportPhotoPath.value = response['data']['url'];
             break;
           case 'idProof':
             idProofName.value = uploadedFileName;
+            idProofPath.value = uploadedFileUrl;
+            idProofError.value = '';
             isIDProofUploadedNow = true;
-            idProofPath.value = response['data']['url'];
-            print("idProofPath=== ${idProofPath.value}");
             break;
         }
-      } else {
-        Fluttertoast.showToast(msg: "Upload failed. Try again.");
-      }
-    } catch (e) {
-      print("Error during file picking/upload: $e");
-      Fluttertoast.showToast(msg: "Something went wrong. Try again.");
-    } finally {
-      isLoading(false);
-    }
+      },
+    );
   }
 
   // Validation methods
@@ -555,7 +626,13 @@ class AddVisitorController extends GetxController {
           msg: response.message ?? "Verified successfully",
         );
         isPhoneVerified.value = true;
+
+        getPhoneNumberDB.value = phoneNumberController.text;
         Get.back();
+      } else if (response.status == "100"){
+        Fluttertoast.showToast(
+          msg: response.message ?? "",
+        );
       }
     } catch (e) {
       print('Error: $e');

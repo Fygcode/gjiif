@@ -218,12 +218,8 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                                             () => Checkbox(
                                               value: controller.selected[index],
                                               checkColor: AppColor.white,
-                                              fillColor:
-                                                  WidgetStateProperty.resolveWith<
-                                                    Color
-                                                  >(
-                                                    (states) =>
-                                                        states.contains(
+                                              fillColor: WidgetStateProperty.resolveWith<Color>(
+                                                    (states) => states.contains(
                                                               WidgetState
                                                                   .selected,
                                                             )
@@ -231,12 +227,11 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                                                             : Colors.white,
                                                   ),
                                               side: const BorderSide(
-                                                color: Colors.grey,
+                                                color: Colors.black,
                                               ),
+
                                               onChanged: (bool? value) async {
                                                 controller.selected[index] = value ?? false;
-                                                print("VISITOR ID : ${visitor.visitorID.toString()}",);
-
                                                 final visitorID = visitor.visitorID.toString();
 
                                                 if (controller.selected[index]) {
@@ -258,39 +253,12 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                                                               .toString(),
                                                         );
                                                 if (isIncomplete) {
-                                                  CommonDialog.showConfirmDialog(
-                                                    title:
-                                                        "Incomplete Registration",
-                                                    content:
-                                                        "This visitor’s registration details are incomplete. Do you want complete it?",
-                                                    confirmText: "Edit Now",
-                                                    cancelText: "Cancel",
-                                                    leading: Icon(
-                                                      Icons
-                                                          .warning_amber_rounded,
-                                                      size: 48,
-                                                      color: Colors.orange,
-                                                    ),
-                                                    onConfirm: () {
-                                                      Get.to(
-                                                        () => EditVisitorScreen(),
-                                                        arguments: {'visitorID': visitor.visitorID, 'isFromEdit': true,},
-                                                      )?.then((_) {
-                                                        print(
-                                                          "BACKED FROM EDIT",
-                                                        );
-                                                        controller.selected[index] = false;
-                                                        controller.selectedVisitorIDs.remove(visitorID);
-                                                        controller.fetchRegisteredVisitorList();
-                                                      });
-                                                    },
-                                                    onCancel: () {
-                                                      controller.selected[index] = false;
-                                                      controller.selectedVisitorIDs.remove(visitorID);
-
-                                                      print("SELECTED VISITOR IDs: ${controller.selectedVisitorIDs}",);
-                                                    },
+                                                  controller.handleIncompleteVisitor(
+                                                    visitorID: visitor.visitorID!,
+                                                    index: index,
+                                                    context: context,
                                                   );
+
                                                 }
                                               },
                                             ),

@@ -30,6 +30,11 @@
 	<key>NSLocalNetworkUsageDescription</key>
     <string>This app uses the local network to debug and connect to development tools.</string>
 
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
+    </dict>
 
 
 	<key>NSAppTransportSecurity</key>

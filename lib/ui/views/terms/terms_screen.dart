@@ -36,71 +36,74 @@ class _TermsScreenState extends State<TermsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-        statusBarColor: AppColor.background,
-        statusBarIconBrightness: Brightness.dark,
+
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // Fully transparent
+        statusBarIconBrightness: Brightness.light, // Icons in white
       ),
-      child: Scaffold(
-        backgroundColor: AppColor.background,
-        extendBody: true,
-        body: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                height: size.height * 0.7,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/splash_background.png'),
-                    // Replace with your image path
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
-                ),
-                child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                  children: [
-                    SizedBox(height: 10),
-                    Center(
-                      child: Text(
-                        "TERMS & CONDITIONS",
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: AppColor.white,
-                          fontWeight: FontWeight.w600,
-                        ),
+    );
+
+    Size size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      backgroundColor: AppColor.background,
+      extendBody: true,
+      body: Column(
+        children: [
+          Container(
+            height: size.height * 0.7,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/splash_background.png'),
+                // Replace with your image path
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+            ),
+            child: SafeArea (
+              bottom: false,
+              child: ListView(
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                children: [
+                  Center(
+                    child: Text(
+                      "TERMS & CONDITIONS",
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: AppColor.white,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: 10),
-                    Text(
-                      controller.termsContent ?? controller.termsContentDefault,
-                      style: TextStyle(fontSize: 15, color: Colors.white),
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    controller.termsContent ?? controller.termsContentDefault,
+                    style: TextStyle(fontSize: 15, color: Colors.white),
+                  ),
+                ],
               ),
-              SizedBox(height: 20),
-              Text(
-                "By creating passcode you agree with our \n Terms & Conditions and Privacy Policy",
-              ),
-              Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: CommonButton(
-                  text: "I Agree",
-                  onPressed: () {
-                    Get.to(() => GstScreen());
-                  },
-                ),
-              ),
-              SizedBox(height: 20),
-            ],
+            ),
           ),
-        ),
+          SizedBox(height: 20),
+          Text(
+            "By creating passcode you agree with our \n Terms & Conditions and Privacy Policy",
+          ),
+          Spacer(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: CommonButton(
+              text: "I Agree",
+              onPressed: () {
+                Get.to(() => GstScreen());
+              },
+            ),
+          ),
+          SizedBox(height: 20),
+        ],
       ),
     );
   }

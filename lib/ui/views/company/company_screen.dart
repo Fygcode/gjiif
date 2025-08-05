@@ -7,6 +7,7 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:tjw1/common_widget/common_dialog.dart';
 import 'package:tjw1/core/model/tjw/fetch_company_type.dart';
 import 'package:tjw1/core/model/tjw/stateList.dart';
+import 'package:tjw1/ui/widgets/common_file_picker_box.dart';
 import 'package:tjw1/ui/widgets/file_preview_widget.dart';
 
 import '../../../common_widget/common_button.dart';
@@ -35,61 +36,179 @@ class _CompanyScreenState extends State<CompanyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.background,
-        body: SafeArea(
-          bottom: false,
-          child: Obx(() {
-            return Stack(
+    // return Scaffold(
+    //   backgroundColor: AppColor.background,
+    //   resizeToAvoidBottomInset: true,
+    //   body:
+    //   SafeArea(
+    //     child: Stack(
+    //       children: [
+    //         TapOutsideUnFocus(
+    //           child: SingleChildScrollView(
+    //             padding: const EdgeInsets.symmetric(horizontal: 20),
+    //             child: Column(
+    //               crossAxisAlignment: CrossAxisAlignment.start,
+    //               children: [
+    //                 const SizedBox(height: 20),
+    //                 const Text(
+    //                   "Company Detail",
+    //                   style: TextStyle(
+    //                     fontSize: 24,
+    //                     fontWeight: FontWeight.w500,
+    //                   ),
+    //                 ),
+    //                 const SizedBox(height: 16),
+    //                 Form(
+    //                   key: controller.formKeyCompany,
+    //              //     autovalidateMode: AutovalidateMode.onUserInteraction,
+    //                   child: _buildFormFields(),
+    //                 ),
+    //                 const SizedBox(height: 100), // Some bottom padding to avoid keyboard overlap
+    //               ],
+    //             ),
+    //           ),
+    //         ),
+    //
+    //         /// Loading overlay
+    //         Obx(() {
+    //           if (controller.isLoading.value ) {
+    //             return Container(
+    //               color: Colors.black.withOpacity(0.2),
+    //               child: const Center(
+    //                 child: CircularProgressIndicator(),
+    //               ),
+    //             );
+    //           } else {
+    //             return const SizedBox.shrink();
+    //           }
+    //         }),
+    //       ],
+    //     ),
+    //   ),
+    // );
+
+    return SafeArea(
+      bottom: false,
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: AppColor.background,
+        body: Stack(
+          children: [
+            Column(
               children: [
-                TapOutsideUnFocus(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                        child: Text(
-                          "Organization Details",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                Expanded(
+                  child: TapOutsideUnFocus(
+                    child: SingleChildScrollView(
+                      controller: controller.scrollController,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 20,
                       ),
-                      const SizedBox(height: 16),
-
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Form(
-                            key: controller.formKeyCompany,
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                            child: _buildFormFields(),
-                          ),
-                        ),
+                      child: Form(
+                        key: controller.formKeyCompany,
+                        child: _buildFormFields(),
                       ),
-
-
-                    ],
-                  ),
-                ),
-
-                if (controller.isLoading.value &&
-                    (controller.stateList.isEmpty ||
-                        controller.companyTypeList.isEmpty))
-                  Container(
-                    color: Colors.black.withOpacity(0.2), // Dim background
-                    child: const Center(
-                      child: CircularProgressIndicator(),
                     ),
                   ),
+                ),
+                Obx(() {
+                  return controller.showSaveButton.value
+                      ? Padding(
+                        padding: const EdgeInsets.only(
+                          left: 20,
+                          right: 20,
+                          bottom: 10,
+                        ),
+                        child: CommonButton(
+                          text: "Save",
+                          isLoading: controller.isLoading.value || controller.isUploadLoading.value,
+                          onPressed: () {
+                            controller.saveCompany();
+                          },
+                        ),
+                      )
+                      : SizedBox.shrink();
+                }),
               ],
-            );
-          }),
+            ),
+            Obx(() {
+              if (controller.isLoading.value) {
+                return Container(
+                  color: Colors.black.withOpacity(0.2),
+                  child: const Center(child: CircularProgressIndicator()),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
+          ],
         ),
-
+      ),
     );
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return SafeArea(
+  //     bottom: false,
+  //     child: LayoutBuilder(
+  //       builder: (context, constraints) {
+  //         return Stack(
+  //           children: [
+  //             TapOutsideUnFocus(
+  //               child: SingleChildScrollView(
+  //                 padding: EdgeInsets.only(
+  //                   left: 20,
+  //                   right: 20,
+  //                   bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+  //                 ),
+  //                 child: ConstrainedBox(
+  //                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
+  //                   child: IntrinsicHeight(
+  //                     child: Column(
+  //                       crossAxisAlignment: CrossAxisAlignment.start,
+  //                       children: [
+  //                         const SizedBox(height: 20),
+  //                         const Text(
+  //                           "Company Detail",
+  //                           style: TextStyle(
+  //                             fontSize: 24,
+  //                             fontWeight: FontWeight.w500,
+  //                           ),
+  //                         ),
+  //                         const SizedBox(height: 16),
+  //                         Form(
+  //                           key: controller.formKeyCompany,
+  //                           autovalidateMode: AutovalidateMode.onUserInteraction,
+  //                           child: _buildFormFields(),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //
+  //             // Only this part uses observables
+  //             Obx(() {
+  //               if (controller.isLoading.value &&
+  //                   (controller.stateList.isEmpty || controller.companyTypeList.isEmpty)) {
+  //                 return Container(
+  //                   color: Colors.black.withOpacity(0.2),
+  //                   child: const Center(
+  //                     child: CircularProgressIndicator(),
+  //                   ),
+  //                 );
+  //               } else {
+  //                 return const SizedBox.shrink();
+  //               }
+  //             }),
+  //           ],
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget _buildFormFields() {
     return Column(
@@ -175,12 +294,21 @@ class _CompanyScreenState extends State<CompanyScreen> {
         Obx(
           () => CommonDropdown<StateData>(
             items: controller.stateList,
-            hintText: 'Enter State*',
-            selectedItem: controller.stateList.firstWhere(
-              (e) => e.stateID == int.tryParse(controller.stateId.value ?? '0'),
-              orElse:
-                  () => StateData(stateID: 0, stateName: '', countryID: null),
-            ),
+            hintText: 'Select State*',
+            selectedItem:
+                (() {
+                  final id = int.tryParse(controller.stateId.value ?? '0');
+                  if (id == null || id == 0) return null;
+                  return controller.stateList.firstWhere(
+                    (e) => e.stateID == id,
+                    orElse:
+                        () => StateData(
+                          stateID: 0,
+                          stateName: '',
+                          countryID: null,
+                        ),
+                  );
+                })(),
             itemAsString: (state) => state.stateName ?? '',
             compareFn: (a, b) => a.stateID == b.stateID,
             onChanged: (value) {
@@ -247,41 +375,53 @@ class _CompanyScreenState extends State<CompanyScreen> {
         ),
         SizedBox(height: 10),
         _buildLabeledText("Upload GST Copy"),
-        GestureDetector(
-          onTap: () {
-            controller.pickFile('gstCopy');
-          },
-          child: DottedBorder(
-            options: RectDottedBorderOptions(
-              strokeWidth: 1,
-              color: AppColor.grey.withOpacity(0.6),
-              dashPattern: [3, 6],
-              strokeCap: StrokeCap.square,
-            ),
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 30),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(color: AppColor.white),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset("assets/uploadIcon.png", scale: 3),
-                  SizedBox(width: 20),
-                  Text(
-                    "Upload GST-Copy",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+        // GestureDetector(
+        //   onTap: () {
+        //     if (controller.isUploadLoading.value) return;
+        //     controller.pickFile('gstCopy');
+        //   },
+        //   child: DottedBorder(
+        //     options: RectDottedBorderOptions(
+        //       strokeWidth: 1,
+        //       color: AppColor.grey.withOpacity(0.6),
+        //       dashPattern: [3, 6],
+        //       strokeCap: StrokeCap.square,
+        //     ),
+        //     child: Container(
+        //       width: double.infinity,
+        //       padding: EdgeInsets.symmetric(vertical: 30),
+        //       alignment: Alignment.center,
+        //       decoration: BoxDecoration(color: AppColor.white),
+        //       child: Row(
+        //         crossAxisAlignment: CrossAxisAlignment.center,
+        //         mainAxisAlignment: MainAxisAlignment.center,
+        //         children: [
+        //           Image.asset("assets/uploadIcon.png", scale: 3),
+        //           SizedBox(width: 20),
+        //           Text(
+        //             "Upload GST-Copy",
+        //             style: TextStyle(
+        //               color: Colors.grey,
+        //               fontSize: 16,
+        //               fontWeight: FontWeight.w500,
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // ),
+
+        CommonFilePickerBox(
+          label: "Upload GST-Copy",
+          fileKey: "gstCopy",
+          isLoading: controller.isUploadLoading,
+          uploadingKey: controller.uploadingFileKey,
+          onPick: controller.pickFile,
         ),
+
+
+
         SizedBox(height: 2),
         FilePreviewWidget(
           filePath: controller.gstCopyFilePath,
@@ -289,19 +429,19 @@ class _CompanyScreenState extends State<CompanyScreen> {
           errorText: controller.gstCopyError,
           isLoading: controller.isLoading,
         ),
-        SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.only(top: 25, bottom: 40),
-          child: Obx(() {
-            return CommonButton(
-              text: "Save",
-              isLoading: controller.isLoading.value,
-              onPressed: () {
-                controller.saveCompany();
-              },
-            );
-          }),
-        ),
+        SizedBox(height: 100),
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 25, bottom: 40),
+        //   child: Obx(() {
+        //     return CommonButton(
+        //       text: "Save",
+        //       isLoading: controller.isLoading.value || controller.isUploadLoading.value,
+        //       onPressed: () {
+        //         controller.saveCompany();
+        //       },
+        //     );
+        //   }),
+        // ),
       ],
     );
   }
