@@ -56,6 +56,9 @@ class GstController extends GetxController {
           return;
         }
         else if (status == "300") {
+          await SecureStorageService().write("visitorID", response.data[0]['visitorID'].toString());
+          await SecureStorageService().write("gst", gstController.text);
+
           final List<VisitorPhone> phoneList = (response.data as List)
               .map((e) => VisitorPhone.fromJson(e))
               .toList();

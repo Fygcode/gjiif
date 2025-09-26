@@ -84,6 +84,7 @@ class CommonDialog {
     VoidCallback? onCancel,
     Widget? leading,
     bool cancelTextHide = false,
+    bool dismissible = false
   }) {
     showCustomDialog(
       content: Padding(
@@ -148,7 +149,7 @@ class CommonDialog {
       ),
       borderRadius: 16,
       backgroundColor: Colors.white,
-      barrierDismissible: false,
+      barrierDismissible: dismissible,
     );
   }
 

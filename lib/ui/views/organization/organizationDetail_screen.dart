@@ -380,13 +380,15 @@ class OrganizationDetailScreen extends StatelessWidget {
                           child: Form(
                             key: controller.formKeyOrganization,
                         //    autovalidateMode: AutovalidateMode.onUserInteraction,
-                            child: _buildFormFields(),
+                            child: _buildFormFields(context),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
+
+
                 if (controller.isLoading.value) _buildLoadingOverlay(),
               ],
             ),
@@ -427,7 +429,7 @@ class OrganizationDetailScreen extends StatelessWidget {
     child: const Center(child: CircularProgressIndicator()),
   );
 
-  Widget _buildFormFields() {
+  Widget _buildFormFields(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -485,7 +487,7 @@ class OrganizationDetailScreen extends StatelessWidget {
           ),
         ),
         _buildLabeledField("Landline", _buildPhoneField()),
-        _buildLabeledField("Upload GST Copy", _buildFileSection()),
+        _buildLabeledField("Upload GST Copy", _buildFileSection(context)),
         Padding(
           padding: const EdgeInsets.only(top: 25, bottom: 40),
           child: Obx(
@@ -611,7 +613,7 @@ class OrganizationDetailScreen extends StatelessWidget {
                 : null,
   );
 
-  Widget _buildFileSection() => Column(
+  Widget _buildFileSection(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       CommonFilePickerBox(
@@ -619,7 +621,7 @@ class OrganizationDetailScreen extends StatelessWidget {
         fileKey: "gstCopy",
         isLoading: controller.isUploadLoading,
         uploadingKey: controller.uploadingFileKey,
-        onPick: controller.pickFile,
+        onPick: controller.handleFileUpload,
       ),
       const SizedBox(height: 2),
       FilePreviewWidget(

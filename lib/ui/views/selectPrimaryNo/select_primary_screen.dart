@@ -71,95 +71,145 @@ class _SelectPrimaryScreenState extends State<SelectPrimaryScreen> {
     //   ),
 
     return Obx(
-      () => Stack(
-        children: [
-          Scaffold(
-            backgroundColor: AppColor.background,
-            body: SafeArea(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Select Primary Number",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Expanded(
-                      child: ListView.separated(
-                        itemCount: widget.data!.length,
-                        itemBuilder: (context, index) {
-                          VisitorPhone data = widget.data![index];
-                          return InkWell(
-                            onTap: () {
-                              print(index);
-                              CommonDialog.showConfirmDialog(
-                                title: "Select Primary Number",
-                                content:
-                                    "Do you want to set this ${data.mobileNumber} number as your primary contact?",
-                                confirmText: "Yes",
-                                cancelText: "No",
-                                leading: Icon(
-                                  Icons.account_box_rounded,
-                                  size: 48,
-                                  color: AppColor.primary,
-                                ),
-                                onConfirm: () {
-                                  controller.setPrimaryNumber(data);
+          () =>
+          Stack(
+            children: [
+              Scaffold(
+                backgroundColor: AppColor.background,
+                appBar: _buildAppBar(),
+                body: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Select Primary Number",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Expanded(
+                          child: ListView.separated(
+                            itemCount: widget.data!.length,
+                            itemBuilder: (context, index) {
+                              VisitorPhone data = widget.data![index];
+                              return InkWell(
+                                onTap: () {
+                                  print(index);
+                                  CommonDialog.showConfirmDialog(
+                                    title: "Select Primary Number",
+                                    content:
+                                    "Do you want to set this ${data
+                                        .mobileNumber} number as your primary contact?",
+                                    confirmText: "Yes",
+                                    cancelText: "No",
+                                    leading: Icon(
+                                      Icons.account_box_rounded,
+                                      size: 48,
+                                      color: AppColor.primary,
+                                    ),
+                                    onConfirm: () {
+                                      controller.setPrimaryNumber(data);
+                                    },
+                                    onCancel: () {
+                                      // Get.back(); // Optional: Close dialog
+                                    },
+                                  );
                                 },
-                                onCancel: () {
-                                  // Get.back(); // Optional: Close dialog
-                                },
-                              );
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment
+                                      .spaceBetween,
                                   children: [
-                                    Text(
-                                      "Visitor ID : ${data.visitorID}",
-                                      style: TextStyle(fontSize: 16),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment
+                                          .start,
+                                      children: [
+                                        Text(
+                                          "Visitor ID : ${data.visitorID}",
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                        SizedBox(height: 6),
+                                        Text(
+                                          "Phone Number : ${data.mobileNumber}",
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(height: 6),
-                                    Text(
-                                      "Phone Number : ${data.mobileNumber}",
-                                      style: TextStyle(fontSize: 16),
-                                    ),
+                                    Icon(Icons.arrow_forward_ios_rounded,
+                                        size: 20),
                                   ],
                                 ),
-                                Icon(Icons.arrow_forward_ios_rounded, size: 20),
-                              ],
-                            ),
-                          );
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Divider(color: AppColor.border),
-                          );
-                        },
-                      ),
+                              );
+                            },
+                            separatorBuilder: (BuildContext context,
+                                int index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8),
+                                child: Divider(color: AppColor.border),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
 
-          if (controller.isLoading.value)
-            Container(
-              color: Colors.black.withOpacity(0.3),
-              // Optional: darken background
-              child: const Center(child: CircularProgressIndicator()),
-            ),
-        ],
-      ),
+              if (controller.isLoading.value)
+                Container(
+                  color: Colors.black.withOpacity(0.3),
+                  // Optional: darken background
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+            ],
+          ),
     );
   }
+
+  PreferredSizeWidget _buildAppBar() =>
+      //     AppBar(
+  //   elevation: 0,
+  //   backgroundColor: Colors.transparent,
+  //   leadingWidth: 130,
+  //   leading: Padding(
+  //     padding: const EdgeInsets.only(left: 20),
+  //     child: Image.asset('assets/GJIIF_Logo.png', height: 60, width: 60),
+  //   ),
+  //
+  //   flexibleSpace: Container(
+  //     decoration: const BoxDecoration(
+  //       image: DecorationImage(
+  //         image: AssetImage('assets/splash_background.png'),
+  //         fit: BoxFit.cover,
+  //       ),
+  //     ),
+  //   ),
+  // );
+
+  AppBar(
+    elevation: 0,
+    backgroundColor: Colors.transparent,
+    // automaticallyImplyLeading: false,
+    leading: IconButton(
+      icon: Icon(Icons.arrow_back, color: Colors.white),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    ),
+    centerTitle: true,
+    title: Image.asset('assets/GJIIF_Logo.png', height: 35),
+    flexibleSpace: Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/splash_background.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+  );
 }

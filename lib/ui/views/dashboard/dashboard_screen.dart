@@ -16,7 +16,7 @@ class DashboardScreen extends StatelessWidget {
   final DashboardController controller = Get.put(DashboardController());
 
   // Define your screens for each tab here
-  static List<Widget> _widgetOptions = <Widget>[
+  static final List<Widget> _widgetOptions = <Widget>[
     const HomeScreen(),
     const VisitorScreen(),
     EbadgeScreen(eventTitle: "GJIIF",),

@@ -112,23 +112,28 @@ class _CompanyScreenState extends State<CompanyScreen> {
                   ),
                 ),
                 Obx(() {
-                  return controller.showSaveButton.value
-                      ? Padding(
-                        padding: const EdgeInsets.only(
-                          left: 20,
-                          right: 20,
-                          bottom: 10,
-                        ),
-                        child: CommonButton(
-                          text: "Save",
-                          isLoading: controller.isLoading.value || controller.isUploadLoading.value,
-                          onPressed: () {
-                            controller.saveCompany();
-                          },
-                        ),
+                  final shouldShow = controller.showSaveButton.value;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10,right: 20,left: 20),
+                    child: AnimatedSwitcher(
+                      duration: Duration(milliseconds: 300),
+                      transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
+                      child: shouldShow
+                          ? CommonButton(
+                        key: ValueKey("saveButton"),
+                        text: "Save",
+                        isLoading: controller.isLoading.value || controller.isUploadLoading.value,
+                        onPressed: () {
+                          controller.saveCompany();
+                        },
                       )
-                      : SizedBox.shrink();
+                          : SizedBox.shrink(
+                        key: ValueKey("emptySpace"),
+                      ),
+                    ),
+                  );
                 }),
+
               ],
             ),
             Obx(() {
@@ -146,69 +151,6 @@ class _CompanyScreenState extends State<CompanyScreen> {
       ),
     );
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return SafeArea(
-  //     bottom: false,
-  //     child: LayoutBuilder(
-  //       builder: (context, constraints) {
-  //         return Stack(
-  //           children: [
-  //             TapOutsideUnFocus(
-  //               child: SingleChildScrollView(
-  //                 padding: EdgeInsets.only(
-  //                   left: 20,
-  //                   right: 20,
-  //                   bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-  //                 ),
-  //                 child: ConstrainedBox(
-  //                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
-  //                   child: IntrinsicHeight(
-  //                     child: Column(
-  //                       crossAxisAlignment: CrossAxisAlignment.start,
-  //                       children: [
-  //                         const SizedBox(height: 20),
-  //                         const Text(
-  //                           "Company Detail",
-  //                           style: TextStyle(
-  //                             fontSize: 24,
-  //                             fontWeight: FontWeight.w500,
-  //                           ),
-  //                         ),
-  //                         const SizedBox(height: 16),
-  //                         Form(
-  //                           key: controller.formKeyCompany,
-  //                           autovalidateMode: AutovalidateMode.onUserInteraction,
-  //                           child: _buildFormFields(),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //
-  //             // Only this part uses observables
-  //             Obx(() {
-  //               if (controller.isLoading.value &&
-  //                   (controller.stateList.isEmpty || controller.companyTypeList.isEmpty)) {
-  //                 return Container(
-  //                   color: Colors.black.withOpacity(0.2),
-  //                   child: const Center(
-  //                     child: CircularProgressIndicator(),
-  //                   ),
-  //                 );
-  //               } else {
-  //                 return const SizedBox.shrink();
-  //               }
-  //             }),
-  //           ],
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
 
   Widget _buildFormFields() {
     return Column(
@@ -346,6 +288,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
           focusNode: controller.pincodeFocusNode,
           hintText: 'Enter Pincode*',
           keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.next,
           validator: (val) {
             if (val == null || val.isEmpty) {
               return 'Please enter pincode';
@@ -362,6 +305,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
           controller: controller.landlineController,
           focusNode: controller.landlineFocusNode,
           hintText: 'Enter Landline *',
+          textInputAction: TextInputAction.next,
           validator: (val) {
             if (val == null || val.isEmpty) {
               return 'Please enter landline number';
@@ -375,52 +319,14 @@ class _CompanyScreenState extends State<CompanyScreen> {
         ),
         SizedBox(height: 10),
         _buildLabeledText("Upload GST Copy"),
-        // GestureDetector(
-        //   onTap: () {
-        //     if (controller.isUploadLoading.value) return;
-        //     controller.pickFile('gstCopy');
-        //   },
-        //   child: DottedBorder(
-        //     options: RectDottedBorderOptions(
-        //       strokeWidth: 1,
-        //       color: AppColor.grey.withOpacity(0.6),
-        //       dashPattern: [3, 6],
-        //       strokeCap: StrokeCap.square,
-        //     ),
-        //     child: Container(
-        //       width: double.infinity,
-        //       padding: EdgeInsets.symmetric(vertical: 30),
-        //       alignment: Alignment.center,
-        //       decoration: BoxDecoration(color: AppColor.white),
-        //       child: Row(
-        //         crossAxisAlignment: CrossAxisAlignment.center,
-        //         mainAxisAlignment: MainAxisAlignment.center,
-        //         children: [
-        //           Image.asset("assets/uploadIcon.png", scale: 3),
-        //           SizedBox(width: 20),
-        //           Text(
-        //             "Upload GST-Copy",
-        //             style: TextStyle(
-        //               color: Colors.grey,
-        //               fontSize: 16,
-        //               fontWeight: FontWeight.w500,
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // ),
 
         CommonFilePickerBox(
           label: "Upload GST-Copy",
           fileKey: "gstCopy",
           isLoading: controller.isUploadLoading,
           uploadingKey: controller.uploadingFileKey,
-          onPick: controller.pickFile,
+          onPick: controller.handleFileUpload,
         ),
-
-
 
         SizedBox(height: 2),
         FilePreviewWidget(
@@ -429,19 +335,7 @@ class _CompanyScreenState extends State<CompanyScreen> {
           errorText: controller.gstCopyError,
           isLoading: controller.isLoading,
         ),
-        SizedBox(height: 100),
-        // Padding(
-        //   padding: const EdgeInsets.only(top: 25, bottom: 40),
-        //   child: Obx(() {
-        //     return CommonButton(
-        //       text: "Save",
-        //       isLoading: controller.isLoading.value || controller.isUploadLoading.value,
-        //       onPressed: () {
-        //         controller.saveCompany();
-        //       },
-        //     );
-        //   }),
-        // ),
+        SizedBox(height: 50),
       ],
     );
   }

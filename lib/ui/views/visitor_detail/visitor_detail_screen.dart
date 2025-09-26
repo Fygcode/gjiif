@@ -64,7 +64,7 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                  controller.isFromEdit ? "Edit Visitor Details" : "Add Visitor Details",
+                  controller.isFromEdit ? "Edit Employee Details" : "Add Employee Details",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
                   ),
                   SizedBox(height: 20),

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:tjw1/helper/utils/upload_utils.dart';
 import 'package:tjw1/ui/views/add_visitor/add_visitor_controller.dart';
 import 'package:tjw1/ui/widgets/common_file_picker_box.dart';
 
@@ -16,7 +17,8 @@ import '../../../core/res/colors.dart';
 import '../../widgets/file_preview_widget.dart';
 
 class AddVisitorScreen extends StatefulWidget {
-  const AddVisitorScreen({super.key});
+  bool? isDashboardForm ;
+  AddVisitorScreen({this.isDashboardForm , super.key, });
 
   @override
   State<AddVisitorScreen> createState() => _AddVisitorScreenState();
@@ -29,7 +31,7 @@ class _AddVisitorScreenState extends State<AddVisitorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.background,
-      appBar: AppBar(
+      appBar: widget.isDashboardForm != true ? AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         // automaticallyImplyLeading: false,
@@ -49,7 +51,7 @@ class _AddVisitorScreenState extends State<AddVisitorScreen> {
             ),
           ),
         ),
-      ),
+      ) : null,
       body: TapOutsideUnFocus(
         child: Padding(
           padding: const EdgeInsets.only(top: 20, right: 20, left: 20),
@@ -59,13 +61,14 @@ class _AddVisitorScreenState extends State<AddVisitorScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Add Visitor Details",
+                  "Add Employee Details",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 20),
 
                 Expanded(
                   child: SingleChildScrollView(
+                    controller: controller.scrollController,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -181,36 +184,6 @@ class _AddVisitorScreenState extends State<AddVisitorScreen> {
                           ),
                         ),
                         SizedBox(height: 10),
-
-
-                        // Obx(() {
-                        //   final isChanged = controller.phoneNumberController.text != controller.getPhoneNumberDB.value;
-                        //   return Row(
-                        //     children: [
-                        //       Text(
-                        //         "Phone Number",
-                        //         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        //       ),
-                        //       Spacer(),
-                        //       if (isChanged || !controller.isPhoneVerified.value)
-                        //         Text(
-                        //           "Unverified",
-                        //           style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
-                        //         ),
-                        //       if (controller.isPhoneVerified.value && !isChanged)
-                        //         Row(
-                        //           children: [
-                        //             Text(
-                        //               "Verified",
-                        //               style: TextStyle(color: Colors.green, fontWeight: FontWeight.w600),
-                        //             ),
-                        //             SizedBox(width: 4),
-                        //             Icon(Icons.verified_rounded, color: Colors.green),
-                        //           ],
-                        //         ),
-                        //     ],
-                        //   );
-                        // }),
 
                         Obx(() {
                           final textNumber = controller.phoneNumberController.text.trim();
@@ -357,53 +330,6 @@ class _AddVisitorScreenState extends State<AddVisitorScreen> {
                           ),
                         ),
                         SizedBox(height: 4),
-                        // Obx(() {
-                        //   return CommonDropdown<String>(
-                        //     items:
-                        //     IDType.values
-                        //         .map(
-                        //           (e) =>
-                        //       e.name[0].toUpperCase() +
-                        //           e.name.substring(1),
-                        //     )
-                        //         .toList(),
-                        //     hintText: 'ID-Type',
-                        //     selectedItem: controller.idTypeController.text.isNotEmpty
-                        //             ? controller.idTypeController.text.capitalizeFirst
-                        //             : null,
-                        //     onChanged: (value) {
-                        //       IDType? selectedStatus = IDType.values.firstWhere(
-                        //         (e) =>
-                        //             e.name.toLowerCase() ==
-                        //             value?.toLowerCase(),
-                        //         orElse: () => IDType.aadhaar,
-                        //       );
-                        //       controller.idTypeController.text = selectedStatus.name;
-                        //     },
-                        //     // selectedItem:
-                        //     // controller.idType.value.isNotEmpty
-                        //     //     ? controller.idType.value.capitalizeFirst
-                        //     //     : null,
-                        //     // onChanged: (value) {
-                        //     //   final selected = IDType.values.firstWhere(
-                        //     //         (e) =>
-                        //     //     e.name.toLowerCase() ==
-                        //     //         value?.toLowerCase(),
-                        //     //     orElse: () => IDType.aadhaar,
-                        //     //   );
-                        //     //   controller.idType.value = selected.name;
-                        //     //   controller.idTypeController.text = selected.name;
-                        //     //
-                        //     //
-                        //     // },
-                        //     validator: (val) {
-                        //       if (val == null || val.isEmpty) {
-                        //         return 'Please select ID-Type';
-                        //       }
-                        //       return null;
-                        //     },
-                        //   );
-                        // }),
                         CommonDropdown<String>(
                           items:
                               IDType.values
@@ -433,22 +359,6 @@ class _AddVisitorScreenState extends State<AddVisitorScreen> {
                               "controller.idTypeController.text ${controller.idTypeController.text}",
                             );
                           },
-                          // selectedItem:
-                          // controller.idType.value.isNotEmpty
-                          //     ? controller.idType.value.capitalizeFirst
-                          //     : null,
-                          // onChanged: (value) {
-                          //   final selected = IDType.values.firstWhere(
-                          //         (e) =>
-                          //     e.name.toLowerCase() ==
-                          //         value?.toLowerCase(),
-                          //     orElse: () => IDType.aadhaar,
-                          //   );
-                          //   controller.idType.value = selected.name;
-                          //   controller.idTypeController.text = selected.name;
-                          //
-                          //
-                          // },
                           validator: (val) {
                             if (val == null || val.isEmpty) {
                               return 'Please select ID-Type';
@@ -479,7 +389,6 @@ class _AddVisitorScreenState extends State<AddVisitorScreen> {
                           },
                         ),
                         SizedBox(height: 10),
-
                         Text(
                           "Business Card",
                           style: TextStyle(
@@ -488,56 +397,33 @@ class _AddVisitorScreenState extends State<AddVisitorScreen> {
                           ),
                         ),
                         SizedBox(height: 4),
-                        // GestureDetector(
-                        //   onTap: () {
-                        //     controller.pickFile('businessCard');
-                        //   },
-                        //   child: DottedBorder(
-                        //     options: RectDottedBorderOptions(
-                        //       strokeWidth: 1,
-                        //       color: AppColor.grey.withOpacity(0.6),
-                        //       dashPattern: [3, 6],
-                        //       strokeCap: StrokeCap.square,
-                        //     ),
-                        //     child: Container(
-                        //       width: double.infinity,
-                        //       padding: EdgeInsets.symmetric(vertical: 30),
-                        //       alignment: Alignment.center,
-                        //       decoration: BoxDecoration(color: AppColor.white),
-                        //       child: Row(
-                        //         crossAxisAlignment: CrossAxisAlignment.center,
-                        //         mainAxisAlignment: MainAxisAlignment.center,
-                        //         children: [
-                        //           Image.asset(
-                        //             "assets/uploadIcon.png",
-                        //             scale: 3,
-                        //           ),
-                        //           SizedBox(width: 20),
-                        //           Text(
-                        //             "Upload Business Card",
-                        //             style: TextStyle(
-                        //               color: Colors.grey,
-                        //               fontSize: 16,
-                        //               fontWeight: FontWeight.w500,
-                        //             ),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
 
                         CommonFilePickerBox(
                           label: "Upload Business Card",
                           fileKey: "businessCard",
                           isLoading: controller.isUploadLoading,
                           uploadingKey: controller.uploadingFileKey,
-                          onPick: controller.pickFile,
+                          onPick: controller.handleFileUpload,
+                          // onPick: (ctx, key) {
+                          //   UploadUtils.showUploadOptions(
+                          //     context: ctx,
+                          //     fileType: key,
+                          //     gstNumber: controller.gstNumber!,
+                          //     mobileNumber: controller.phoneNumberController.text,
+                          //     isUploadLoading: controller.isUploadLoading,
+                          //     uploadingKey: controller.uploadingFileKey,
+                          //     onSuccess: (uploadedFileName, uploadedFileUrl) {
+                          //       controller.businessFileName.value = uploadedFileName;
+                          //       controller.businessFilePath.value = uploadedFileUrl;
+                          //       controller.businessError.value = '';
+                          //       controller.isBusinessCardUploadedNow = true;
+                          //     },
+                          //   );
+                          // },
                         ),
 
 
                         SizedBox(height: 2),
-
                         FilePreviewWidget(
                           filePath: controller.businessFilePath,
                           fileName: controller.businessFileName,
@@ -555,53 +441,13 @@ class _AddVisitorScreenState extends State<AddVisitorScreen> {
                           ),
                         ),
                         SizedBox(height: 4),
-                        // GestureDetector(
-                        //   onTap: () {
-                        //     controller.pickFile('photo');
-                        //   },
-                        //   child: DottedBorder(
-                        //     options: RectDottedBorderOptions(
-                        //       strokeWidth: 1,
-                        //       color: AppColor.grey.withOpacity(0.6),
-                        //       dashPattern: [3, 6],
-                        //       strokeCap: StrokeCap.square,
-                        //     ),
-                        //     child: Container(
-                        //       width: double.infinity,
-                        //       padding: EdgeInsets.symmetric(vertical: 30),
-                        //       alignment: Alignment.center,
-                        //       decoration: BoxDecoration(color: AppColor.white),
-                        //       child: Row(
-                        //         crossAxisAlignment: CrossAxisAlignment.center,
-                        //         mainAxisAlignment: MainAxisAlignment.center,
-                        //         children: [
-                        //           Image.asset(
-                        //             "assets/uploadIcon.png",
-                        //             scale: 3,
-                        //           ),
-                        //           SizedBox(width: 20),
-                        //           Text(
-                        //             "Upload Passport Photo",
-                        //             style: TextStyle(
-                        //               color: Colors.grey,
-                        //               fontSize: 16,
-                        //               fontWeight: FontWeight.w500,
-                        //             ),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-
                         CommonFilePickerBox(
                           label: "Upload Passport Photo",
                           fileKey: "photo",
                           isLoading: controller.isUploadLoading,
                           uploadingKey: controller.uploadingFileKey,
-                          onPick: controller.pickFile,
+                          onPick: controller.handleFileUpload,
                         ),
-
 
                         SizedBox(height: 2),
 
@@ -622,51 +468,12 @@ class _AddVisitorScreenState extends State<AddVisitorScreen> {
                           ),
                         ),
                         SizedBox(height: 4),
-                        // GestureDetector(
-                        //   onTap: () {
-                        //     controller.pickFile('idProof');
-                        //   },
-                        //   child: DottedBorder(
-                        //     options: RectDottedBorderOptions(
-                        //       strokeWidth: 1,
-                        //       color: AppColor.grey.withOpacity(0.6),
-                        //       dashPattern: [3, 6],
-                        //       strokeCap: StrokeCap.square,
-                        //     ),
-                        //     child: Container(
-                        //       width: double.infinity,
-                        //       padding: EdgeInsets.symmetric(vertical: 30),
-                        //       alignment: Alignment.center,
-                        //       decoration: BoxDecoration(color: AppColor.white),
-                        //       child: Row(
-                        //         crossAxisAlignment: CrossAxisAlignment.center,
-                        //         mainAxisAlignment: MainAxisAlignment.center,
-                        //         children: [
-                        //           Image.asset(
-                        //             "assets/uploadIcon.png",
-                        //             scale: 3,
-                        //           ),
-                        //           SizedBox(width: 20),
-                        //           Text(
-                        //             "Upload ID-Proof",
-                        //             style: TextStyle(
-                        //               color: Colors.grey,
-                        //               fontSize: 16,
-                        //               fontWeight: FontWeight.w500,
-                        //             ),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-
                         CommonFilePickerBox(
                           label: "Upload ID-Proof",
                           fileKey: "idProof",
                           isLoading: controller.isUploadLoading,
                           uploadingKey: controller.uploadingFileKey,
-                          onPick: controller.pickFile,
+                          onPick: controller.handleFileUpload,
                         ),
 
                         SizedBox(height: 2),
@@ -677,28 +484,45 @@ class _AddVisitorScreenState extends State<AddVisitorScreen> {
                           isLoading: controller.isLoading,
                         ),
 
-                        SizedBox(height: 100),
+                        SizedBox(height: 60),
                       ],
                     ),
                   ),
                 ),
+
+                Column(
+                  children: [
+                    if (controller.showSaveButton.value) SizedBox(height: 20),
+                    SafeArea (
+                      child: Obx(() {
+                        final shouldShow = controller.showSaveButton.value;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: AnimatedSwitcher(
+                            duration: Duration(milliseconds: 300),
+                            transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
+                            child: shouldShow
+                                ? CommonButton(
+                              key: ValueKey("saveButton"),
+                              text: "Save",
+                              isLoading: controller.isLoading.value || controller.isUploadLoading.value,
+                              onPressed: () {
+                                controller.saveVisitor();
+                              },
+                            )
+                                : SizedBox.shrink(
+                              key: ValueKey("emptySpace"),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+
               ],
             ),
           ),
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Obx(() {
-            return CommonButton(
-              text: "Save",
-              isLoading: controller.isUploadLoading.value || controller.isLoading.value,
-              onPressed: () {
-                controller.saveVisitor();
-              },
-            );
-          }),
         ),
       ),
     );

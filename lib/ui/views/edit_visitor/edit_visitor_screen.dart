@@ -60,19 +60,20 @@ class _EditVisitorScreenState extends State<EditVisitorScreen> {
                 padding: const EdgeInsets.only(top: 20, right: 20, left: 20),
                 child: Form(
                   key: controller.editFormKey,
-               //   autovalidateMode: AutovalidateMode.onUserInteraction,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
 
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Edit Visitor Details",
+                        "Edit Employee Details",
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
                       ),
                       SizedBox(height: 20),
 
                       Expanded(
                         child: SingleChildScrollView(
+                          controller: controller.scrollController,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -375,6 +376,7 @@ class _EditVisitorScreenState extends State<EditVisitorScreen> {
                                 focusNode: controller.idNumberFocusNode,
                                 hintText: 'Enter ID number*',
                                 keyboardType: TextInputType.number,
+                                textInputAction: TextInputAction.next,
                                 maxLength: 20,
                                 validator: (val) {
                                   if (val == null || val.isEmpty) {
@@ -399,7 +401,7 @@ class _EditVisitorScreenState extends State<EditVisitorScreen> {
                                 fileKey: "businessCard",
                                 isLoading: controller.isUploadLoading,
                                 uploadingKey: controller.uploadingFileKey,
-                                onPick: controller.pickFile,
+                                onPick: controller.handleFileUpload,
                               ),
 
                               SizedBox(height: 2),
@@ -424,7 +426,7 @@ class _EditVisitorScreenState extends State<EditVisitorScreen> {
                                 fileKey: "photo",
                                 isLoading: controller.isUploadLoading,
                                 uploadingKey: controller.uploadingFileKey,
-                                onPick: controller.pickFile,
+                                onPick: controller.handleFileUpload,
                               ),
 
                               SizedBox(height: 2),
@@ -449,7 +451,7 @@ class _EditVisitorScreenState extends State<EditVisitorScreen> {
                                 fileKey: "idProof",
                                 isLoading: controller.isUploadLoading,
                                 uploadingKey: controller.uploadingFileKey,
-                                onPick: controller.pickFile,
+                                onPick: controller.handleFileUpload,
                               ),
 
                               SizedBox(height: 2),
@@ -460,11 +462,36 @@ class _EditVisitorScreenState extends State<EditVisitorScreen> {
                                 isLoading: controller.isLoading,
                               ),
 
-                              SizedBox(height: 100),
+                              SizedBox(height: 70),
                             ],
                           ),
                         ),
                       ),
+
+                      Obx(() {
+                        final shouldShow = controller.showSaveButton.value;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: AnimatedSwitcher(
+                            duration: Duration(milliseconds: 300),
+                            transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
+                            child: shouldShow
+                                ? CommonButton(
+                              key: ValueKey("saveButton"),
+                              text: "Save",
+                              isLoading: controller.isLoading.value || controller.isUploadLoading.value,
+                              onPressed: () {
+                                controller.saveUpdatedVisitor(context);
+                              },
+                            )
+                                : SizedBox.shrink(
+                              key: ValueKey("emptySpace"),
+                            ),
+                          ),
+                        );
+                      }),
+
+
                     ],
                   ),
                 ),
@@ -484,23 +511,6 @@ class _EditVisitorScreenState extends State<EditVisitorScreen> {
               }
             })
           ],
-        ),
-
-
-      ),
-
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Obx(() {
-            return CommonButton(
-              text: "Save",
-              isLoading: controller.isUploadLoading.value || controller.isLoading.value,
-              onPressed: () {
-                controller.saveUpdatedVisitor(context);
-              },
-            );
-          }),
         ),
       ),
     );

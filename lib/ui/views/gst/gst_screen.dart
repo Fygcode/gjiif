@@ -3,11 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:tjw1/ui/views/otp/otp_screen.dart';
+import 'package:tjw1/ui/views/otp_member/otp_member_screen.dart';
+import 'package:tjw1/ui/views/phone_member/phone_member_screen.dart';
 
 import '../../../common_widget/common_button.dart';
 import '../../../common_widget/common_text_field.dart';
 import '../../../common_widget/tap_outside_unfocus.dart';
 import '../../../core/res/colors.dart';
+import '../ebadge_member/ebadge_member_screen.dart';
 import '../phone/phone_screen.dart';
 import 'gst_controller.dart';
 
@@ -51,17 +54,28 @@ class _GstScreenState extends State<GstScreen> {
                     ),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(20, statusBarHeight + 20, 20, 20),
+                    padding: EdgeInsets.fromLTRB(
+                      20,
+                      statusBarHeight + 20,
+                      20,
+                      20,
+                    ),
                     child: Form(
                       key: controller.formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SvgPicture.asset("assets/GJIIF_Logo2.svg", height: 100),
-                          SizedBox(height: size.height * 0.35),
+                          SvgPicture.asset(
+                            "assets/GJIIF_Logo2.svg",
+                            height: 100,
+                          ),
+                          SizedBox(height: size.height * 0.30),
                           Text(
                             "Enter your GST Number",
-                            style: TextStyle(fontSize: 32, color: AppColor.white),
+                            style: TextStyle(
+                              fontSize: 32,
+                              color: AppColor.white,
+                            ),
                           ),
                           SizedBox(height: 10),
                           CommonTextField(
@@ -92,7 +106,23 @@ class _GstScreenState extends State<GstScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 200),
+                InkWell(
+                  onTap: () {
+                    Get.to(() => PhoneMemberScreen());
+                 //   Get.to(() => OtpMemberScreen());
+                 //   Get.to(() => EbadgeMemberScreen());
+                  },
+                  child: Text(
+                    "Login to get E-badge",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xff151515),
+                      fontWeight: FontWeight.w500,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -118,6 +148,4 @@ class _GstScreenState extends State<GstScreen> {
       ),
     );
   }
-
-
 }

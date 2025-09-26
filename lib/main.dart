@@ -80,13 +80,13 @@ Future<void> main() async {
   await masterData.loadInitialData();
 
   // Run the app
-  // runApp(MyApp());
-  runApp(
-    DevicePreview(
-      enabled: !kReleaseMode,
-      builder: (context) => MyApp(),
-    ),
-  );
+   runApp(MyApp());
+  // runApp(
+  //   DevicePreview(
+  //     enabled: !kReleaseMode,
+  //     builder: (context) => MyApp(),
+  //   ),
+  // );
 }
 
 class MyApp extends StatelessWidget {
@@ -103,7 +103,7 @@ class MyApp extends StatelessWidget {
 
     return GetMaterialApp(
       title: 'TJW',
-      initialRoute: 'dashboard',  //  / ,  login
+      initialRoute: '/',  //  / ,  login
       debugShowCheckedModeBanner: false,
       getPages: AppRoutes.pages,
       theme: AppStyle.appTheme,

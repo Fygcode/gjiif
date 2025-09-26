@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
-                        "Pre Register ",
+                        "Events ",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
@@ -265,32 +265,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     SvgPicture.asset("assets/clock.svg"),
                                     SizedBox(width: 6),
-                                    Text.rich(
-                                      controller.rateDatetime != null
-                                          ? TextSpan(
-                                            text: DateFormat(
-                                              'hh:mm ',
-                                            ).format(controller.rateDatetime!),
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                              color: AppColor.black,
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text: DateFormat('a').format(
-                                                  controller.rateDatetime!,
-                                                ),
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
+                                    Expanded (
+                                      child: Text.rich(
+                                        controller.rateDatetime != null
+                                            ? TextSpan(
+                                              text: DateFormat(
+                                                'hh:mm ',
+                                              ).format(controller.rateDatetime!),
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500,
+                                                color: AppColor.black,
                                               ),
-                                            ],
-                                          )
-                                          : TextSpan(
-                                            text: '',
-                                          ), // fallback if null
+                                              children: [
+                                                TextSpan(
+                                                  text: DateFormat('a').format(
+                                                    controller.rateDatetime!,
+                                                  ),
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                            : TextSpan(
+                                              text: '',
+                                            ), // fallback if null
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -477,28 +479,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                  //    color: Colors.white.withOpacity(0.9),
                     ),
                     clipBehavior: Clip.antiAlias,
                     child:
-
                     CachedNetworkImage(
                       imageUrl: path,
                       fit: BoxFit.cover,
                       alignment: Alignment.center,
-                      // placeholder: (context, url) => const Center(
-                      //   child: CircularProgressIndicator(),
+                      // placeholder: (context, url) => Container(
+                      //   color: Colors.grey[100],
+                      //   child: const Center(
+                      //     child: Icon(Icons.image, size: 40, color: Colors.grey),
+                      //   ),
                       // ),
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(color: Colors.grey[300]),
+                      ),
+
                       errorWidget: (context, url, error) => const Center(
                         child: Icon(Icons.error, color: Colors.red),
                       ),
                     ),
-
-                    // Image.network(
-                    //   path,
-                    //   fit: BoxFit.contain,
-                    //   alignment: Alignment.center,
-                    // ),
                   );
                 }).toList(),
             options: CarouselOptions(

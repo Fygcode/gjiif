@@ -76,7 +76,7 @@ class SummaryController extends GetxController {
       isLoading(true);
       final response = await ApiBaseService.request<PaymentSummaryResponse>(
         'VisitorDetail/GetPaymentSummary?EventID=$eventId',
-        method: RequestMethod.POST,
+        method: RequestMethod.GET,
         authenticated: false,
         body: joinedVisitorIds,
       );

@@ -13,6 +13,7 @@ import 'package:tjw1/core/model/tjw/fetch_company_type.dart';
 import 'package:tjw1/core/model/tjw/stateList.dart';
 import 'package:tjw1/core/res/colors.dart';
 import 'package:tjw1/helper/file_upload_helper.dart';
+import 'package:tjw1/helper/utils/upload_utils.dart';
 import 'package:tjw1/services/api_base_service.dart';
 import 'package:tjw1/services/request_method.dart';
 import 'package:tjw1/services/secure_storage_service.dart';
@@ -135,84 +136,84 @@ class OrganizationDetailController extends GetxController {
 
   }
 
-  // Future<void> pickFile(String type) async {   /// HERE NEED TO IMPLEMENT CODE OPTIMIZE LIKE I DID IN COMPANY PAGE
-  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
-  //     type: FileType.custom,
-  //     allowedExtensions: ['jpg', 'pdf', 'doc'],
-  //     allowMultiple: false,
-  //   );
-  //
-  //   if (result != null && result.files.single.path != null) {
-  //     String fileName = result.files.single.name;
-  //     String filePath = result.files.single.path!;
-  //
-  //     File pickedFile = File(filePath);
-  //     int fileSize = await pickedFile.length();
-  //
-  //     double sizeInMB = fileSize / (1024 * 1024);
-  //     print("File size: ${sizeInMB.toStringAsFixed(2)} MB");
-  //
-  //     const int maxFileSize = 2 * 1024 * 1024;
-  //
-  //     if (fileSize > maxFileSize) {
-  //       Fluttertoast.showToast(
-  //         msg: "File Too Large, Please select a file under 2MB.",
-  //       );
-  //       return;
-  //     }
-  //     switch (type) {
-  //       case 'gstCopy':
-  //         gstCopyFileName.value = fileName;
-  //         gstCopyFilePath.value = filePath;
+
+  // void showUploadOptions(BuildContext context, String fileType) {
+  //   void handleUpload(String uploadedFileName, String uploadedFileUrl) {
+  //     final updateMap = {
+  //       'gstCopy': () {
+  //         gstCopyFileName.value = uploadedFileName;
+  //         gstCopyFilePath.value = uploadedFileUrl;
   //         gstCopyError.value = '';
-  //         break;
-  //     }
-  //
-  //     try {
-  //       isLoading(true);
-  //       var response = await ApiBaseService().uploadImage(
-  //         pickedFile,
-  //         'SQ/FileUpload',
-  //         fileCategory: 'gst',
-  //         gstNumber: '$gstNumber',
-  //         mobileNumber: '$mobileNumber',
-  //       );
-  //       print("File uploaded successfully: $response");
-  //       if(response['status'] == "200"){
   //         isGstUploadedNow = true;
-  //         final fileName = response['data']['fileName'];
-  //         print("Uploaded file name: $fileName");
-  //         gstCopyFileName.value = fileName;
-  //       }
-  //
-  //     } catch (e) {
-  //       print("Upload failed: $e");
-  //     } finally {
-  //       isLoading(false);
-  //     }
-  //   } else {
-  //     print("No file selected.");
+  //       },
+  //     };
+  //     updateMap[fileType]?.call();
   //   }
+  //
+  //   void startUpload(UploadSource source) {
+  //     Navigator.pop(context);
+  //     FileUploadHelper.pickAndUploadFile(
+  //       source: source,
+  //       fileType: fileType,
+  //       gstNumber: gstNumber!,
+  //       mobileNumber: mobileNumber!,
+  //       onSuccess: handleUpload,
+  //       isUploadLoading: isUploadLoading,
+  //       uploadingKey: uploadingFileKey,
+  //     );
+  //   }
+  //
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (context) => SafeArea(
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           ListTile(
+  //             leading: Icon(Icons.camera_alt),
+  //             title: Text("Take Photo"),
+  //             onTap: () => startUpload(UploadSource.camera),
+  //           ),
+  //           ListTile(
+  //             leading: Icon(Icons.insert_drive_file),
+  //             title: Text("Choose File"),
+  //             onTap: () => startUpload(UploadSource.file),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
   // }
 
-  Future<void> pickFile(String fileKey) async {
-    await FileUploadHelper.pickAndUploadFile(
-      fileType: fileKey,
-      gstNumber: gstNumber!,
-      mobileNumber: mobileNumber!,
-      isUploadLoading: isUploadLoading,
-      uploadingKey: uploadingFileKey,
-      onSuccess: (uploadedFileName, uploadedFileUrl) {
-        switch (fileKey) {
-          case 'gstCopy':
-            gstCopyFileName.value = uploadedFileName;
-            gstCopyFilePath.value = uploadedFileUrl;
-            gstCopyError.value = '';
-            isGstUploadedNow = true;
-            break;
-        }
-      },
-    );
+  void handleFileUpload(BuildContext context, String fileKey) {
+    print("FileKey received: $fileKey");
+    final onSuccess = getUploadHandler(fileKey);
+
+    if (onSuccess != null) {
+      UploadUtils.showUploadOptions(
+        context: context,
+        fileType: fileKey,
+        gstNumber: gstNumber!,
+        mobileNumber: mobileNumber!,
+        isUploadLoading: isUploadLoading,
+        uploadingKey: uploadingFileKey,
+        onSuccess: onSuccess,
+      );
+    }
+  }
+
+  Function(String, String)? getUploadHandler(String fileKey) {
+    switch (fileKey) {
+      case 'gstCopy':
+        return (fileName, fileUrl) {
+          gstCopyFileName.value = fileName;
+          gstCopyFilePath.value = fileUrl;
+          gstCopyError.value = '';
+          isGstUploadedNow = true;
+        };
+      default:
+        return null;
+    }
   }
 
   Future<void> saveOrganization() async {
@@ -276,24 +277,24 @@ class OrganizationDetailController extends GetxController {
       }
 
       //
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('Error: $e');
       Get.snackbar("Error", "Something went wrong");
+      // logErrorToBackend(
+      //   error: e.toString(),
+      //   screen: 'YourScreenName',
+      //   stackTrace: stackTrace,
+      // );
     } finally {
       isLoading(false);
     }
 
   }
 
-  // CompanyTypeData get selectedCompanyType =>
-  //     companyTypeList.firstWhere(
-  //           (e) => e.id == int.tryParse(companyTypeId.value ?? '0'),
-  //       orElse: () => CompanyTypeData(id: 0, companyType: ''),
-  //     );
 
   CompanyTypeData? get selectedCompanyType {
     final id = int.tryParse(companyTypeId.value ?? '0');
-    if (id == null || id == 0) return null; // ✅ Let it be null to show hint
+    if (id == null || id == 0) return null;
     return companyTypeList.firstWhere(
           (e) => e.id == id,
       orElse: () => CompanyTypeData(id: 0, companyType: ''),
@@ -361,117 +362,6 @@ class OrganizationDetailController extends GetxController {
       isLoading(false);
     }
   }
-
-  // List<StateData> stateList = [];
-  // Future<void> stateListApi() async {
-  //   print("STATE API");
-  //   try {
-  //     isLoading(true);
-  //
-  //     StateList response = await ApiBaseService.request<StateList>(
-  //       'SQ/GetStateList',
-  //       method: RequestMethod.GET,
-  //       authenticated: false
-  //     );
-  //
-  //     if(response.response?.status == "200"){
-  //       stateList = response.stateData!;
-  //       if(statusCode == "300"){   // 300 means partially company details there , 400 - no company details at all
-  //         fetchCompanyDetail(visitorId);
-  //       }
-  //     }
-  //     print("==== ss ${response.stateData}");
-  //
-  //
-  //
-  //
-  //     print("States: ${stateList.length}");
-  //   } catch (e) {
-  //     print('Error fetching state list: $e');
-  //   } finally {
-  //     isLoading(false);
-  //   }
-  // }
-  // Future<void> fetchCompanyType() async {
-  //   print("STATE API");
-  //   try {
-  //     isLoading(true);
-  //
-  //     StateList response = await ApiBaseService.request<StateList>(
-  //         'CompanyDetails/FetchCompanyType',
-  //         method: RequestMethod.GET,
-  //         authenticated: false
-  //     );
-  //
-  //     if(response.response?.status == "200"){
-  //       stateList = response.stateData!;
-  //       if(statusCode == "300"){   // 300 means partially company details there , 400 - no company details at all
-  //         fetchCompanyDetail(visitorId);
-  //       }
-  //     }
-  //     print("==== ss ${response.stateData}");
-  //
-  //
-  //
-  //
-  //     print("States: ${stateList.length}");
-  //   } catch (e) {
-  //     print('Error fetching state list: $e');
-  //   } finally {
-  //     isLoading(false);
-  //   }
-  // }
-  //
-  // Future<void> fetchCompanyDetail(String? visitorId) async {
-  //   try {
-  //     isLoading(true);
-  //
-  //     final FetchCompanyDetail response = await ApiBaseService.request<FetchCompanyDetail>(
-  //       'CompanyDetails/FetchCompanyDetail?GSTN=$gstNumber&VisitorID=$visitorId',
-  //       method: RequestMethod.GET,
-  //       authenticated: false,
-  //     );
-  //
-  //     if(response.status == "200"){
-  //       companyTypeController.text = response.data?.companyType ?? "";
-  //       companyNameController.text = response.data?.companyName ?? "";
-  //       emailController.text = response.data?.email ?? "";
-  //       communicationAddressController.text = response.data?.address ?? "";
-  //       cityController.text = response.data?.city ?? "";
-  //
-  //       stateId.value = response.data?.stateID ?? "";
-  //
-  //       print("=== stateId ${stateId.value}");
-  //       if (stateId.value != null && stateList.isNotEmpty) {
-  //         final matchedState = stateList.firstWhere(
-  //               (state) => state.stateID.toString() == stateId.value.toString(),
-  //           orElse: () => StateData(stateID: 1, stateName: ''),
-  //         );
-  //         stateController.text = matchedState.stateName ?? "";
-  //         print("=== stateId ${stateController.text}");
-  //       }
-  //
-  //       districtController.text = response.data?.district ?? "";
-  //       pincodeController.text = response.data?.pincode ?? "";
-  //       landlineController.text = response.data?.landline ?? "";
-  //       gstCopyFilePath.value = response.data?.gstFilePath ?? "";
-  //       gstCopyFileName.value = response.data?.gstFileName ?? "";
-  //
-  //       print("gstCopyFilePath  $gstCopyFilePath");
-  //       print("gstCopyFileName  $gstCopyFileName");
-  //
-  //     }
-  //
-  //     print("COMPANY FETCH : ${response.toJson()}");
-  //
-  //     // Get.offAll(() => DashboardScreen());
-  //   } catch (e) {
-  //     print('Error: $e');
-  //     Get.snackbar("Error", "Something went wrong");
-  //   } finally {
-  //     isLoading(false);
-  //   }
-  // }
 
 
 }

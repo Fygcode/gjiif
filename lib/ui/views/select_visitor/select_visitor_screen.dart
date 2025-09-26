@@ -335,7 +335,7 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                 children: [
                   Expanded(
                     child: CommonButton(
-                      text: "+ Add Visitor",
+                      text: "+ Add Employee",
 
                       onPressed: () {
                         Get.to(

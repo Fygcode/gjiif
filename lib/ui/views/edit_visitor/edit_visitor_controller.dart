@@ -9,6 +9,7 @@ import 'package:pinput/pinput.dart';
 import 'package:tjw1/controllers/master_data_controller.dart';
 import 'package:tjw1/core/model/tjw/designation_response.dart';
 import 'package:tjw1/helper/file_upload_helper.dart';
+import 'package:tjw1/helper/utils/upload_utils.dart';
 import 'package:tjw1/services/api_base_service.dart';
 import 'package:tjw1/services/request_method.dart';
 import 'package:toastification/toastification.dart';
@@ -95,35 +96,19 @@ class EditVisitorController extends GetxController {
 
   int currentVisitorId = 0;
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   _loadGstFromStorage();
-  //   phoneNumberController.addListener(() {
-  //     isPhoneValid.value = phoneNumberController.text.length == 10;
-  //     isPhoneVerified.value = true;
-  //   });
-  //   if (designationList.isEmpty) {
-  //     fetchDesignation();
-  //   }
-  //
-  //   final args = Get.arguments as Map<String, dynamic>;
-  //   currentVisitorId = args['visitorID'];
-  //   print("currentVisitorId $currentVisitorId");
-  //   fetchVisitorDetails(currentVisitorId);
-  //
-  //   phoneNumberController.addListener(() {
-  //     currentPhoneNumber.value = phoneNumberController.text;
-  //   });
-  // }
 
   final MasterDataController masterData = Get.find();
   RxList<DesignationData> designationList = <DesignationData>[].obs;
+
+  final ScrollController scrollController = ScrollController();
+  final RxBool showSaveButton = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     _loadGstFromStorage();
+
+    scrollController.addListener(_scrollListener);
 
     designationList.assignAll(masterData.designations);
     ever(masterData.designations, (_) {
@@ -144,6 +129,20 @@ class EditVisitorController extends GetxController {
         isPhoneVerified.value = false;
       }
     });
+  }
+
+  void _scrollListener() {
+    if (!scrollController.hasClients) return;
+
+    final maxScroll = scrollController.position.maxScrollExtent;
+    final currentScroll = scrollController.offset;
+
+    final buffer = 100.0; // Adjust buffer range as needed
+    final shouldShow = currentScroll >= (maxScroll - buffer);
+
+    if (showSaveButton.value != shouldShow) {
+      showSaveButton.value = shouldShow;
+    }
   }
 
   final RxString gender = ''.obs;
@@ -308,241 +307,52 @@ class EditVisitorController extends GetxController {
       isLoading(false);
     }
 
-    // Get.to(() => SelectVisitorScreen());
   }
 
-  void cameraOrGallery(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) {
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          color: Color(0xffFCF4CB),
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 20, top: 5),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black54,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  height: 4,
-                  width: 45,
-                ),
-                SizedBox(height: 20),
-                Text(
-                  "Upload Your Document",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                ),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    // Use Expanded here
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          //     pickImage(ImageSource.gallery);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(color: AppColor.secondary),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.image,
-                                  color: AppColor.primary,
-                                  size: 40,
-                                ),
-                                SizedBox(height: 10),
-                                const Text(
-                                  "From Gallery",
-                                  style: TextStyle(fontSize: 17),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          // pickImage(ImageSource.camera);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(color: AppColor.secondary),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.camera,
-                                  color: AppColor.primary,
-                                  size: 40,
-                                ),
-                                SizedBox(height: 10),
-                                const Text(
-                                  "From Camera",
-                                  style: TextStyle(fontSize: 17),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+  void handleFileUpload(BuildContext context, String fileKey) {
+    print("FileKey received: $fileKey");
+    final onSuccess = getUploadHandler(fileKey);
+
+    if (onSuccess != null) {
+      UploadUtils.showUploadOptions(
+        context: context,
+        fileType: fileKey,
+        gstNumber: gstNumber!,
+        mobileNumber: phoneNumberController.text,
+        isUploadLoading: isUploadLoading,
+        uploadingKey: uploadingFileKey,
+        onSuccess: onSuccess,
+      );
+    }
   }
 
-  // Future<void> pickFile(String type) async {
-  //   const allowedExtensions = ['jpg', 'pdf'];
-  //   const maxFileSizeBytes = 2 * 1024 * 1024; // 2MB
-  //
-  //   try {
-  //     final result = await FilePicker.platform.pickFiles(
-  //       type: FileType.custom,
-  //       allowedExtensions: allowedExtensions,
-  //       allowMultiple: false,
-  //     );
-  //
-  //     if (result == null || result.files.single.path == null) {
-  //       print("No file selected.");
-  //       return;
-  //     }
-  //
-  //     final file = File(result.files.single.path!);
-  //     final fileSize = await file.length();
-  //
-  //     if (fileSize > maxFileSizeBytes) {
-  //       Fluttertoast.showToast(
-  //         msg: "File too large. Please select a file under 2MB.",
-  //       );
-  //       return;
-  //     }
-  //
-  //     final fileName = result.files.single.name;
-  //     final filePath = result.files.single.path!;
-  //
-  //     final fileMappings = {
-  //       'businessCard': () {
-  //         businessFileName.value = fileName;
-  //         // businessFilePath.value = filePath;
-  //         businessError.value = '';
-  //       },
-  //       'photo': () {
-  //         passportPhotoName.value = fileName;
-  //         // passportPhotoPath.value = filePath;
-  //         passportPhotoError.value = '';
-  //       },
-  //       'idProof': () {
-  //         idProofName.value = fileName;
-  //         //     idPro ofPath.value = filePath;
-  //         idProofError.value = '';
-  //       },
-  //     };
-  //
-  //     fileMappings[type]?.call();
-  //
-  //     uploadingFileKey.value = type;
-  //     isUploadLoading(true);
-  //
-  //     print("POPO = ${phoneNumberController.text}");
-  //     final response = await ApiBaseService().uploadImage(
-  //       file,
-  //       'SQ/FileUpload',
-  //       fileCategory: type,
-  //       gstNumber: '$gstNumber',
-  //       mobileNumber: phoneNumberController.text,
-  //     );
-  //
-  //     if (response['status'] == "200") {
-  //       final uploadedFileName = response['data']['fileName'];
-  //       print("Uploaded file name: $uploadedFileName");
-  //
-  //       Fluttertoast.showToast(msg: response['message'] ?? "");
-  //
-  //       switch (type) {
-  //         case 'businessCard':
-  //           businessFileName.value = uploadedFileName;
-  //           isBusinessCardUploadedNow = true;
-  //           businessFilePath.value = response['data']['url'];
-  //           print("BUSINESS CARD");
-  //           break;
-  //         case 'photo':
-  //           passportPhotoName.value = uploadedFileName;
-  //           isPhotoUploadedNow = true;
-  //           passportPhotoPath.value = response['data']['url'];
-  //           print("PHOTO");
-  //           print("PHOTO URL ${passportPhotoPath.value}");
-  //           break;
-  //         case 'idProof':
-  //           idProofName.value = uploadedFileName;
-  //           isIDProofUploadedNow = true;
-  //           idProofPath.value = response['data']['url'];
-  //           print("idProofPath=== ${idProofPath.value}");
-  //           break;
-  //       }
-  //     } else {
-  //       Fluttertoast.showToast(msg: "Upload failed. Try again.");
-  //     }
-  //   } catch (e) {
-  //     print("Error during file picking/upload: $e");
-  //     Fluttertoast.showToast(msg: "Something went wrong. Try again.");
-  //   } finally {
-  //     isUploadLoading(false);
-  //     uploadingFileKey.value = '';
-  //   }
-  // }
-
-  Future<void> pickFile(String fileKey) async {
-    await FileUploadHelper.pickAndUploadFile(
-      fileType: fileKey,
-      gstNumber: gstNumber!,
-      mobileNumber: phoneNumberController.text,
-      isUploadLoading: isUploadLoading,
-      uploadingKey: uploadingFileKey,
-      onSuccess: (uploadedFileName, uploadedFileUrl) {
-        switch (fileKey) {
-          case 'businessCard':
-            businessFileName.value = uploadedFileName;
-            businessFilePath.value = uploadedFileUrl;
-            businessError.value = '';
-            isBusinessCardUploadedNow = true;
-            break;
-          case 'photo':
-            passportPhotoName.value = uploadedFileName;
-            passportPhotoPath.value = uploadedFileUrl;
-            passportPhotoError.value = '';
-            isPhotoUploadedNow = true;
-            break;
-          case 'idProof':
-            idProofName.value = uploadedFileName;
-            idProofPath.value = uploadedFileUrl;
-            idProofError.value = '';
-            isIDProofUploadedNow = true;
-            break;
-        }
-      },
-    );
+  Function(String, String)? getUploadHandler(String fileKey) {
+    switch (fileKey) {
+      case 'businessCard':
+        return (fileName, fileUrl) {
+          businessFileName.value = fileName;
+          businessFilePath.value = fileUrl;
+          businessError.value = '';
+          isBusinessCardUploadedNow = true;
+        };
+      case 'photo':
+        return (fileName, fileUrl) {
+          passportPhotoName.value = fileName;
+          passportPhotoPath.value = fileUrl;
+          passportPhotoError.value = '';
+          isPhotoUploadedNow = true;
+        };
+      case 'idProof':
+        return (fileName, fileUrl) {
+          idProofName.value = fileName;
+          idProofPath.value = fileUrl;
+          idProofError.value = '';
+          isIDProofUploadedNow = true;
+        };
+      default:
+        return null;
+    }
   }
-
 
   // Validation methods
   bool validateBusinessCard() {

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:tjw1/common_widget/common_dropdown.dart';
@@ -36,6 +37,19 @@ class _EbadgeScreenState extends State<EbadgeScreen> {
       body: Obx((){
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
+        }
+        if(!controller.registeredList.isEmpty){
+          return Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset("assets/NoVisitorFound.svg"),
+                SizedBox(height: 20,),
+                Text("There is no data to show you right now",style: TextStyle(fontSize: 20,color: Color(0xff4A4A4A)),),
+              ],
+            ),
+          );
         }
         return  SafeArea(
           child: TapOutsideUnFocus(
@@ -151,7 +165,8 @@ class _EbadgeScreenState extends State<EbadgeScreen> {
                                           CommonButton(
                                             text: "View Badge",
                                             onPressed: () {
-                                              controller.downloadBadge();
+                                              print("CLICKED E-BADGE");
+                                              controller.viewBadge(context,data.registrationID);
                                             },
                                             fillColor: AppColor.secondary,
                                             textColor: AppColor.black,
