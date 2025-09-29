@@ -11,9 +11,11 @@ import 'package:tjw1/ui/views/phone/phone_screen.dart';
 
 import '../organization/organizationDetail_screen.dart';
 
-class OtpController extends GetxController {
+class OtpController extends GetxController with WidgetsBindingObserver  {
   final dynamic data = Get.arguments;
   final formKey = GlobalKey<FormState>();
+
+  final ScrollController scrollController = ScrollController();
 
 
   final TextEditingController otpController = TextEditingController();
@@ -41,6 +43,7 @@ class OtpController extends GetxController {
 
   @override
   Future<void> onInit() async {
+     WidgetsBinding.instance.addObserver(this);
     print("DATA: $data");
     String phone = data['mobileNumber'].toString();
     print("Phone: $phone");
@@ -62,6 +65,32 @@ class OtpController extends GetxController {
 
     super.onInit();
   }
+
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    if (bottomInset > 0) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (scrollController.hasClients) {
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 10),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+  }
+
+  @override
+  void onClose() {
+    otpFocusNode.dispose();
+    otpController.dispose();
+    scrollController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.onClose();
+  }
+
 
   Future<void> _loadGstFromStorage() async {
     gstNumber = await SecureStorageService().read("gst");
@@ -168,9 +197,8 @@ class OtpController extends GetxController {
   }
 
 
-  @override
-  void onClose() {
-    otpFocusNode.dispose();
-    super.onClose();
-  }
+
+
+
+
 }

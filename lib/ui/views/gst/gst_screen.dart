@@ -140,6 +140,7 @@ class _GstScreenState extends State<GstScreen> {
                     ),
                   ),
                 ),
+                SizedBox(height: 16),
               ],
             ),
           ),
