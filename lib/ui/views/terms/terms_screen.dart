@@ -95,11 +95,13 @@ class _TermsScreenState extends State<TermsScreen> {
           Spacer(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: CommonButton(
-              text: "I Agree",
-              onPressed: () {
-                Get.to(() => GstScreen());
-              },
+            child: SafeArea (
+              child: CommonButton(
+                text: "I Agree",
+                onPressed: () {
+                  Get.to(() => GstScreen());
+                },
+              ),
             ),
           ),
           SizedBox(height: 20),

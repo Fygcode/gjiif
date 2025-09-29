@@ -241,8 +241,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: AppColor.background,
-      resizeToAvoidBottomInset: false,
-
+      extendBodyBehindAppBar: true,
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -257,76 +256,109 @@ class _PhoneScreenState extends State<PhoneScreen> {
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage('assets/splash_background.png'),
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 40),
-                                // Center(
-                                //   child: Image.asset(
-                                //     "assets/intro_logo.png",
-                                //     scale: 2,
-                                //   ),
-                                // ),
-                                Center(child: SvgPicture.asset("assets/GJIIF_Logo2.svg",height: 100,)),
-                                SizedBox(height: size.height * 0.3),
-                                Text(
-                                  "Enter your mobile number",
-                                  style: const TextStyle(
-                                    fontSize: 32,
-                                    color: AppColor.white,
-                                  ),
+                    child: Form(
+                      key: controller.formKey,
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(
+                                  'assets/splash_background.png',
                                 ),
-                                const SizedBox(height: 10),
-                                CommonTextField.phone(
-                                  controller: controller.phoneController,
-                                  focusNode: controller.phoneFocusNode,
-                                  hintText: 'Phone Number *',
-                                  errorTextColor: Colors.orangeAccent,
-                                  validator: (val) {
-                                    if (val == null || val.isEmpty) {
-                                      return 'Please enter phone number';
-                                    }
-                                    RegExp phoneRegExp = RegExp(r'^[0-9]{10}$');
-                                    if (!phoneRegExp.hasMatch(val)) {
-                                      return 'Please enter a valid phone number';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ],
+                                fit: BoxFit.cover,
+                              ),
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(30),
+                                bottomRight: Radius.circular(30),
+                              ),
                             ),
-                          ),
-                        ),
-                        SizedBox(height: 20,),
-                        controller.isAlreadyRegister ?
-                        Align (
-                          alignment: Alignment.centerRight,
-                          child: InkWell (
-                            onTap: (){
-                              print("Contact Helpline");
-                            },
                             child: Padding(
-                              padding: const EdgeInsets.only(right: 20),
-                              child: Text("Contact Helpline",style: TextStyle(color: Colors.blue, textBaseline: TextBaseline.alphabetic), textAlign: TextAlign.end,),
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 47),
+                                  Center(
+                                    child: SvgPicture.asset(
+                                      "assets/GJIIF_Logo2.svg",
+                                      height: 100,
+                                    ),
+                                  ),
+                                  SizedBox(height: size.height * 0.35),
+                                  Text(
+                                    "Enter your mobile number",
+                                    style: const TextStyle(
+                                      fontSize: 26,
+                                      color: AppColor.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CommonTextField.phone(
+                                    controller: controller.phoneController,
+                                    focusNode: controller.phoneFocusNode,
+                                    hintText: 'Phone Number *',
+                                    textStyle: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    errorTextColor: Colors.orangeAccent,
+                                    onChanged: (val) {
+                                      if (val.isNotEmpty) {
+                                        RegExp phoneRegExp = RegExp(
+                                          r'^[0-9]{10}$',
+                                        );
+                                        if (phoneRegExp.hasMatch(val)) {
+                                          // ✅ Close keyboard once phone is valid
+                                          FocusScope.of(
+                                            controller.phoneFocusNode.context!,
+                                          ).unfocus();
+                                        }
+                                      }
+                                    },
+                                    validator: (val) {
+                                      if (val == null || val.isEmpty) {
+                                        return 'Please enter phone number';
+                                      }
+                                      RegExp phoneRegExp = RegExp(
+                                        r'^[0-9]{10}$',
+                                      );
+                                      if (!phoneRegExp.hasMatch(val)) {
+                                        return 'Please enter a valid phone number';
+                                      }
+                                      return null; // ✅ don’t unfocus here
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ) : SizedBox.shrink()
-                      ],
+                          SizedBox(height: 20),
+                          //   controller.isAlreadyRegister ?
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: InkWell(
+                              onTap: () {
+                                controller.launchCaller();
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 20),
+                                child:Text(
+                                  "Contact Helpline",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                    textBaseline: TextBaseline.alphabetic,
+                                  ),
+                                  textAlign: TextAlign.end,
+                                )
+
+                              ),
+                            ),
+                          ),
+                          //       : SizedBox.shrink()
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -335,13 +367,18 @@ class _PhoneScreenState extends State<PhoneScreen> {
           ),
         );
       }),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-        child: Obx((){
-          return CommonButton(text: "Continue", onPressed: controller.mobileOpt,isLoading: controller.isLoading.value,);
-        })
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Obx(() {
+            return CommonButton(
+              text: "Continue",
+              onPressed: controller.mobileOpt,
+              isLoading: controller.isLoading.value,
+            );
+          }),
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tjw1/core/res/colors.dart';
 import 'package:tjw1/services/api_base_service.dart';
+import 'package:toastification/toastification.dart';
 
 import '../common_widget/common_dialog.dart';
 
@@ -108,7 +109,16 @@ class FileUploadHelper {
         final uploadedUrl = response['data']['url'];
 
         onSuccess(uploadedFileName, uploadedUrl);
-        Fluttertoast.showToast(msg: response['message'] ?? "");
+
+        toastification.show(
+          title: Text('${response['message']}'),
+          alignment: Alignment.center,
+          type: ToastificationType.success,
+          style: ToastificationStyle.fillColored,
+          showProgressBar: false,
+          autoCloseDuration: const Duration(seconds: 2),
+        );
+        // Fluttertoast.showToast(msg: response['message'] ?? "");
       } else {
         Fluttertoast.showToast(msg: "Upload failed. Try again.");
       }

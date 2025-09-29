@@ -33,16 +33,12 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
       backgroundColor: AppColor.background,
-      resizeToAvoidBottomInset: true,
       extendBodyBehindAppBar: true,
-
-
       body: TapOutsideUnFocus(
-        child: SingleChildScrollView (
+        child: SingleChildScrollView(
           child: Column(
             children: [
               Container(
@@ -57,28 +53,34 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 20,
+                    horizontal: 16,
+                  ),
                   child: Form(
                     key: controller.formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        SizedBox(height: 47),
                         Center(
                           child: SvgPicture.asset(
                             "assets/GJIIF_Logo2.svg",
                             height: 100,
                           ),
                         ),
-                   //     SizedBox(height: size.height * 0.25),
-                        SizedBox(height: size.height * 0.35),
+                        SizedBox(height: size.height * 0.30),
                         Obx(() {
-                          return Text(
-                            "Enter OTP sent to your number - ${controller.maskedPhone.value}",
-                            style: const TextStyle(
-                              fontSize: 30,
-                              color: AppColor.white,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 30),
+                            child: Text(
+                              "Enter OTP sent to your number - ${controller.maskedPhone.value}",
+                              style: const TextStyle(
+                                fontSize: 26,
+                                color: AppColor.white,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
                           );
                         }),
                         const SizedBox(height: 10),
@@ -92,9 +94,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             }
                             return null; // Valid
                           },
-                          errorTextStyle: TextStyle(
-                            color: Colors.orangeAccent,
-                          ),
+                          errorTextStyle: TextStyle(color: Colors.orangeAccent),
                           defaultPinTheme: PinTheme(
                             width: 60,
                             height: 60,
@@ -106,10 +106,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             decoration: BoxDecoration(
                               color: AppColor.background,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
+                              border: Border.all(color: Colors.white, width: 2),
                             ),
                           ),
                           focusedPinTheme: PinTheme(
@@ -123,10 +120,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             decoration: BoxDecoration(
                               color: AppColor.background,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Colors.grey,
-                                width: 2,
-                              ),
+                              border: Border.all(color: Colors.grey, width: 2),
                             ),
                           ),
                           submittedPinTheme: PinTheme(
@@ -181,7 +175,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     text: "Continue",
                     onPressed: controller.mobileOpt,
                     isLoading: controller.isLoading.value,
-                    isDisabled: controller.isExpiredOrInvalid,
+                    //      isDisabled: controller.isExpiredOrInvalid,
                   ),
                 ),
               ],
@@ -189,13 +183,9 @@ class _OtpScreenState extends State<OtpScreen> {
           );
         }),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
-
-
-
 
 //import 'package:flutter/cupertino.dart';
 // import 'package:flutter/material.dart';

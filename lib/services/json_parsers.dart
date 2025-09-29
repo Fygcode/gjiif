@@ -7,6 +7,7 @@ import 'package:tjw1/core/model/tjw/payment_summary_response.dart';
 import 'package:tjw1/core/model/tjw/registered_badge_response.dart';
 import 'package:tjw1/core/model/tjw/registered_visitor_list.dart';
 import 'package:tjw1/core/model/tjw/select_primary_number.dart';
+import 'package:tjw1/core/model/tjw/single_otp_verify_response.dart';
 import 'package:tjw1/core/model/tjw/stateList.dart';
 import 'package:tjw1/core/model/tjw/today_rate_card.dart';
 import 'package:tjw1/core/model/tjw/visitor_list_response.dart';
@@ -43,10 +44,11 @@ class JsonParsers {
       return RegisteredVisitorResponse.fromJson(json) as T;
     } else if (T == PaymentSummaryResponse) {
       return PaymentSummaryResponse.fromJson(json) as T;
-    }  else if (T == RegisteredBadgeResponse) {
+    } else if (T == RegisteredBadgeResponse) {
       return RegisteredBadgeResponse.fromJson(json) as T;
-    }
-    else {
+    } else if (T == SingleOtpVerifyResponse) {
+      return SingleOtpVerifyResponse.fromJson(json) as T;
+    } else {
       throw Exception('Unsupported type $T');
     }
   }

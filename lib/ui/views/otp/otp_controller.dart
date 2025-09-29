@@ -15,6 +15,7 @@ class OtpController extends GetxController {
   final dynamic data = Get.arguments;
   final formKey = GlobalKey<FormState>();
 
+
   final TextEditingController otpController = TextEditingController();
   FocusNode otpFocusNode = FocusNode();
 
@@ -28,6 +29,7 @@ class OtpController extends GetxController {
   String otpID = '';
   String mobileNumber = '';
   String visitorID = '';
+  String sentOtp = '';
 
   bool isExpiredOrInvalid = false;
 
@@ -50,7 +52,13 @@ class OtpController extends GetxController {
     mobileNumber = data['mobileNumber'].toString();
     visitorID = data['visitorID'].toString();
 
+    // Testing Purpose Start
+    sentOtp = data['sentOTP'].toString();
+    otpController.text = sentOtp;
+    // Testing Purpose End
+
     _loadGstFromStorage();
+
 
     super.onInit();
   }
@@ -119,6 +127,11 @@ class OtpController extends GetxController {
       visitorID = response['visitorID'].toString();
       mobileNumber = response['mobileNumber'].toString();
 
+      // Testing Purpose Start
+      sentOtp = response['sentOTP'].toString();
+      otpController.text = sentOtp;
+      // Testing Purpose End
+
       Fluttertoast.showToast(msg: "OTP resent successfully");
     } catch (e) {
       print('Error: $e');
@@ -152,5 +165,12 @@ class OtpController extends GetxController {
     } finally {
       isLoading(false);
     }
+  }
+
+
+  @override
+  void onClose() {
+    otpFocusNode.dispose();
+    super.onClose();
   }
 }

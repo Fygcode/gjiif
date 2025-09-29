@@ -65,29 +65,45 @@ class _GstScreenState extends State<GstScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          SizedBox(height: 10,),
                           SvgPicture.asset(
                             "assets/GJIIF_Logo2.svg",
                             height: 100,
                           ),
-                          SizedBox(height: size.height * 0.30),
-                          Text(
-                            "Enter your GST Number",
-                            style: TextStyle(
-                              fontSize: 32,
-                              color: AppColor.white,
+                          SizedBox(height: size.height * 0.35),
+                          Align (
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Enter your GST Number",
+                              style: TextStyle(
+                                fontSize: 26,
+                                color: AppColor.white,
+                              ),
                             ),
                           ),
+
                           SizedBox(height: 10),
                           CommonTextField(
                             controller: controller.gstController,
                             focusNode: controller.gstFocusNode,
                             hintText: 'Enter GST Number *',
-                            textStyle: TextStyle(
+                            textStyle: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
                             ),
                             textCapitalization: TextCapitalization.characters,
-                            errorTextColor: Colors.white,
+                            errorTextColor: Colors.orangeAccent,
+                            onChanged: (val) {
+                              if (val.isNotEmpty) {
+                                RegExp gstRegExp = RegExp(
+                                  r'^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$',
+                                );
+                                if (gstRegExp.hasMatch(val.toUpperCase())) {
+                                  // ✅ Close keyboard only once GST is valid
+                                  FocusScope.of(controller.gstFocusNode.context!).unfocus();
+                                }
+                              }
+                            },
                             validator: (val) {
                               if (val == null || val.isEmpty) {
                                 return 'Please enter gst number';
@@ -98,23 +114,24 @@ class _GstScreenState extends State<GstScreen> {
                               if (!gstRegExp.hasMatch(val.toUpperCase())) {
                                 return 'Please enter a valid GST number';
                               }
-                              return null;
+                              return null; // ✅ no unfocus here
                             },
-                          ),
+                          )
+
                         ],
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 200),
+                SizedBox(height: 16),
+                Text("Or",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),),
+                SizedBox(height: 16),
                 InkWell(
                   onTap: () {
                     Get.to(() => PhoneMemberScreen());
-                 //   Get.to(() => OtpMemberScreen());
-                 //   Get.to(() => EbadgeMemberScreen());
                   },
                   child: Text(
-                    "Login to get E-badge",
+                    "Download your Badge",
                     style: TextStyle(
                       fontSize: 16,
                       color: Color(0xff151515),

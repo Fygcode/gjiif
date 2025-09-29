@@ -48,6 +48,7 @@ class SelectPrimaryController extends GetxController{
           "otpID": json['otpID'],
           "mobileNumber": json['mobileNumber'],
           "visitorID": json['visitorID'],
+          "sentOTP": json['sentOTP'],
         };
 
         print("======= ${otpData}");

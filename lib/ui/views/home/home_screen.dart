@@ -486,18 +486,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       imageUrl: path,
                       fit: BoxFit.cover,
                       alignment: Alignment.center,
-                      // placeholder: (context, url) => Container(
-                      //   color: Colors.grey[100],
-                      //   child: const Center(
-                      //     child: Icon(Icons.image, size: 40, color: Colors.grey),
-                      //   ),
-                      // ),
                       placeholder: (context, url) => Shimmer.fromColors(
                         baseColor: Colors.grey[300]!,
                         highlightColor: Colors.grey[100]!,
                         child: Container(color: Colors.grey[300]),
                       ),
-
                       errorWidget: (context, url, error) => const Center(
                         child: Icon(Icons.error, color: Colors.red),
                       ),

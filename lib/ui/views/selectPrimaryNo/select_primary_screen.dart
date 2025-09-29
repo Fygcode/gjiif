@@ -22,54 +22,6 @@ class _SelectPrimaryScreenState extends State<SelectPrimaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   backgroundColor: AppColor.background,
-    //   body: SafeArea (
-    //     child: Padding(
-    //       padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-    //       child: Column(
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: [
-    //           Text("Select Primary Number",style: TextStyle(fontSize: 22,fontWeight: FontWeight.w600),),
-    //           SizedBox(height: 20,),
-    //           Expanded (
-    //             child: ListView.separated(
-    //               itemCount: widget.data!.length,
-    //               itemBuilder: (context, index) {
-    //                 VisitorData data = widget.data![index];
-    //                 return InkWell (
-    //                   onTap: (){
-    //                     print(index);
-    //
-    //                   },
-    //                   child: Row(
-    //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                     children: [
-    //                       Column(
-    //                         crossAxisAlignment: CrossAxisAlignment.start,
-    //                         children: [
-    //                           Text("Visitor ID : ${data.visitorID}", style: TextStyle(fontSize: 16)),
-    //                           SizedBox(height: 6,),
-    //                           Text("Phone Number : ${data.mobileNumber}",style: TextStyle(fontSize: 16),),
-    //                         ],
-    //                       ),
-    //                       Icon(Icons.arrow_forward_ios_rounded,size: 20,),
-    //                     ],
-    //                   ),
-    //                 );
-    //               }, separatorBuilder: (BuildContext context, int index) {
-    //               return Padding(
-    //                 padding: const EdgeInsets.symmetric(vertical: 8),
-    //                 child: Divider(color: AppColor.border,),
-    //               );
-    //             },
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //     )
-    //   ),
-
     return Obx(
           () =>
           Stack(

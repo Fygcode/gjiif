@@ -34,6 +34,7 @@ class CommonTextField extends StatefulWidget {
   final Color? focusedBorderColor;
   final Color? errorBorderColor;
   final Color? errorTextColor;
+  final VoidCallback? onTap;
 
 
   CommonTextField({
@@ -67,6 +68,7 @@ class CommonTextField extends StatefulWidget {
     this.focusedBorderColor,
     this.errorBorderColor,
     this.errorTextColor,
+    this.onTap,
 
   }) : inputFormatters = [
          FilteringTextInputFormatter.deny(RegExp("[ ]{2}")),
@@ -101,7 +103,7 @@ class CommonTextField extends StatefulWidget {
     this.focusedBorderColor,
     this.errorBorderColor,
     this.errorTextColor,
-
+    this.onTap,
 
   }) : obscureText = false,
        keyboardType = TextInputType.emailAddress,
@@ -142,7 +144,7 @@ class CommonTextField extends StatefulWidget {
     this.focusedBorderColor,
     this.errorBorderColor,
     this.errorTextColor,
-
+    this.onTap,
 
   }) : obscureText = true,
        keyboardType = TextInputType.number,
@@ -182,7 +184,7 @@ class CommonTextField extends StatefulWidget {
     this.focusedBorderColor,
     this.errorBorderColor,
     this.errorTextColor,
-
+    this.onTap,
 
   }) : obscureText = false,
        keyboardType = TextInputType.phone,
@@ -220,6 +222,8 @@ class _CommonTextFieldState extends State<CommonTextField> {
       maxLength: widget.maxLength,
       maxLines: widget.maxLines,
       minLines: widget.minLines,
+      enableInteractiveSelection: true,
+      onTap: widget.onTap,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
         hintText: widget.hintText ?? "",

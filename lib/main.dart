@@ -13,6 +13,7 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:tjw1/router.dart';
 import 'package:tjw1/services/appconfig_service.dart';
 import 'package:tjw1/services/network_service.dart';
+import 'package:toastification/toastification.dart';
 
 
 
@@ -24,22 +25,6 @@ import 'core/res/styles.dart';
 import 'firebase_options.dart';
 import 'locator.dart';
 
-// Future<void> main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//
-//   setupLocator();
-//
-//   locator<NetworkService>().onInit();
-//
-//   runApp(
-//     DevicePreview(
-//       enabled: !kReleaseMode,
-//       builder: (context) => MyApp(),
-//     ),
-//   );
-// }
-
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -47,10 +32,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-
-
-  // Setup service locator
   setupLocator();
 
   try {
@@ -80,7 +61,13 @@ Future<void> main() async {
   await masterData.loadInitialData();
 
   // Run the app
-   runApp(MyApp());
+  //  runApp(MyApp());
+
+  runApp(
+    const ToastificationWrapper(
+      child: MyApp(),
+    ),
+  );
   // runApp(
   //   DevicePreview(
   //     enabled: !kReleaseMode,
