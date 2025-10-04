@@ -75,51 +75,54 @@ class AppConfigService {
   }
 }
 
+
 class AppConfig {
-  String appName;
-  String baseApiUrl;
+  String? appName;
+  String? baseApiUrl;
   String? firebaseNotificationApiKey;
   Android? android;
   IOS? iOS;
+  Update? update;
   List<String>? banners;
   String? termsAndConditions;
-  bool? forceUpdate;
 
-  AppConfig({
-    required this.appName,
-    required this.baseApiUrl,
-    this.firebaseNotificationApiKey,
-    this.android,
-    this.iOS,
-    this.banners,
-    this.termsAndConditions,
-    this.forceUpdate
-  });
+  AppConfig(
+      {this.appName,
+        this.baseApiUrl,
+        this.firebaseNotificationApiKey,
+        this.android,
+        this.iOS,
+        this.update,
+        this.banners,
+        this.termsAndConditions});
 
-  factory AppConfig.fromJson(Map<String, dynamic> json) {
-    return AppConfig(
-      appName: json['AppName'] ?? '',
-      baseApiUrl: json['BaseApiUrl'] ?? '',
-      firebaseNotificationApiKey: json['FirebaseNotificationApiKey'],
-      android: json['Android'] != null ? Android.fromJson(json['Android']) : null,
-      iOS: json['IOS'] != null ? IOS.fromJson(json['IOS']) : null,
-      banners: (json['Banners'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      termsAndConditions: json['TermsAndConditions']
-    );
+  AppConfig.fromJson(Map<String, dynamic> json) {
+    appName = json['AppName'];
+    baseApiUrl = json['BaseApiUrl'];
+    firebaseNotificationApiKey = json['FirebaseNotificationApiKey'];
+    android = json['Android'] != null ? new Android.fromJson(json['Android']) : null;
+    iOS = json['IOS'] != null ? new IOS.fromJson(json['IOS']) : null;
+    update = json['Update'] != null ? Update.fromJson(json['Update']) : null;
+    banners = json['Banners'].cast<String>();
+    termsAndConditions = json['TermsAndConditions'];
   }
 
   Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{
-      'AppName': appName,
-      'BaseApiUrl': baseApiUrl,
-      'FirebaseNotificationApiKey': firebaseNotificationApiKey,
-      'TermsAndConditions' : termsAndConditions,
-    };
-    if (android != null) data['Android'] = android!.toJson();
-    if (iOS != null) data['IOS'] = iOS!.toJson();
-    if (banners != null) data['Banners'] = banners;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['AppName'] = this.appName;
+    data['BaseApiUrl'] = this.baseApiUrl;
+    data['FirebaseNotificationApiKey'] = this.firebaseNotificationApiKey;
+    if (this.android != null) {
+      data['Android'] = this.android!.toJson();
+    }
+    if (this.iOS != null) {
+      data['IOS'] = this.iOS!.toJson();
+    }
+    if (this.update != null) {
+      data['Update'] = this.update!.toJson();
+    }
+    data['Banners'] = this.banners;
+    data['TermsAndConditions'] = this.termsAndConditions;
     return data;
   }
 }
@@ -131,20 +134,18 @@ class Android {
 
   Android({this.url, this.version, this.appID});
 
-  factory Android.fromJson(Map<String, dynamic> json) {
-    return Android(
-      url: json['Url'],
-      version: json['Version'],
-      appID: json['AppID'],
-    );
+  Android.fromJson(Map<String, dynamic> json) {
+    url = json['Url'];
+    version = json['Version'];
+    appID = json['AppID'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'Url': url,
-      'Version': version,
-      'AppID': appID,
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['Url'] = this.url;
+    data['Version'] = this.version;
+    data['AppID'] = this.appID;
+    return data;
   }
 }
 
@@ -155,20 +156,141 @@ class IOS {
 
   IOS({this.url, this.version, this.appId});
 
-  factory IOS.fromJson(Map<String, dynamic> json) {
-    return IOS(
-      url: json['Url'],
-      version: json['Version'],
-      appId: json['AppId'],
-    );
+  IOS.fromJson(Map<String, dynamic> json) {
+    url = json['Url'];
+    version = json['Version'];
+    appId = json['AppId'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'Url': url,
-      'Version': version,
-      'AppId': appId,
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['Url'] = this.url;
+    data['Version'] = this.version;
+    data['AppId'] = this.appId;
+    return data;
   }
 }
+
+class Update {
+  String? title;
+  String? subtitle;
+  bool? forceUpdate;
+
+  Update({this.title, this.subtitle, this.forceUpdate});
+
+  Update.fromJson(Map<String, dynamic> json) {
+    title = json['Title'];
+    subtitle = json['Subtitle'];
+    forceUpdate = json['ForceUpdate'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['Title'] = this.title;
+    data['Subtitle'] = this.subtitle;
+    data['ForceUpdate'] = this.forceUpdate;
+    return data;
+  }
+}
+
+
+
+
+
+// class AppConfig {
+//   String appName;
+//   String baseApiUrl;
+//   String? firebaseNotificationApiKey;
+//   Android? android;
+//   IOS? iOS;
+//   List<String>? banners;
+//   String? termsAndConditions;
+//   bool? forceUpdate;
+//
+//   AppConfig({
+//     required this.appName,
+//     required this.baseApiUrl,
+//     this.firebaseNotificationApiKey,
+//     this.android,
+//     this.iOS,
+//     this.banners,
+//     this.termsAndConditions,
+//     this.forceUpdate
+//   });
+//
+//   factory AppConfig.fromJson(Map<String, dynamic> json) {
+//     return AppConfig(
+//       appName: json['AppName'] ?? '',
+//       baseApiUrl: json['BaseApiUrl'] ?? '',
+//       firebaseNotificationApiKey: json['FirebaseNotificationApiKey'],
+//       android: json['Android'] != null ? Android.fromJson(json['Android']) : null,
+//       iOS: json['IOS'] != null ? IOS.fromJson(json['IOS']) : null,
+//       banners: (json['Banners'] as List<dynamic>?)
+//           ?.map((e) => e as String)
+//           .toList(),
+//       termsAndConditions: json['TermsAndConditions']
+//     );
+//   }
+//
+//   Map<String, dynamic> toJson() {
+//     final data = <String, dynamic>{
+//       'AppName': appName,
+//       'BaseApiUrl': baseApiUrl,
+//       'FirebaseNotificationApiKey': firebaseNotificationApiKey,
+//       'TermsAndConditions' : termsAndConditions,
+//     };
+//     if (android != null) data['Android'] = android!.toJson();
+//     if (iOS != null) data['IOS'] = iOS!.toJson();
+//     if (banners != null) data['Banners'] = banners;
+//     return data;
+//   }
+// }
+//
+// class Android {
+//   String? url;
+//   String? version;
+//   String? appID;
+//
+//   Android({this.url, this.version, this.appID});
+//
+//   factory Android.fromJson(Map<String, dynamic> json) {
+//     return Android(
+//       url: json['Url'],
+//       version: json['Version'],
+//       appID: json['AppID'],
+//     );
+//   }
+//
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'Url': url,
+//       'Version': version,
+//       'AppID': appID,
+//     };
+//   }
+// }
+//
+// class IOS {
+//   String? url;
+//   String? version;
+//   String? appId;
+//
+//   IOS({this.url, this.version, this.appId});
+//
+//   factory IOS.fromJson(Map<String, dynamic> json) {
+//     return IOS(
+//       url: json['Url'],
+//       version: json['Version'],
+//       appId: json['AppId'],
+//     );
+//   }
+//
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'Url': url,
+//       'Version': version,
+//       'AppId': appId,
+//     };
+//   }
+// }
 

@@ -37,62 +37,6 @@ class EbadgeController extends GetxController {
     registeredBadgeList();
   }
 
-  // Future<void> downloadBadge() async {
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse('https://gjiif.thejewelleryworld.com/VisitorDetail/ViewEBadge?RegistrationID=GF25-TV5608&EventID=23'),
-  //       headers: {
-  //         'Accept': 'application/pdf',
-  //       },
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       final pdfBytes = response.bodyBytes;
-  //       print("PDF BYTES = $pdfBytes");
-  //     } else {
-  //       print("Failed to fetch PDF. Status: ${response.statusCode}");
-  //     }
-  //   } catch (e) {
-  //     print("Error downloading badge PDF: $e");
-  //   }
-  // }
-  //
-  //
-  // Future<void> downloadBadgeStreamed() async {
-  //   try {
-  //     final request = http.Request(
-  //       'GET',
-  //       Uri.parse('https://gjiif.thejewelleryworld.com/VisitorDetail/ViewEBadge?RegistrationID=GF25-TV44455'),
-  //     );
-  //
-  //     request.headers['Accept'] = 'application/pdf';
-  //
-  //     final response = await request.send(); // This returns a StreamedResponse
-  //
-  //     if (response.statusCode == 200) {
-  //       // Get device's temporary directory
-  //       final dir = await getTemporaryDirectory();
-  //       final filePath = '${dir.path}/badge.pdf';
-  //       final file = File(filePath);
-  //
-  //       // Open file for writing and pipe the stream into it
-  //       final fileSink = file.openWrite();
-  //       await response.stream.pipe(fileSink);
-  //       await fileSink.close();
-  //
-  //       print("PDF saved at: $filePath");
-  //
-  //       // You can now open it in a PDF viewer package if you want
-  //       // OpenFile.open(filePath);
-  //
-  //     } else {
-  //       print("Failed to fetch PDF. Status: ${response.statusCode}");
-  //     }
-  //   } catch (e) {
-  //     print("Error streaming badge PDF: $e");
-  //   }
-  // }
-
   Future<void> viewBadge(
     BuildContext context,
     String? registrationID,

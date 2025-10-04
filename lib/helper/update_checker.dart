@@ -32,6 +32,8 @@ class UpdateChecker {
               ? appConfig.android?.url ?? ''
               : appConfig.iOS?.url ?? '';
 
+      final Update? update = appConfig.update;
+
       if (version.isEmpty || url.isEmpty) return;
 
       final int remoteVersion = int.parse(version.replaceAll(".", ""));
@@ -39,10 +41,17 @@ class UpdateChecker {
 
       print("remoteVersion $remoteVersion");
       print("localVersion $localVersion");
+      print("update ${update?.title}");
+      print("update ${update?.subtitle}");
+      print("update ${update?.forceUpdate}");
 
       if (remoteVersion > localVersion) {
-        // && (appConfig.forceUpdate ?? false)
-        print("TRUEEEE");
+        // Use update dialog content from Remote Config
+        final String title = update?.title ?? 'Update Available';
+        final String subtitle = update?.subtitle ??
+            'A new version is available. Please update to continue.';
+        final bool forceUpdate = update?.forceUpdate ?? false;
+
         await Get.dialog(
           AlertDialog(
             shape: RoundedRectangleBorder(
@@ -55,13 +64,18 @@ class UpdateChecker {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  //       SvgPicture.asset(Images.updateIcon),
                   VerticalSpacing.custom(value: 24),
-                  Text("Update Available"),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   VerticalSpacing.custom(value: 12),
-                  const Text(
-                    "Please update the app for better experience",
-                    style: TextStyle(
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                       color: Color(0xff414141),
@@ -79,33 +93,107 @@ class UpdateChecker {
                           mode: LaunchMode.externalApplication,
                         );
                       }
-                      Get.back(); // Close dialog
+                      if (!forceUpdate) Get.back();
                     },
                   ),
-                  VerticalSpacing.custom(value: 12),
-                  Button(
-                    "Cancel",
-                    key: UniqueKey(),
-                    color: AppColor.divider,
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xff312D4A),
+                  if (!forceUpdate)
+                    VerticalSpacing.custom(value: 12),
+                  if (!forceUpdate)
+                    Button(
+                      "Cancel",
+                      key: UniqueKey(),
+                      color: AppColor.divider,
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xff312D4A),
+                      ),
+                      onPressed: () {
+                        Get.back(); // Close dialog
+                      },
                     ),
-                    onPressed: () {
-                      Get.back(); // Close dialog
-                    },
-                  ),
                 ],
               ),
             ),
           ),
-          barrierDismissible: false,
+          barrierDismissible: !forceUpdate, // force update blocks dismiss
         );
       }
+
+      // if (remoteVersion > localVersion) {
+      //
+      //   final title = update?.title ?? 'Update Available';
+      //   final subtitle = update?.subtitle ??
+      //       'A new version is available. Please update to continue.';
+      //   final forceUpdate = update?.forceUpdate ?? false;
+      //
+      //   // && (appConfig.forceUpdate ?? false)
+      //   print("TRUEEEE");
+      //   await Get.dialog(
+      //     AlertDialog(
+      //       shape: RoundedRectangleBorder(
+      //         borderRadius: BorderRadius.circular(12),
+      //       ),
+      //       content: Container(
+      //         decoration: BoxDecoration(
+      //           borderRadius: BorderRadius.circular(16),
+      //         ),
+      //         child: Column(
+      //           mainAxisSize: MainAxisSize.min,
+      //           children: [
+      //             //       SvgPicture.asset(Images.updateIcon),
+      //             VerticalSpacing.custom(value: 24),
+      //             Text("Update Available"),
+      //             VerticalSpacing.custom(value: 12),
+      //             const Text(
+      //               "Please update the app for better experience",
+      //               style: TextStyle(
+      //                 fontSize: 14,
+      //                 fontWeight: FontWeight.w400,
+      //                 color: Color(0xff414141),
+      //               ),
+      //               textAlign: TextAlign.center,
+      //             ),
+      //             VerticalSpacing.custom(value: 20),
+      //             Button(
+      //               "Update",
+      //               key: UniqueKey(),
+      //               onPressed: () async {
+      //                 if (await canLaunchUrl(Uri.parse(url))) {
+      //                   await launchUrl(
+      //                     Uri.parse(url),
+      //                     mode: LaunchMode.externalApplication,
+      //                   );
+      //                 }
+      //                 Get.back(); // Close dialog
+      //               },
+      //             ),
+      //             VerticalSpacing.custom(value: 12),
+      //             Button(
+      //               "Cancel",
+      //               key: UniqueKey(),
+      //               color: AppColor.divider,
+      //               textStyle: const TextStyle(
+      //                 fontSize: 16,
+      //                 fontWeight: FontWeight.w700,
+      //                 color: Color(0xff312D4A),
+      //               ),
+      //               onPressed: () {
+      //                 Get.back(); // Close dialog
+      //               },
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      //     barrierDismissible: false,
+      //   );
+      // }
     } catch (exception, stacktrace) {
       // Logger.e("Unable to check for version info", e: exception, s: stacktrace);
       print("Version check failed $stacktrace");
     }
   }
 }
+
+
