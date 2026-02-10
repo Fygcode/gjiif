@@ -10,6 +10,7 @@ import 'package:tjw1/ui/views/summary/summary_screen.dart';
 import '../../../common_widget/common_button.dart';
 import '../../../common_widget/common_dialog.dart';
 import '../../../core/res/colors.dart';
+import '../add_visitor/add_visitor_binding.dart';
 import '../visitor_detail/visitor_detail_screen.dart';
 
 class SelectVisitorScreen extends StatefulWidget {
@@ -111,9 +112,12 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                           onSelected: (value) {
                             if (value != null) {
                               controller.filterController.text = value.status!;
-                              print("DD == ${controller.filterController.text}");
+                              print(
+                                "DD == ${controller.filterController.text}",
+                              );
                               print("statusID == ${value.statusID}");
-                              controller.dropdownStatusId = value.statusID ?? -1;
+                              controller.dropdownStatusId =
+                                  value.statusID ?? -1;
                               controller.filterVisitorListByStatus(
                                 value.statusID.toString(),
                               );
@@ -142,186 +146,192 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                     itemCount: controller.visitorList.length,
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
+                      // final visitor = controller.visitorList[index];
+                      // return Container(
+                      //   decoration: BoxDecoration(
+                      //     color:
+                      //         index % 2 == 0
+                      //             ? Color(0xffFCF4CB)
+                      //             : Color(0xffF0F0F0),
+                      //   ),
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(8.0),
+                      //     child: Row(
+                      //       children: [
+                      //         ClipRRect(
+                      //           borderRadius: BorderRadius.circular(4),
+                      //           child: Stack(
+                      //             children: [
+                      //               CachedNetworkImage(
+                      //                 height: 100,
+                      //                 width: 100,
+                      //                 imageUrl:
+                      //                     visitor.visitorPhotoURL ??
+                      //                     "https://via.placeholder.com/100",
+                      //                 // fallback image
+                      //                 fit: BoxFit.cover,
+                      //                 placeholder:
+                      //                     (context, url) => const Center(
+                      //                       child: CircularProgressIndicator(),
+                      //                     ),
+                      //                 errorWidget:
+                      //                     (context, url, error) => Container(
+                      //                       padding: EdgeInsets.all(16),
+                      //                       decoration: BoxDecoration(
+                      //                         gradient: LinearGradient(
+                      //                           colors: [
+                      //                             AppColor.primary,
+                      //                             AppColor.textPrimary,
+                      //                           ],
+                      //                           // or your custom gradient colors
+                      //                           begin: Alignment.topLeft,
+                      //                           end: Alignment.bottomRight,
+                      //                         ),
+                      //                         borderRadius:
+                      //                             BorderRadius.circular(
+                      //                               8,
+                      //                             ), // optional rounded corners
+                      //                       ),
+                      //                       child: Image.asset(
+                      //                         'assets/GJIIF_Logo.png',
+                      //                         fit: BoxFit.contain,
+                      //                       ),
+                      //                     ),
+                      //               ),
+                      //               Positioned(
+                      //                 top: -10,
+                      //                 left: -10,
+                      //                 child: Transform.scale(
+                      //                   scale: 1.1,
+                      //                   child: Container(
+                      //                     decoration: BoxDecoration(
+                      //                       boxShadow: [
+                      //                         BoxShadow(
+                      //                           color: Colors.grey.withOpacity(
+                      //                             0.3,
+                      //                           ),
+                      //                           spreadRadius: 4,
+                      //                           blurRadius: 10,
+                      //                           offset: Offset(0, 2),
+                      //                         ),
+                      //                       ],
+                      //                       shape: BoxShape.circle,
+                      //                     ),
+                      //                     child: Obx(
+                      //                       () => Checkbox(
+                      //                         value: controller.selected[index],
+                      //                         checkColor: AppColor.white,
+                      //                         fillColor: WidgetStateProperty.resolveWith<Color>(
+                      //                               (states) => states.contains(
+                      //                                         WidgetState
+                      //                                             .selected,
+                      //                                       )
+                      //                                       ? AppColor.primary
+                      //                                       : Colors.white,
+                      //                             ),
+                      //                         side: const BorderSide(
+                      //                           color: Colors.black,
+                      //                         ),
+                      //
+                      //                         onChanged: (bool? value) async {
+                      //                           controller.selected[index] = value ?? false;
+                      //                           final visitorID = visitor.visitorID.toString();
+                      //
+                      //                           if (controller.selected[index]) {
+                      //                             // Add to selected list
+                      //                             if (!controller.selectedVisitorIDs.contains(visitorID)) {
+                      //                               controller.selectedVisitorIDs.add(visitorID);}
+                      //                           } else {
+                      //                             // Remove if unchecked
+                      //                             controller.selectedVisitorIDs.remove(visitorID);
+                      //                           }
+                      //
+                      //                           print("VISITOR ID: $visitorID");
+                      //                           print("SELECTED VISITOR IDs: ${controller.selectedVisitorIDs}",);
+                      //
+                      //                           final isIncomplete =
+                      //                               await controller
+                      //                                   .isVisitorRegisterWithAllDetail(
+                      //                                     visitor.visitorID
+                      //                                         .toString(),
+                      //                                   );
+                      //                           if (isIncomplete) {
+                      //                             controller.handleIncompleteVisitor(
+                      //                               visitorID: visitor.visitorID!,
+                      //                               index: index,
+                      //                               context: context,
+                      //                             );
+                      //
+                      //                           }
+                      //                         },
+                      //                       ),
+                      //                     ),
+                      //                   ),
+                      //                 ),
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         ),
+                      //         SizedBox(width: 10),
+                      //         Expanded(
+                      //           child: Column(
+                      //             crossAxisAlignment: CrossAxisAlignment.start,
+                      //             children: [
+                      //               Text(
+                      //                 visitor.visitorName ?? 'Unknown',
+                      //                 style: TextStyle(
+                      //                   fontSize: 18,
+                      //                   fontWeight: FontWeight.w600,
+                      //                 ),
+                      //                 maxLines: 1,
+                      //                 overflow: TextOverflow.ellipsis,
+                      //               ),
+                      //               Text(
+                      //                 visitor.visitorPhone ?? 'No Mobile',
+                      //                 style: TextStyle(
+                      //                   fontSize: 16,
+                      //                   fontWeight: FontWeight.w500,
+                      //                 ),
+                      //               ),
+                      //               SizedBox(height: 4),
+                      //               RichText(
+                      //                 text: TextSpan(
+                      //                   children: [
+                      //                     const TextSpan(
+                      //                       text: 'Status : ',
+                      //                       style: TextStyle(
+                      //                         fontSize: 16,
+                      //                         fontWeight: FontWeight.w500,
+                      //                         color: Colors.black45,
+                      //                       ),
+                      //                     ),
+                      //                     TextSpan(
+                      //                       text: visitor.status ?? 'Unknown',
+                      //                       style: TextStyle(
+                      //                         fontSize: 16,
+                      //                         fontWeight: FontWeight.w500,
+                      //                         color: controller
+                      //                             .getStatusColorByID(
+                      //                               visitor.statusID!,
+                      //                             ),
+                      //                       ),
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // );
+
                       final visitor = controller.visitorList[index];
-
-                      return Container(
-                        decoration: BoxDecoration(
-                          color:
-                              index % 2 == 0
-                                  ? Color(0xffFCF4CB)
-                                  : Color(0xffF0F0F0),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
-                                child: Stack(
-                                  children: [
-                                    CachedNetworkImage(
-                                      height: 100,
-                                      width: 100,
-                                      imageUrl:
-                                          visitor.visitorPhotoURL ??
-                                          "https://via.placeholder.com/100",
-                                      // fallback image
-                                      fit: BoxFit.cover,
-                                      placeholder:
-                                          (context, url) => const Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                      errorWidget:
-                                          (context, url, error) => Container(
-                                            padding: EdgeInsets.all(16),
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  AppColor.primary,
-                                                  AppColor.textPrimary,
-                                                ],
-                                                // or your custom gradient colors
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    8,
-                                                  ), // optional rounded corners
-                                            ),
-                                            child: Image.asset(
-                                              'assets/GJIIF_Logo.png',
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                    ),
-                                    Positioned(
-                                      top: -10,
-                                      left: -10,
-                                      child: Transform.scale(
-                                        scale: 1.1,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey.withOpacity(
-                                                  0.3,
-                                                ),
-                                                spreadRadius: 4,
-                                                blurRadius: 10,
-                                                offset: Offset(0, 2),
-                                              ),
-                                            ],
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Obx(
-                                            () => Checkbox(
-                                              value: controller.selected[index],
-                                              checkColor: AppColor.white,
-                                              fillColor: WidgetStateProperty.resolveWith<Color>(
-                                                    (states) => states.contains(
-                                                              WidgetState
-                                                                  .selected,
-                                                            )
-                                                            ? AppColor.primary
-                                                            : Colors.white,
-                                                  ),
-                                              side: const BorderSide(
-                                                color: Colors.black,
-                                              ),
-
-                                              onChanged: (bool? value) async {
-                                                controller.selected[index] = value ?? false;
-                                                final visitorID = visitor.visitorID.toString();
-
-                                                if (controller.selected[index]) {
-                                                  // Add to selected list
-                                                  if (!controller.selectedVisitorIDs.contains(visitorID)) {
-                                                    controller.selectedVisitorIDs.add(visitorID);}
-                                                } else {
-                                                  // Remove if unchecked
-                                                  controller.selectedVisitorIDs.remove(visitorID);
-                                                }
-
-                                                print("VISITOR ID: $visitorID");
-                                                print("SELECTED VISITOR IDs: ${controller.selectedVisitorIDs}",);
-
-                                                final isIncomplete =
-                                                    await controller
-                                                        .isVisitorRegisterWithAllDetail(
-                                                          visitor.visitorID
-                                                              .toString(),
-                                                        );
-                                                if (isIncomplete) {
-                                                  controller.handleIncompleteVisitor(
-                                                    visitorID: visitor.visitorID!,
-                                                    index: index,
-                                                    context: context,
-                                                  );
-
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      visitor.visitorName ?? 'Unknown',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      visitor.visitorPhone ?? 'No Mobile',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          const TextSpan(
-                                            text: 'Status : ',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black45,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: visitor.status ?? 'Unknown',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: controller
-                                                  .getStatusColorByID(
-                                                    visitor.statusID!,
-                                                  ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      return VisitorListItem(
+                        visitor: visitor,
+                        controller: controller,
+                        index: index,
                       );
                     },
                     separatorBuilder:
@@ -338,8 +348,17 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                       text: "+ Add Employee",
 
                       onPressed: () {
+                        // Get.to(
+                        //   () => AddVisitorScreen(),
+                        //   arguments: {'isFromEdit': false, 'visitorID': 0},
+                        // )?.then((_) {
+                        //   print("BACKED");
+                        //   controller.fetchRegisteredVisitorList();
+                        // });
+
                         Get.to(
                           () => AddVisitorScreen(),
+                          binding: AddVisitorBinding(), // 🔥 THIS IS KEY
                           arguments: {'isFromEdit': false, 'visitorID': 0},
                         )?.then((_) {
                           print("BACKED");
@@ -356,13 +375,15 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
                     child: Obx(
                       () => CommonButton(
                         text: "Proceed (${controller.selectedCount})",
-                        onPressed: () => Get.to(
+                        onPressed:
+                            () => Get.to(
                               () => SummaryScreen(),
-                          arguments: {
-                            'visitorList': controller.selectedVisitorIDs.toList(),
-                            'eventId': controller.eventId.value,
-                          },
-                        ),
+                              arguments: {
+                                'visitorList':
+                                    controller.selectedVisitorIDs.toList(),
+                                'eventId': controller.eventId.value,
+                              },
+                            ),
                         isDisabled: controller.selectedCount == 0,
                       ),
                     ),
@@ -371,6 +392,315 @@ class _SelectVisitorScreenState extends State<SelectVisitorScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class VisitorListItem extends StatefulWidget {
+  final VisitorsList visitor;
+  final SelectVisitorController controller;
+  final int index;
+
+  const VisitorListItem({
+    super.key,
+    required this.visitor,
+    required this.controller,
+    required this.index,
+  });
+
+  @override
+  State<VisitorListItem> createState() => _VisitorListItemState();
+}
+
+class _VisitorListItemState extends State<VisitorListItem>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true; // keep widget alive
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // required for KeepAlive
+
+    // return Container(
+    //   decoration: BoxDecoration(
+    //     color: AppColor.tertiary,
+    //     borderRadius: BorderRadius.circular(6),
+    //   ),
+    //   child: Padding(
+    //     padding: const EdgeInsets.all(8.0),
+    //     child: Row(
+    //       children: [
+    //         ClipRRect(
+    //           borderRadius: BorderRadius.circular(12),
+    //           child: CachedNetworkImage(
+    //             height: 100,
+    //             width: 100,
+    //             imageUrl: "${widget.data.visitorPhoto!}?ts=${DateTime.now().millisecondsSinceEpoch}", //
+    //             fit: BoxFit.cover,
+    //             //   cacheKey: widget.data.visitorID.toString() + (widget.data.visitorPhoto ?? ""),
+    //             placeholder: (context, url) => Container(
+    //               height: 100,
+    //               width: 100,
+    //               color: Colors.grey[200],
+    //               child: const Center(
+    //                 child: SizedBox(
+    //                   height: 18,
+    //                   width: 18,
+    //                   child: CircularProgressIndicator(
+    //                     strokeWidth: 2,
+    //                     color: Colors.grey,
+    //                   ),
+    //                 ),
+    //               ),
+    //             ),
+    //
+    //             errorWidget: (context, url, error) => Image.asset(
+    //               'assets/updateBanner.png',
+    //               fit: BoxFit.cover,
+    //             ),
+    //           ),
+    //         ),
+    //         const SizedBox(width: 10),
+    //
+    //         Expanded(
+    //           child: Column(
+    //             crossAxisAlignment: CrossAxisAlignment.start,
+    //             children: [
+    //               Text(
+    //                 widget.data.visitorName!,
+    //                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+    //               ),
+    //               Text(
+    //                 widget.data.visitorMobile!,
+    //                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+    //               ),
+    //
+    //               Padding(
+    //                 padding: const EdgeInsets.only(top: 10),
+    //                 child: Row(
+    //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                   children: [
+    //                     InkWell(
+    //                       onTap: () async {
+    //                         final result = await Get.to(
+    //                               () => EditVisitorScreen(),
+    //                           arguments: {
+    //                             'isFromEdit': true,
+    //                             'visitorID': widget.data.visitorID,
+    //                           },
+    //                         );
+    //                         if (result == 'refresh') {
+    //                           widget.controller.fetchVisitorList();
+    //                         }
+    //
+    //                       },
+    //                       child: Text(
+    //                         "Edit",
+    //                         style: TextStyle(
+    //                           fontSize: 17,
+    //                           color: AppColor.black,
+    //                           decoration: TextDecoration.underline,
+    //                         ),
+    //                       ),
+    //                     ),
+    //                     InkWell(
+    //                       onTap: () {
+    //                         CommonDialog.showConfirmDialog(
+    //                           title: "Confirm Remove",
+    //                           content: "Are you sure you want to remove ?",
+    //                           confirmText: "Yes",
+    //                           cancelText: "No",
+    //                           onConfirm: () {
+    //                             print("Item removed");
+    //                             Get.back();
+    //                           },
+    //                           leading: Icon(
+    //                             Icons.warning_amber_rounded,
+    //                             size: 48,
+    //                             color: AppColor.primary,
+    //                           ),
+    //                           onCancel: () {
+    //                             Get.back(); // Just close the dialog
+    //                           },
+    //                         );
+    //                       },
+    //                       child: Icon(Icons.delete_forever_sharp),
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ],
+    //           ),
+    //         ),
+    //       ],
+    //     ),
+    //   ),
+    // );
+
+    return Container(
+      decoration: BoxDecoration(
+        color: widget.index % 2 == 0 ? Color(0xffFCF4CB) : Color(0xffF0F0F0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Stack(
+                children: [
+                  CachedNetworkImage(
+                    height: 100,
+                    width: 100,
+                    imageUrl:
+                        widget.visitor.visitorPhotoURL ??
+                        "https://via.placeholder.com/100",
+                    // fallback image
+                    fit: BoxFit.cover,
+                    placeholder:
+                        (context, url) =>
+                            const Center(child: CircularProgressIndicator()),
+                    errorWidget:
+                        (context, url, error) => Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [AppColor.primary, AppColor.textPrimary],
+                              // or your custom gradient colors
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              8,
+                            ), // optional rounded corners
+                          ),
+                          child: Image.asset(
+                            'assets/GJIIF_Logo.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                  ),
+                  Positioned(
+                    top: -10,
+                    left: -10,
+                    child: Transform.scale(
+                      scale: 1.1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 4,
+                              blurRadius: 10,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                          shape: BoxShape.circle,
+                        ),
+                        child: Obx(
+                          () => Checkbox(
+                            value: widget.controller.selected[widget.index],
+                            checkColor: AppColor.white,
+                            fillColor: WidgetStateProperty.resolveWith<Color>(
+                              (states) =>
+                                  states.contains(WidgetState.selected)
+                                      ? AppColor.primary
+                                      : Colors.white,
+                            ),
+                            side: const BorderSide(color: Colors.black),
+
+                            onChanged: (bool? value) async {
+                              widget.controller.selected[widget.index] =
+                                  value ?? false;
+                              final visitorID =
+                                  widget.visitor.visitorID.toString();
+
+                              if (widget.controller.selected[widget.index]) {
+                                // Add to selected list
+                                if (!widget.controller.selectedVisitorIDs
+                                    .contains(visitorID)) {
+                                  widget.controller.selectedVisitorIDs.add(
+                                    visitorID,
+                                  );
+                                }
+                              } else {
+                                // Remove if unchecked
+                                widget.controller.selectedVisitorIDs.remove(
+                                  visitorID,
+                                );
+                              }
+
+                              print("VISITOR ID: $visitorID");
+                              print(
+                                "SELECTED VISITOR IDs: ${widget.controller.selectedVisitorIDs}",
+                              );
+
+                              final isIncomplete = await widget.controller
+                                  .isVisitorRegisterWithAllDetail(
+                                    widget.visitor.visitorID.toString(),
+                                  );
+                              if (isIncomplete) {
+                                widget.controller.handleIncompleteVisitor(
+                                  visitorID: widget.visitor.visitorID!,
+                                  index: widget.index,
+                                  context: context,
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.visitor.visitorName ?? 'Unknown',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    widget.visitor.visitorPhone ?? 'No Mobile',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(height: 4),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Status : ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black45,
+                          ),
+                        ),
+                        TextSpan(
+                          text: widget.visitor.status ?? 'Unknown',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: widget.controller.getStatusColorByID(
+                              widget.visitor.statusID!,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

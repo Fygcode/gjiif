@@ -36,29 +36,24 @@ class GstController extends GetxController {
         final response = SelectPrimaryNumber.fromJson(json);
         final status = response.status;
 
-        print("ALALAL $response");
-        print("ALALAL $json");
-
-
-        await SecureStorageService().write("gst", gstController.text);
-   //     await SecureStorageService().write("visitorID", response.data['visitorID'].toString());
 
 
         if (status == "100") {
+          await SecureStorageService().write("gst", gstController.text);
           Get.to(() => PhoneScreen());
           return;
         }
         else if (status == "200") {
           Fluttertoast.showToast(msg: response.message ?? "");
           await SecureStorageService().write("gst", gstController.text);
-          await SecureStorageService().write("visitorID", response.data['visitorID'].toString());
+          // await SecureStorageService().write("visitorID", response.data['visitorID'].toString());
           Get.to(() => OtpScreen(), arguments:  response.data,);
           return;
         }
         else if (status == "300") {
-          await SecureStorageService().write("visitorID", response.data[0]['visitorID'].toString());
           await SecureStorageService().write("gst", gstController.text);
 
+          print("CHECK 1");
           final List<VisitorPhone> phoneList = (response.data as List)
               .map((e) => VisitorPhone.fromJson(e))
               .toList();
@@ -78,7 +73,5 @@ class GstController extends GetxController {
       isLoading(false);
     }
   }
-
-
 
 }

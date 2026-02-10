@@ -319,7 +319,6 @@ class _CompanyScreenState extends State<CompanyScreen> {
         ),
         SizedBox(height: 10),
         _buildLabeledText("Upload GST Copy"),
-
         CommonFilePickerBox(
           label: "Upload GST-Copy",
           fileKey: "gstCopy",

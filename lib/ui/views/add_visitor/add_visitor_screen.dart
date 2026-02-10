@@ -25,7 +25,9 @@ class AddVisitorScreen extends StatefulWidget {
 }
 
 class _AddVisitorScreenState extends State<AddVisitorScreen> {
-  final AddVisitorController controller = Get.put(AddVisitorController());
+  // final AddVisitorController controller = Get.put(AddVisitorController());
+
+  final AddVisitorController controller = Get.find<AddVisitorController>();
 
   @override
   Widget build(BuildContext context) {

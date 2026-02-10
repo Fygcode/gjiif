@@ -1,49 +1,104 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
+import '../../../controllers/master_data_controller.dart';
+import '../../../locator.dart';
+import '../../../services/appconfig_service.dart';
+import '../../../services/network_service.dart';
 import '../terms/terms_screen.dart';
 
+// class SplashController extends GetxController {
+//
+//   var isLoading = true.obs;
+//
+//
+//   @override
+//   void onInit() {
+//     super.onInit();
+//     init();
+//   }
+//
+//   /// Initial method called on splash screen load
+//   Future<void> init() async {
+//     print("INSIDE INIT SPLASH CONTROLLER");
+//     // Simulate a short loading time (splash delay)
+//     await Future.delayed(const Duration(seconds: 2));
+//
+//     // Optionally fetch data or check login state
+//     // await fetchUserData();
+//
+//     // Navigate to dashboard (or login depending on logic)
+//     Get.off(() => TermsScreen());
+//     // OR Get.offNamed('/dashboard');
+//   }
+//
+// }
+
+
 class SplashController extends GetxController {
-
-  var isLoading = true.obs;
-
-  // Form controllers
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
-  final phoneController = TextEditingController();
-  final genderController = TextEditingController();
-  final fruitController = TextEditingController();
-  final emailController = TextEditingController();
-
-  // Form key & focus nodes
-  final formKey = GlobalKey<FormState>();
-  final focusNode = FocusNode();
-  final focusNodePhone = FocusNode();
-  final focusNodeEmail = FocusNode();
-  final focusNodePassword = FocusNode();
-
   @override
   void onInit() {
     super.onInit();
-    init();
+    _initApp();
   }
 
-  /// Initial method called on splash screen load
-  Future<void> init() async {
-    print("INSIDE INIT SPLASH CONTROLLER");
-    // Simulate a short loading time (splash delay)
-    await Future.delayed(const Duration(seconds: 2));
+  Future<void> _initApp() async {
+    try {
+      debugPrint("🚀 Splash init started");
 
-    // Optionally fetch data or check login state
-    // await fetchUserData();
+      // // Small splash delay (optional UX)
+      // await Future.delayed(const Duration(seconds: 1));
 
-    // Navigate to dashboard (or login depending on logic)
-    Get.off(() => TermsScreen());
-    // OR Get.offNamed('/dashboard');
+      await _loadRemoteConfig();
+      await _initServices();
+
+      debugPrint("✅ App init success");
+
+      Get.offAll(() => TermsScreen());
+      // OR Get.offAllNamed('/login');
+
+    } catch (e, s) {
+      debugPrint("❌ Splash init failed: $e");
+      debugPrint("$s");
+
+      Get.snackbar(
+        'Startup Error',
+        'Unable to initialize app',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
+}
 
+Future<void> _loadRemoteConfig() async {
+  final remoteConfig = FirebaseRemoteConfig.instance;
+
+  await remoteConfig.setDefaults({'config': '{}'});
+
+  await remoteConfig.setConfigSettings(
+    RemoteConfigSettings(
+      fetchTimeout: const Duration(seconds: 2),
+      minimumFetchInterval: Duration.zero,
+    ),
+  );
+
+  await remoteConfig.fetchAndActivate();
+
+  final rawJson = remoteConfig.getString('config');
+  if (rawJson.isNotEmpty && rawJson != '{}') {
+    locator<AppConfigService>().setConfig(jsonDecode(rawJson));
+  }
+}
+
+Future<void> _initServices() async {
+  locator<NetworkService>().onInit();
+
+  final masterData = Get.find<MasterDataController>();
+  await masterData.loadInitialData();
 }
 
 

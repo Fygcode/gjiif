@@ -20,13 +20,10 @@ enum Gender {
 }
 
 enum IDType {
-  aadhaar,
-  panCard,
-  passport,
-  drivingLicense,
   voterId,
+  drivingLicense,
+  aadhaar,
   rationCard,
-  other,
 }
 
 enum CompanyType {

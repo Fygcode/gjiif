@@ -205,12 +205,11 @@
 //   }
 // }
 
-
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:tjw1/core/model/tjw/dropdown_api.dart';
 
 import '../../../common_widget/common_button.dart';
 import '../../../common_widget/common_dropdown.dart';
@@ -221,6 +220,7 @@ import 'ebadge_controller.dart';
 
 class EbadgeScreen extends StatefulWidget {
   final String? eventTitle;
+
   const EbadgeScreen({super.key, this.eventTitle});
 
   @override
@@ -230,25 +230,18 @@ class EbadgeScreen extends StatefulWidget {
 class _EbadgeScreenState extends State<EbadgeScreen> {
   final EbadgeController controller = Get.put(EbadgeController());
 
-  @override
-  void initState() {
-    super.initState();
-    controller.registeredBadgeList();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   controller.dropdownListApi();
+  //   controller.registeredBadgeList();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.background,
       body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (controller.registeredList.isEmpty) {
-          return _buildEmptyState();
-        }
-
         return SafeArea(
           child: TapOutsideUnFocus(
             child: SingleChildScrollView(
@@ -258,7 +251,15 @@ class _EbadgeScreenState extends State<EbadgeScreen> {
                 children: [
                   _buildHeader(),
                   const SizedBox(height: 16),
-                  _buildBadgeList(),
+                   // _buildBadgeList(),
+
+                  if (controller.isLoading.value)
+                    const Center(child: CircularProgressIndicator())
+                  else if (controller.hasLoadedOnce.value &&
+                      controller.registeredList.isEmpty)
+                    _buildEmptyState()
+                  else
+                    _buildBadgeList(),
                 ],
               ),
             ),
@@ -279,14 +280,33 @@ class _EbadgeScreenState extends State<EbadgeScreen> {
         const SizedBox(width: 10),
         Expanded(
           child: CommonDropdown<String>(
-            items: const ['GJIIF', 'CJS'],
+            items:
+                controller.dropdownList.map((e) => e.eventShortName ?? '').toList(),
             hintText: 'Select Event',
-            selectedItem: controller.eventController.text.isNotEmpty
-                ? controller.eventController.text
-                : null,
-            onChanged: (value) => controller.eventController.text = value ?? '',
-            validator: (val) =>
-            val == null || val.isEmpty ? 'Please select an event' : null,
+            selectedItem:
+                controller.eventController.text.isNotEmpty
+                    ? controller.eventController.text
+                    : null,
+            onChanged: (value) {
+              controller.eventController.text = value ?? '';
+
+              // find matching event in the dropdownList
+              final selectedEvent = controller.dropdownList.firstWhere(
+                (e) => e.eventShortName == value,
+                orElse: () => DropDownData(), // fallback if not found
+              );
+
+              controller.selectedEventId = selectedEvent.eventID.toString();
+              controller.registeredBadgeList();
+
+              print("✅ Selected Event ID: ${selectedEvent.eventID}");
+            },
+
+            validator:
+                (val) =>
+                    val == null || val.isEmpty
+                        ? 'Please select an event'
+                        : null,
           ),
         ),
       ],
@@ -354,17 +374,15 @@ class _EbadgeScreenState extends State<EbadgeScreen> {
         width: 110,
         imageUrl: imageUrl ?? '',
         fit: BoxFit.cover,
-        placeholder: (context, url) => const SizedBox(
-          height: 40,
-          width: 40,
-          child: Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-        ),
-        errorWidget: (context, url, error) => Image.asset(
-          'assets/updateBanner.png',
-          fit: BoxFit.cover,
-        ),
+        placeholder:
+            (context, url) => const SizedBox(
+              height: 40,
+              width: 40,
+              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            ),
+        errorWidget:
+            (context, url, error) =>
+                Image.asset('assets/updateBanner.png', fit: BoxFit.cover),
       ),
     );
   }
@@ -395,8 +413,7 @@ class _EbadgeScreenState extends State<EbadgeScreen> {
         const SizedBox(height: 8),
         CommonButton(
           text: "View Badge",
-          onPressed: () =>
-              controller.viewBadge(context, data.registrationID),
+          onPressed: () => controller.viewBadge(context, data.registrationID),
           fillColor: AppColor.secondary,
           textColor: AppColor.black,
           height: 40,

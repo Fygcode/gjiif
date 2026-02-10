@@ -12,15 +12,6 @@ import 'package:tjw1/ui/views/payment/payment_controller.dart';
 import '../../../services/secure_storage_service.dart';
 
 class SummaryController extends GetxController {
-  final List<Map<String, dynamic>> entries = [
-    {'name': 'Abhinavagupta', 'amount': 1000},
-    {'name': 'Bhartrihari', 'amount': 1500},
-    {'name': 'Vasugupta', 'amount': 2000},
-    {'name': 'Utpaladeva', 'amount': 2500},
-  ];
-
-  final Color color1 = Colors.grey.shade100;
-  final Color color2 = Colors.grey.shade300;
 
   late List<String> visitorIds = [];
   late String eventId = "";
@@ -75,8 +66,8 @@ class SummaryController extends GetxController {
     try {
       isLoading(true);
       final response = await ApiBaseService.request<PaymentSummaryResponse>(
-        'VisitorDetail/GetPaymentSummary?EventID=$eventId',
-        method: RequestMethod.GET,
+        'VisitorDetail/GetPaymentSummary?EventID=$eventId',  // $eventId
+        method: RequestMethod.POST,
         authenticated: false,
         body: joinedVisitorIds,
       );
@@ -96,65 +87,60 @@ class SummaryController extends GetxController {
     }
   }
 
-
-
   Future<Map<String, dynamic>> createCashfreeOrder() async {
-    final url = Uri.parse('https://sandbox.cashfree.com/pg/orders');
-
-    final headers = {
-      'Content-Type': 'application/json',
-      'x-api-version': '2025-01-01',
-      'x-client-id': '97644cc98fa0f694b239a7cf344679',
-      'x-client-secret': '5461d06075cb72624170d5d0b3684c267e3fb752',
-    };
-
-    final body = {
-      "order_currency": "INR",
-      "order_amount": totalPayableAmount,
-      "customer_details": {
-        "customer_id": "7112AAA812234",
-        "customer_phone": "9898989898",
-      }
-    };
-
-    print("BODY DATA == ${body}");
-
     isPaymentLoading.value = true;
 
+    final body = {
+      "eventId": eventId,
+      "amount": totalPayableAmount,
+      "primaryVisitorId": visitorId.toString(),
+      "registeringFor": visitorIds.join(','),
+    };
+
+    print("PAYMENT BODY : $body");
+
     try {
-      final response = await http.post(
-        url,
-        headers: headers,
-        body: jsonEncode(body),
+      /// 🔹 CALL BACKEND ONLY ONCE
+      final Map<String, dynamic> decoded =
+      await ApiBaseService.request<Map<String, dynamic>>(
+        'PG/CreateOrder',
+        body: body,
+        method: RequestMethod.POST,
+        authenticated: false,
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        print('✅ Cashfree Order Created: ${response.body}');
-
-        final data = jsonDecode(response.body);
-
-        final String orderId = data['order_id'] ?? '';
-        final String orderToken = data['payment_session_id'] ?? '';
-
-        print('Order ID: $orderId');
-        print('Order Token: $orderToken');
-
-        PaymentController().startPayment(
-          orderId: orderId,
-          orderToken: orderToken,
-        );
-
-        return data;
-      } else {
-        print('❌ Cashfree Order Failed: ${response.statusCode} - ${response.body}');
-        throw Exception('Failed to create order: ${response.body}');
+      final paymentData = decoded['data'];
+      if (paymentData == null) {
+        throw Exception('Payment data missing in response');
       }
+
+      final String orderId = paymentData['orderID'] ?? '';
+      final String orderToken = paymentData['paymentSessionID'] ?? '';
+
+      if (orderId.isEmpty || orderToken.isEmpty) {
+        throw Exception('Invalid Cashfree order response');
+      }
+
+      print("RESULT DATA : $orderId == $orderToken");
+
+      /// 🔹 USE EXISTING CONTROLLER (VERY IMPORTANT)
+      final paymentController = Get.find<PaymentController>();
+
+      paymentController.startPayment(
+        orderId: orderId,
+        orderToken: orderToken,
+      );
+
+      return decoded;
     } catch (e) {
-      print('Cashfree order error: $e');
+      print('❌ CreateOrder error: $e');
       rethrow;
     } finally {
       isPaymentLoading.value = false;
     }
   }
+
+
+
 
 }

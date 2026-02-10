@@ -1,7 +1,11 @@
 import 'package:get/get.dart';
 import 'package:tjw1/ui/views/dashboard/dashboard_screen.dart';
 import 'package:tjw1/ui/views/organization/organizationDetail_screen.dart';
+import 'package:tjw1/ui/views/payment/payment_controller.dart';
+import 'package:tjw1/ui/views/splash/splash_controller.dart';
 import 'package:tjw1/ui/views/splash/splash_screen.dart';
+
+import 'controllers/master_data_controller.dart';
 
 
 
@@ -15,6 +19,7 @@ class AppRoutes {
     GetPage(
       name: splash,
       page: () => SplashScreen(),
+      binding: SplashBinding(),
       transition: Transition.fadeIn,
     ),
     GetPage(
@@ -31,3 +36,13 @@ class AppRoutes {
     // Add more pages here
   ];
 }
+
+class SplashBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put(SplashController());
+    Get.put(PaymentController(), permanent: true);
+    Get.put(MasterDataController(), permanent: true);
+  }
+}
+

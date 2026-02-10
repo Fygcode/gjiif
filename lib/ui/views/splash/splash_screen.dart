@@ -31,7 +31,6 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Text("Muthuraksjds"),
           Image.asset(
             'assets/splash_background.png', // Optional full background
             fit: BoxFit.cover,

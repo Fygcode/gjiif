@@ -138,13 +138,24 @@ class _SummaryScreenState extends State<SummaryScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "Total Amount",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18,
-                            ),
-                          ),
+                         Column(
+                           children: [
+                             Text(
+                               "Total Amount",
+                               style: TextStyle(
+                                 fontWeight: FontWeight.w600,
+                                 fontSize: 18,
+                               ),
+                             ),
+                             // Text(
+                             //   "Inc Gst",
+                             //   style: TextStyle(
+                             //     fontWeight: FontWeight.w600,
+                             //     fontSize: 18,
+                             //   ),
+                             // ),
+                           ],
+                         ),
                           Text(
                             "₹${controller.totalPayableAmount}",
                             style: TextStyle(

@@ -243,7 +243,7 @@ class CompanyController extends GetxController {
 
       final FetchCompanyDetail
       response = await ApiBaseService.request<FetchCompanyDetail>(
-        'CompanyDetails/FetchCompanyDetail?GSTN=$gstNumber&VisitorID=$visitorId',
+        'CompanyDetails/GetCompanyDetail?GSTN=$gstNumber&VisitorID=$visitorId',
         method: RequestMethod.GET,
         authenticated: false,
       );

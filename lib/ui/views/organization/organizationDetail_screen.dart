@@ -384,6 +384,7 @@ class OrganizationDetailScreen extends StatelessWidget {
                           ),
                         ),
                       ),
+
                     ],
                   ),
                 ),
@@ -433,6 +434,7 @@ class OrganizationDetailScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
         _buildLabeledField(
           "Company GSTIN",
           _buildDisabledTextField(
@@ -500,6 +502,7 @@ class OrganizationDetailScreen extends StatelessWidget {
             ),
           ),
         ),
+        SizedBox(height: 180,)
       ],
     );
   }

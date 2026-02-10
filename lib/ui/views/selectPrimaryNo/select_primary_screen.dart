@@ -51,6 +51,7 @@ class _SelectPrimaryScreenState extends State<SelectPrimaryScreen> {
                               return InkWell(
                                 onTap: () {
                                   print(index);
+                                  print(data.visitorID);
                                   CommonDialog.showConfirmDialog(
                                     title: "Select Primary Number",
                                     content:

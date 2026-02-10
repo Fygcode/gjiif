@@ -37,7 +37,7 @@ class MasterDataController extends GetxController {
   Future<List<CompanyTypeData>> fetchCompanyType() async {
     try {
       FetchCompanyType response = await ApiBaseService.request<FetchCompanyType>(
-        'CompanyDetails/FetchCompanyType',
+        'CompanyDetails/GetCompanyType',
         method: RequestMethod.GET,
         authenticated: false,
       );

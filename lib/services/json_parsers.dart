@@ -13,6 +13,7 @@ import 'package:tjw1/core/model/tjw/today_rate_card.dart';
 import 'package:tjw1/core/model/tjw/visitor_list_response.dart';
 
 import '../core/model/tjw/designation_response.dart';
+import '../core/model/tjw/dropdown_api.dart';
 
 class JsonParsers {
   static T fromJson<T>(Map<String, dynamic> json) {
@@ -48,7 +49,10 @@ class JsonParsers {
       return RegisteredBadgeResponse.fromJson(json) as T;
     } else if (T == SingleOtpVerifyResponse) {
       return SingleOtpVerifyResponse.fromJson(json) as T;
-    } else {
+    } else if (T == DropdownApi) {
+      return DropdownApi.fromJson(json) as T;
+    }
+    else {
       throw Exception('Unsupported type $T');
     }
   }

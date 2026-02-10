@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:linkify_plus/linkify_plus.dart';
 import 'package:tjw1/ui/views/setting/setting_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -91,37 +93,80 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
+  // Widget _buildExpandableTile({
+  //   required String title,
+  //   required String content,
+  // }) {
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       color: Color(0xffFCF4CB),
+  //       borderRadius: BorderRadius.circular(10),
+  //       border: Border.all(color: Colors.grey.shade300),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.grey.withOpacity(0.1),
+  //           blurRadius: 4,
+  //           offset: Offset(0, 2),
+  //         ),
+  //       ],
+  //     ),
+  //     child: ExpansionTile(
+  //       tilePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+  //       title: Text(
+  //         title,
+  //         style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+  //       ),
+  //       childrenPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+  //       children: [
+  //         Text(
+  //           content,
+  //           style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+
   Widget _buildExpandableTile({
     required String title,
     required String content,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xffFCF4CB),
+        color: const Color(0xffFCF4CB),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.shade300),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
             blurRadius: 4,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: ExpansionTile(
-        tilePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         title: Text(
           title,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
         ),
-        childrenPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        childrenPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         children: [
-          Text(
-            content,
+          Linkify(
+            text: content,
             style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            linkStyle: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+            onOpen: (link) async {
+              final Uri url = Uri.parse(link.url);
+              if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                throw Exception('Could not launch ${link.url}');
+              }
+            },
           ),
         ],
       ),
     );
   }
+
 }

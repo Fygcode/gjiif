@@ -136,55 +136,6 @@ class OrganizationDetailController extends GetxController {
 
   }
 
-
-  // void showUploadOptions(BuildContext context, String fileType) {
-  //   void handleUpload(String uploadedFileName, String uploadedFileUrl) {
-  //     final updateMap = {
-  //       'gstCopy': () {
-  //         gstCopyFileName.value = uploadedFileName;
-  //         gstCopyFilePath.value = uploadedFileUrl;
-  //         gstCopyError.value = '';
-  //         isGstUploadedNow = true;
-  //       },
-  //     };
-  //     updateMap[fileType]?.call();
-  //   }
-  //
-  //   void startUpload(UploadSource source) {
-  //     Navigator.pop(context);
-  //     FileUploadHelper.pickAndUploadFile(
-  //       source: source,
-  //       fileType: fileType,
-  //       gstNumber: gstNumber!,
-  //       mobileNumber: mobileNumber!,
-  //       onSuccess: handleUpload,
-  //       isUploadLoading: isUploadLoading,
-  //       uploadingKey: uploadingFileKey,
-  //     );
-  //   }
-  //
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) => SafeArea(
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           ListTile(
-  //             leading: Icon(Icons.camera_alt),
-  //             title: Text("Take Photo"),
-  //             onTap: () => startUpload(UploadSource.camera),
-  //           ),
-  //           ListTile(
-  //             leading: Icon(Icons.insert_drive_file),
-  //             title: Text("Choose File"),
-  //             onTap: () => startUpload(UploadSource.file),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   void handleFileUpload(BuildContext context, String fileKey) {
     print("FileKey received: $fileKey");
     final onSuccess = getUploadHandler(fileKey);
@@ -259,6 +210,7 @@ class OrganizationDetailController extends GetxController {
 
       if(response['status'] == "200"){
         Fluttertoast.showToast(msg: response['message'] ?? "");
+        await SecureStorageService().write("visitorID", response['visitorID'].toString());
         CommonDialog.showConfirmDialog(
           title: "Organization Saved",
           content: "The organization details have been saved successfully.",
@@ -307,7 +259,7 @@ class OrganizationDetailController extends GetxController {
       isLoading(true);
 
       final FetchCompanyDetail response = await ApiBaseService.request<FetchCompanyDetail>(
-        'CompanyDetails/FetchCompanyDetail?GSTN=$gstNumber&VisitorID=$visitorId',
+        'CompanyDetails/GetCompanyDetail?GSTN=$gstNumber&VisitorID=$visitorId',
         method: RequestMethod.GET,
         authenticated: false,
       );

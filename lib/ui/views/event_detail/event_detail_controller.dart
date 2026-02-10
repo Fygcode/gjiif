@@ -40,7 +40,7 @@ class EventDetailController extends GetxController {
     try {
       isLoading(true);
       final EventDetailResponse response =
-          await ApiBaseService.request<EventDetailResponse>('Event/FetchEventDetails?EventID=$eventId',
+          await ApiBaseService.request<EventDetailResponse>('Event/GetEventDetails?EventID=$eventId',  // $eventId
             method: RequestMethod.GET,
             authenticated: false,
           );

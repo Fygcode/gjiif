@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:tjw1/services/api_base_service.dart';
 import 'package:tjw1/services/request_method.dart';
+import 'package:tjw1/services/secure_storage_service.dart';
 import 'package:tjw1/ui/views/otp/otp_screen.dart';
 import 'package:tjw1/ui/views/phone/phone_screen.dart';
 import 'package:toastification/toastification.dart';
@@ -35,12 +36,11 @@ class PhoneController extends GetxController {
         method: RequestMethod.GET,
         authenticated: false,
       );
+
+      print("KKKK : ${verifyResponse}");
       if (verifyResponse.isNotEmpty) {
         if (verifyResponse['status'] == "100") {
-      //    Fluttertoast.showToast(msg: verifyResponse['message'] ?? "",gravity: ToastGravity.CENTER);
-
           toastification.show(
-      //      context: context,
             title: Text('${verifyResponse['message']}'),
             alignment: Alignment.center,
             type: ToastificationType.warning,
@@ -59,6 +59,7 @@ class PhoneController extends GetxController {
                 authenticated: false,
               );
           if (json.isNotEmpty) {
+            // await SecureStorageService().write("visitorID", json['visitorID'].toString());
             final otpData = {
               "otpID": json['otpID'],
               "mobileNumber": json['mobileNumber'],

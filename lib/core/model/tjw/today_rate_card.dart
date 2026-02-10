@@ -11,17 +11,17 @@ class TodaysRateCard {
     if (json['data'] != null) {
       rateCardData = <RateCardData>[];
       json['data'].forEach((v) {
-        rateCardData!.add(new RateCardData.fromJson(v));
+        rateCardData!.add(RateCardData.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['message'] = this.message;
-    if (this.rateCardData != null) {
-      data['data'] = this.rateCardData!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
+    data['message'] = message;
+    if (rateCardData != null) {
+      data['data'] = rateCardData!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -35,6 +35,7 @@ class RateCardData {
   int? isGSTIncluded;
   int? gstPercentage;
   String? rateDate;
+  int? deviation;
 
   RateCardData(
       {this.metalCategory,
@@ -43,7 +44,9 @@ class RateCardData {
         this.rate,
         this.isGSTIncluded,
         this.gstPercentage,
-        this.rateDate});
+        this.rateDate,
+        this.deviation
+      });
 
   RateCardData.fromJson(Map<String, dynamic> json) {
     metalCategory = json['metalCategory'];
@@ -53,17 +56,19 @@ class RateCardData {
     isGSTIncluded = json['isGSTIncluded'];
     gstPercentage = json['gstPercentage'];
     rateDate = json['rateDate'];
+    deviation = json['deviation'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['metalCategory'] = this.metalCategory;
-    data['metal'] = this.metal;
-    data['grams'] = this.grams;
-    data['rate'] = this.rate;
-    data['isGSTIncluded'] = this.isGSTIncluded;
-    data['gstPercentage'] = this.gstPercentage;
-    data['rateDate'] = this.rateDate;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['metalCategory'] = metalCategory;
+    data['metal'] = metal;
+    data['grams'] = grams;
+    data['rate'] = rate;
+    data['isGSTIncluded'] = isGSTIncluded;
+    data['gstPercentage'] = gstPercentage;
+    data['rateDate'] = rateDate;
+    data['deviation'] = deviation;
     return data;
   }
 }

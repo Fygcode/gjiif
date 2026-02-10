@@ -272,6 +272,7 @@
 // ABONE ONE IS ALSO WORKING - BUT THIS IS OPTIMIZED ONE :
 
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -280,6 +281,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:toastification/toastification.dart';
+import '../../../common_widget/common_dialog.dart';
 import '../../../core/res/colors.dart';
 
 class PdfViewScreen extends StatefulWidget {
@@ -373,6 +375,7 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
         autoCloseDuration: const Duration(seconds: 3),
       );
     } catch (e) {
+      print(e);
       _showErrorSnack("Error saving: $e");
     } finally {
       setState(() => _isLoading = false);
@@ -397,13 +400,80 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
   }
 
   /// Permission handler for Android 11+ (Downloads access)
-  Future<bool> _checkAndRequestPermission() async {
-    final status = await Permission.manageExternalStorage.request();
-    if (status.isGranted) return true;
 
-    Fluttertoast.showToast(msg: "Storage permission required.");
+  // Future<bool> _checkAndRequestPermission() async {
+  //   if (!Platform.isAndroid) return true;
+  //
+  //   final androidInfo = await DeviceInfoPlugin().androidInfo;
+  //   final sdk = androidInfo.version.sdkInt;
+  //
+  //   PermissionStatus status;
+  //
+  //   if (sdk >= 33) {
+  //     // Android 13+ → media access only
+  //     status = await Permission.photos.request();
+  //   } else {
+  //     // Android 12 and below
+  //     status = await Permission.storage.request();
+  //   }
+  //
+  //   if (status.isGranted) return true;
+  //
+  //   Fluttertoast.showToast(msg: "Storage permission required.");
+  //   return false;
+  // }
+
+  Future<bool> _checkAndRequestPermission() async {
+    if (!Platform.isAndroid) return true;
+
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    final sdk = androidInfo.version.sdkInt;
+
+    Permission permission;
+
+    if (sdk >= 33) {
+      // Android 13+ (media access)
+      permission = Permission.photos;
+    } else {
+      // Android 12 and below
+      permission = Permission.storage;
+    }
+
+    final status = await permission.request();
+
+    if (status.isGranted) {
+      return true;
+    }
+
+    if (status.isPermanentlyDenied) {
+      // 🔴 Manual dialog (same UX as FileUploadHelper)
+      CommonDialog.showConfirmDialog(
+        title: "Permission required",
+        content:
+        "Storage permission is required to save the PDF to your device. Please enable it from app settings.",
+        confirmText: "Open Settings",
+        cancelTextHide: true,
+        leading: Icon(
+          Icons.folder_open,
+          size: 48,
+          color: AppColor.primary,
+        ),
+        onConfirm: () {
+          openAppSettings();
+        },
+        dismissible: true,
+      );
+    } else {
+      // ❌ Temporarily denied
+      Fluttertoast.showToast(
+        msg: "Permission denied. Please allow storage access.",
+      );
+    }
+
     return false;
   }
+
+
 
   void _showErrorSnack(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));

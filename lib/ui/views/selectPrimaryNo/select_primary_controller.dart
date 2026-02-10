@@ -12,6 +12,7 @@ class SelectPrimaryController extends GetxController{
 
   @override
   Future<void> onInit() async {
+    print("CHECK 2");
     super.onInit();
   }
 

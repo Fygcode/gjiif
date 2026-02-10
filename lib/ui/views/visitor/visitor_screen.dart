@@ -18,6 +18,7 @@ import 'package:tjw1/ui/widgets/file_preview_widget.dart';
 import '../../../common_widget/common_button.dart';
 import '../../../common_widget/common_dialog.dart';
 import '../../../core/res/colors.dart';
+import '../add_visitor/add_visitor_binding.dart';
 import '../edit_visitor/edit_visitor_screen.dart';
 import '../visitor_detail/visitor_detail_screen.dart';
 
@@ -85,10 +86,22 @@ class VisitorListScreen extends StatelessWidget {
                   text: "+ Add Employee",
                   padding: EdgeInsets.zero,
                   onPressed: () async {
+                    print("GGGG");
+                    // final result = await Get.to(
+                    //   () => AddVisitorScreen(),
+                    //   arguments: {'isFromEdit': false, 'visitorID': 0},
+                    // );
+
                     final result = await Get.to(
-                      () => AddVisitorScreen(),
-                      arguments: {'isFromEdit': false, 'visitorID': 0},
+                          () => AddVisitorScreen(),
+                      binding: AddVisitorBinding(), // 🔥 THIS IS KEY
+                      arguments: {
+                        'isFromEdit': false,
+                        'visitorID': 0,
+                      },
                     );
+
+
                     if (result == 'refresh') {
                       controller.fetchVisitorList();
                     }
@@ -370,31 +383,3 @@ class _VisitorListItemState extends State<VisitorListItem>
     );
   }
 }
-
-
-//   ClipRRect(
-//               borderRadius: BorderRadius.circular(12),
-//               child:
-//               CachedNetworkImage(
-//                 height: 100,
-//                 width: 100,
-//                 imageUrl:
-//                 (data.visitorPhoto ?? "").startsWith("http")
-//                     ? "${data.visitorPhoto}" // ?ts=${DateTime.now().millisecondsSinceEpoch}
-//                     : (data.visitorPhoto ?? ""),
-//                 fit: BoxFit.cover,
-//                 placeholder:
-//                     (context, url) => Container(
-//                       height: 100,
-//                       width: 100,
-//                       color: Colors.grey[200],
-//                       child: const Icon(Icons.image, color: Colors.grey),
-//                     ),
-//                 errorWidget:
-//                     (context, url, error) => Image.asset(
-//                       'assets/updateBanner.png',
-//                       fit: BoxFit.cover,
-//                     ),
-//               ),
-//
-//             ),

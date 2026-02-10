@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
-                        "Events ",
+                        "Select Your Event ",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
@@ -118,13 +118,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onTap: () {
                                     Get.to(
                                       () => EventDetailScreen(),
-                                      arguments: event.eventID
+                                      arguments: event.eventID,
                                     ); // if needed
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: AppColor.border.withOpacity(0.4),
                                       borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 1,
+                                          offset: const Offset(-2, 0),
+                                        ),
+                                        BoxShadow(
+                                          color: Colors.white.withOpacity(0.2),
+                                          blurRadius: 1,
+                                          offset: const Offset(-2, 2),
+                                        ),
+                                      ],
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
@@ -247,9 +259,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     SizedBox(width: 6),
                                     Text(
-                                      DateFormat(
-                                        'EEE, MMM dd, yyyy',
-                                      ).format(controller.rateDatetime ?? DateTime.now()),
+                                      DateFormat('EEE, MMM dd, yyyy').format(
+                                        controller.rateDatetime ??
+                                            DateTime.now(),
+                                      ),
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w500,
@@ -265,13 +278,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     SvgPicture.asset("assets/clock.svg"),
                                     SizedBox(width: 6),
-                                    Expanded (
+                                    Expanded(
                                       child: Text.rich(
                                         controller.rateDatetime != null
                                             ? TextSpan(
-                                              text: DateFormat(
-                                                'hh:mm ',
-                                              ).format(controller.rateDatetime!),
+                                              text: DateFormat('hh:mm ').format(
+                                                controller.rateDatetime!,
+                                              ),
                                               style: TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w500,
@@ -410,9 +423,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                               child: Row(
                                                 children: [
                                                   SvgPicture.asset(
-                                                    "assets/priceHigh.svg",
+                                                    getDeviationAsset(
+                                                      rate.deviation,
+                                                    ),
                                                   ),
-                                                  const SizedBox(width: 4),
+                                                  const SizedBox(width: 6),
                                                   Text(
                                                     "₹ ${rate.rate}",
                                                     style: TextStyle(
@@ -481,19 +496,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     clipBehavior: Clip.antiAlias,
-                    child:
-                    CachedNetworkImage(
+                    child: CachedNetworkImage(
                       imageUrl: path,
                       fit: BoxFit.cover,
                       alignment: Alignment.center,
-                      placeholder: (context, url) => Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(color: Colors.grey[300]),
-                      ),
-                      errorWidget: (context, url, error) => const Center(
-                        child: Icon(Icons.error, color: Colors.red),
-                      ),
+                      placeholder:
+                          (context, url) => Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(color: Colors.grey[300]),
+                          ),
+                      errorWidget:
+                          (context, url, error) => const Center(
+                            child: Icon(Icons.error, color: Colors.red),
+                          ),
                     ),
                   );
                 }).toList(),
@@ -535,4 +551,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  String getDeviationAsset(int? deviation) {
+    switch (deviation) {
+      case 1:
+        return "assets/priceHigh.svg";
+      case 0:
+        return "assets/priceLow.svg";
+      default:
+        return "assets/neutral.svg";
+    }
+  }
 }

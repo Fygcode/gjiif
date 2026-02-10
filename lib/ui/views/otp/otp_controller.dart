@@ -11,12 +11,11 @@ import 'package:tjw1/ui/views/phone/phone_screen.dart';
 
 import '../organization/organizationDetail_screen.dart';
 
-class OtpController extends GetxController with WidgetsBindingObserver  {
+class OtpController extends GetxController with WidgetsBindingObserver {
   final dynamic data = Get.arguments;
   final formKey = GlobalKey<FormState>();
 
   final ScrollController scrollController = ScrollController();
-
 
   final TextEditingController otpController = TextEditingController();
   FocusNode otpFocusNode = FocusNode();
@@ -43,25 +42,24 @@ class OtpController extends GetxController with WidgetsBindingObserver  {
 
   @override
   Future<void> onInit() async {
-     WidgetsBinding.instance.addObserver(this);
-    print("DATA: $data");
-    String phone = data['mobileNumber'].toString();
-    print("Phone: $phone");
-    await SecureStorageService().write("mobileNumber", phone);
-    print("isNewPrimaryNumber: $isNewPrimaryNumber");
-    maskedPhone.value = phone.replaceRange(2, 6, "xxxxxx");
+    WidgetsBinding.instance.addObserver(this);
 
     otpID = data['otpID'].toString();
     mobileNumber = data['mobileNumber'].toString();
     visitorID = data['visitorID'].toString();
 
-    // Testing Purpose Start
+    maskedPhone.value = mobileNumber.replaceRange(2, 6, "xxxxxx");
+
+    // await SecureStorageService().write("visitorID", visitorID.toString());
+    // await SecureStorageService().write("mobileNumber", mobileNumber);
+
     sentOtp = data['sentOTP'].toString();
-    otpController.text = sentOtp;
-    // Testing Purpose End
 
+    gstNumber = await SecureStorageService().read("gst");
+    if (gstNumber == "22AAAAA0000A1Z3") {
+      otpController.text = sentOtp;
+    }
     _loadGstFromStorage();
-
 
     super.onInit();
   }
@@ -90,7 +88,6 @@ class OtpController extends GetxController with WidgetsBindingObserver  {
     WidgetsBinding.instance.removeObserver(this);
     super.onClose();
   }
-
 
   Future<void> _loadGstFromStorage() async {
     gstNumber = await SecureStorageService().read("gst");
@@ -121,15 +118,27 @@ class OtpController extends GetxController with WidgetsBindingObserver  {
         Fluttertoast.showToast(
           msg: response.message ?? "Verified successfully",
         );
-        await setPrimaryNumber(isNewPrimaryNumber, status: response.status,visitorID: visitorID);
+        await setPrimaryNumber(
+          isNewPrimaryNumber,
+          status: response.status,
+          visitorID: visitorID,
+        );
+        print("LET == 200");
+        await SecureStorageService().write("visitorID", visitorID.toString());
         await SecureStorageService().write("mobileNumber", mobileNumber);
       } else if (response.status == "100") {
+        print("LET == 100");
         Fluttertoast.showToast(msg: response.message ?? "Status 100");
         isExpiredOrInvalid = true;
       } else if (response.status == "300" || response.status == "400") {
         print("LET'S CHECK ${response.status}");
         await SecureStorageService().write("mobileNumber", mobileNumber);
-        await setPrimaryNumber(isNewPrimaryNumber, status: response.status,visitorID: visitorID);
+        await SecureStorageService().write("visitorID", visitorID.toString());
+        await setPrimaryNumber(
+          isNewPrimaryNumber,
+          status: response.status,
+          visitorID: visitorID,
+        );
       }
     } catch (e) {
       print('Error: $e');
@@ -158,8 +167,10 @@ class OtpController extends GetxController with WidgetsBindingObserver  {
 
       // Testing Purpose Start
       sentOtp = response['sentOTP'].toString();
-      otpController.text = sentOtp;
-      // Testing Purpose End
+
+      if (gstNumber == "22AAAAA0000A1Z3") {
+        otpController.text = sentOtp;
+      }
 
       Fluttertoast.showToast(msg: "OTP resent successfully");
     } catch (e) {
@@ -170,13 +181,18 @@ class OtpController extends GetxController with WidgetsBindingObserver  {
     }
   }
 
-  Future<void> setPrimaryNumber(bool? isNewPrimaryNumber, {status, visitorID}) async {
+  Future<void> setPrimaryNumber(
+    bool? isNewPrimaryNumber, {
+    status,
+    visitorID,
+  }) async {
     print("isNewPrimaryNumber $isNewPrimaryNumber");
     print("VisitorID ${visitorID}");
 
     try {
       isLoading(true);
-      final Map<String, dynamic> json = await ApiBaseService.request<Map<String, dynamic>>(
+      final Map<String, dynamic>
+      json = await ApiBaseService.request<Map<String, dynamic>>(
         'VisitorDetail/SetPrimaryMobileNumber?GSTN=$gstNumber&VisitorID=$visitorID',
         method: RequestMethod.GET,
         authenticated: false,
@@ -195,10 +211,4 @@ class OtpController extends GetxController with WidgetsBindingObserver  {
       isLoading(false);
     }
   }
-
-
-
-
-
-
 }

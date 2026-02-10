@@ -123,24 +123,26 @@ class _GstScreenState extends State<GstScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
-                Text("Or",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),),
-                SizedBox(height: 16),
-                InkWell(
-                  onTap: () {
-                    Get.to(() => PhoneMemberScreen());
-                  },
-                  child: Text(
-                    "Download your Badge",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xff151515),
-                      fontWeight: FontWeight.w500,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16),
+                // ENABLE THIS FOR NEXT UPDATES
+
+                // SizedBox(height: 16),
+                // Text("Or",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),),
+                // SizedBox(height: 16),
+                // InkWell(
+                //   onTap: () {
+                //     Get.to(() => PhoneMemberScreen());
+                //   },
+                //   child: Text(
+                //     "Download your Badge",
+                //     style: TextStyle(
+                //       fontSize: 16,
+                //       color: Color(0xff151515),
+                //       fontWeight: FontWeight.w500,
+                //       decoration: TextDecoration.underline,
+                //     ),
+                //   ),
+                // ),
+                // SizedBox(height: 16),
               ],
             ),
           ),
